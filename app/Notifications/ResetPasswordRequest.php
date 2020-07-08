@@ -45,9 +45,9 @@ class ResetPasswordRequest extends Notification implements ShouldQueue
         $frontend = config('app.frontend_url');
         $url = $frontend . '/reset-password/' . $this->token;
         return (new MailMessage)
-            ->line('You are receiving this email because we received a password reset request for your account.')
-            ->action('Reset Password', url($url))
-            ->line('If you did not request a password reset, no further action is required.');
+            ->line('Bạn đang nhận được email này vì chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.')
+            ->action('Đặt lại mật khẩu', url($url))
+            ->line('Nếu bạn không yêu cầu đặt lại mật khẩu, không cần thực hiện thêm hành động nào.');
     }
 
     /**
