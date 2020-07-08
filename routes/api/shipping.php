@@ -7,7 +7,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 			Route::get('/status', 'ShippingController@status');
 			Route::get('/count', 'ShippingController@countByStatus');
             Route::post('/create', 'ShippingController@create');
-            Route::put('/update', 'ShippingController@update');
+            Route::post('/update', 'ShippingController@update');
             Route::post('/approve', 'ShippingController@approve');
             Route::get('/detail/{id}', 'ShippingController@detail');
         });

@@ -7,7 +7,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/search', 'PartnerController@search');
                 Route::get('/detail/{id}', 'PartnerController@detail');
                 Route::post('/create', 'PartnerController@create');
-                Route::put('/update', 'PartnerController@update');
+                Route::post('/update', 'PartnerController@update');
                 Route::delete('/delete', 'PartnerController@delete');
             });
         });

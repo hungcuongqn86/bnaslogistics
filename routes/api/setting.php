@@ -6,7 +6,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/search', 'SettingController@search');
             Route::get('/detail/{id}', 'SettingController@detail');
             Route::post('/create', 'SettingController@create');
-            Route::put('/update', 'SettingController@update');
+            Route::post('/update', 'SettingController@update');
         });
     });
 });

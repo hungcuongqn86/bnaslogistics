@@ -8,7 +8,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/custumers', 'UserController@custumers');
                 Route::get('/detail/{id}', 'UserController@detail');
                 Route::post('/create', 'UserController@create');
-                Route::put('/update', 'UserController@update');
+                Route::post('/update', 'UserController@update');
                 Route::delete('/delete', 'UserController@delete');
             });
             Route::group(['prefix' => 'role'], function () {
