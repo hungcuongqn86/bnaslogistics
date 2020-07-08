@@ -18,6 +18,17 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['namespace' => 'Modules\Common\Http\Controllers'], function () {
         Route::post('login', 'PassportController@login');
         Route::post('register', 'PassportController@register');
+
+        Route::post('activate/{token}', 'PassportController@signupActivate');
+        Route::group(['prefix' => 'password'], function () {
+            Route::post('create', 'ResetPasswordController@create');
+            Route::get('find/{token}', 'ResetPasswordController@find');
+            Route::post('reset', 'ResetPasswordController@reset');
+            Route::group(['middleware' => 'auth:api'], function () {
+                Route::post('change', 'PassportController@changePassword');
+            });
+        });
+
         Route::get('auth/signup/activate/{token}', 'PassportController@signupActivate');
         Route::post('permissions', 'PassportController@setPermissions');
         Route::group(['middleware' => 'auth:api'], function () {
