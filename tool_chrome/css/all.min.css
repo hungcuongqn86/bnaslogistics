@@ -150,13 +150,13 @@ sub {
 }
 
 .btn-tbex-success {
-    background-image: -webkit-linear-gradient(top, #5cb85c 0, #419641 100%);
+/*    background-image: -webkit-linear-gradient(top, #5cb85c 0, #419641 100%);
     background-image: -o-linear-gradient(top, #5cb85c 0, #419641 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, from(#5cb85c), to(#419641));
     background-image: linear-gradient(to bottom, #5cb85c 0, #419641 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5cb85c', endColorstr='#ff419641', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-    border-color: #3e8f3e
+    border-color: #3e8f3e*/
 }
 
 .btn-tbex-success.active, .btn-tbex-success:active {
@@ -165,7 +165,7 @@ sub {
 }
 
 .btn-tbex-success.disabled, .btn-tbex-success.disabled.active, .btn-tbex-success.disabled.focus, .btn-tbex-success.disabled:active, .btn-tbex-success.disabled:focus, .btn-tbex-success.disabled:hover, .btn-tbex-success[disabled], .btn-tbex-success[disabled].active, .btn-tbex-success[disabled].focus, .btn-tbex-success[disabled]:active, .btn-tbex-success[disabled]:focus, .btn-tbex-success[disabled]:hover, fieldset[disabled] .btn-tbex-success, fieldset[disabled] .btn-tbex-success.active, fieldset[disabled] .btn-tbex-success.focus, fieldset[disabled] .btn-tbex-success:active, fieldset[disabled] .btn-tbex-success:focus, fieldset[disabled] .btn-tbex-success:hover {
-    background-color: #419641;
+    background-color: #000000;
     background-image: none
 }
 
@@ -340,7 +340,7 @@ sub {
     display: inline-block;
     border: none;
     color: #fff !important;
-    background-image: linear-gradient(rgb(51, 232, 71) 0px, rgb(26, 121, 36) 100%) !important;
+    background-color: #000000 !important;
 }
 
 .btn-thqc-add img {
@@ -368,7 +368,7 @@ sub {
 
 #tbe-info-shop, #thqc-info-shop {
     padding: 15px 0;
-    border: 3px solid #26ab34;
+    border: 3px solid #000000;
     clear: both
 }
 
