@@ -331,7 +331,7 @@ sub {
     left: 0;
     text-align: center;
     background: #dc3545;
-    z-index: 9999;
+    z-index: 99999999;
     padding: 10px 0;
 }
 
