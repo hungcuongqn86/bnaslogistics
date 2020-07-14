@@ -23,7 +23,7 @@
     }
   ],
   "description": "cong cu dat hang taobao, tmall, 1688, mua hang trung quoc, đặt hàng nhanh chóng",
-  "homepage_url": "https://order.bnaslogistics.com/api/public",
+  "homepage_url": "https://order.bnaslogistics.com",
   "icons": {
     "128": "images/128x128.png",
     "16": "images/16x16.png",
@@ -47,7 +47,7 @@
     "https://2.taobao.com/item.htm",
     "https://item.taobao.com/"
   ],
-  "short_name": "qc247",
+  "short_name": "bnas",
   "update_url": "https://clients2.google.com/service/update2/crx",
   "version": "1.0.0",
   "web_accessible_resources": [
