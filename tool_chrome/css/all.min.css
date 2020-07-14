@@ -307,6 +307,8 @@ sub {
     color: #8a6d3b;
     display: none;
     border-radius: 4px
+    text-align: center;
+    margin: 15px auto;
 }
 
 #cart-thqc-warning:hover {
@@ -316,7 +318,10 @@ sub {
 }
 
 #pro-thqc-note {
-    margin-top: 15px;
+    margin: 0 15px;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 5px;
 }
 
 #cart-thqc-parent {
