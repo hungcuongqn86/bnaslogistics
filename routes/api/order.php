@@ -12,7 +12,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/status', 'OrderController@status');
             Route::post('/create', 'OrderController@create');
             Route::post('/update', 'OrderController@update');
-            Route::post('/baogia', 'OrderController@baogia');
+            Route::post('/phancong', 'OrderController@phancong');
             Route::post('/datcoc', 'OrderController@datcoc');
             Route::get('/detail/{id}', 'OrderController@detail');
             Route::group(['prefix' => 'history'], function () {

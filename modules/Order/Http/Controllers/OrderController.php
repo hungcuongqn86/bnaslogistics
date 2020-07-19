@@ -265,16 +265,16 @@ class OrderController extends CommonController
         }
     }
 
-    public function baogia(Request $request)
+    public function phancong(Request $request)
     {
         $input = $request->all();
         $arrRules = [
             'id' => 'required',
-            'content' => 'required'
+            'hander' => 'required'
         ];
         $arrMessages = [
             'id.required' => 'id.required',
-            'content.required' => 'content.required'
+            'hander.required' => 'hander.required'
         ];
 
         $validator = Validator::make($input, $arrRules, $arrMessages);
@@ -283,8 +283,6 @@ class OrderController extends CommonController
         }
 
         try {
-            $input['status'] = 2;
-            $input['baogia_content'] = $input['content'];
             $update = OrderServiceFactory::mOrderService()->update($input);
             if (!empty($update)) {
                 // History
@@ -293,7 +291,7 @@ class OrderController extends CommonController
                     'user_id' => $user['id'],
                     'order_id' => $input['id'],
                     'type' => 2,
-                    'content' => $input['content']
+                    'content' => $input['content_pc']
                 ];
                 OrderServiceFactory::mHistoryService()->create($history);
             }

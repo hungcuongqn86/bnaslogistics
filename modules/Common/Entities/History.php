@@ -43,7 +43,7 @@ class History extends BaseEntity
     {
         $res = [];
         $res[] = ['id' => 1, 'name' => 'Kết đơn'];
-        $res[] = ['id' => 2, 'name' => 'Báo giá'];
+        $res[] = ['id' => 2, 'name' => 'Phân công thực hiện'];
         $res[] = ['id' => 3, 'name' => 'Đặt cọc'];
         $res[] = ['id' => 4, 'name' => 'Mua hàng'];
         $res[] = ['id' => 5, 'name' => 'Thanh lý'];

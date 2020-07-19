@@ -8,3 +8,6 @@ UPDATE `bnaslogist_com`.`roles` SET `position` = 'Thành viên' WHERE (`id` = '4
 
 ALTER TABLE `bnaslogist_com`.`orders`
 ADD COLUMN `hander` INT(11) NULL DEFAULT NULL AFTER `shipping`;
+
+ALTER TABLE `bnaslogist_com`.`orders`
+ADD COLUMN `content_pc` VARCHAR(500) NULL DEFAULT NULL AFTER `hander`;

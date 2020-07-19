@@ -29,7 +29,9 @@ class Order extends BaseEntity
         'is_deleted',
         'created_at',
         'updated_at',
-		'shipping'
+		'shipping',
+        'hander',
+        'content_pc'
     ];
 
     public function Shop()
