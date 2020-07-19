@@ -30,14 +30,19 @@ class PackageService extends CommonService implements IPackageService
         }))->where('is_deleted', '=', 0);
 
         $sOrderCode = isset($filter['code']) ? $filter['code'] : '';
-        $iuserId = isset($filter['user_id']) ? $filter['user_id'] : null;
-        $query->whereHas('Order', function ($q) use ($sOrderCode, $sKeySearch, $iuserId) {
+        $iuserId = isset($filter['user_id']) ? $filter['user_id'] : 0;
+        $ihander = isset($filter['hander']) ? $filter['hander'] : 0;
+        $query->whereHas('Order', function ($q) use ($sOrderCode, $sKeySearch, $iuserId, $ihander) {
             if (!empty($sOrderCode)) {
                 $q->where('id', '=', $sOrderCode);
             }
 
-            if (!empty($iuserId)) {
+            if ($iuserId > 0) {
                 $q->where('user_id', '=', $iuserId);
+            }
+
+            if ($ihander > 0) {
+                $q->where('hander', '=', $ihander);
             }
 
             if (!empty($sKeySearch)) {
