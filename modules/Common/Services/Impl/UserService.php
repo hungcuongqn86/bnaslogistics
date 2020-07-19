@@ -3,6 +3,7 @@
 namespace Modules\Common\Services\Impl;
 
 use App\User;
+
 // use Modules\Common\Entities\User;
 use Modules\Common\Services\Intf\IUserService;
 use Illuminate\Support\Facades\DB;
@@ -18,15 +19,28 @@ class UserService extends CommonService implements IUserService
     {
         // return User::class;
     }
-	
-	public function usersGetAll($filter)
+
+    public function usersGetAll($filter)
     {
         $query = User::with(['roles'])->where('is_deleted', '=', 0);
-		if(isset($filter['type'])){
-			$query->where('type', '=', $filter['type']);
-		}
+        if (isset($filter['type'])) {
+            $query->where('type', '=', $filter['type']);
+        }
         $rResult = $query->get();
         return $rResult;
+    }
+
+    public function handleGetAll()
+    {
+        $query = User::whereHas('roles', function ($q) {
+            $q->whereIn('name', ['admin', 'employees']);
+        })->where('is_deleted', '=', 0);
+        $rResult = $query->get(['id', 'name']);
+        if (!empty($rResult)) {
+            return $rResult->toArray();
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -5,3 +5,6 @@ UPDATE `bnaslogist_com`.`roles` SET `position` = 'Administrator' WHERE (`id` = '
 UPDATE `bnaslogist_com`.`roles` SET `position` = 'Quản lý' WHERE (`id` = '2');
 UPDATE `bnaslogist_com`.`roles` SET `position` = 'Chuyên viên' WHERE (`id` = '3');
 UPDATE `bnaslogist_com`.`roles` SET `position` = 'Thành viên' WHERE (`id` = '4');
+
+ALTER TABLE `bnaslogist_com`.`orders`
+ADD COLUMN `hander` INT(11) NULL DEFAULT NULL AFTER `shipping`;

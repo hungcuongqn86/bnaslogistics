@@ -28,6 +28,14 @@ class UserController extends CommonController
         }
     }
 
+    public function handleGetAll()
+    {
+        try {
+            return $this->sendResponse(CommonServiceFactory::mUserService()->handleGetAll(), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 
     public function custumers(Request $request)
     {
@@ -140,16 +148,16 @@ class UserController extends CommonController
 
             $update = CommonServiceFactory::mUserService()->update($input);
             if ($update) {
-				if(isset($input['role_id'])){
-					$role = CommonServiceFactory::mRoleService()->findById($input['role_id']);
-					if ($role) {
-						$roles = $update->getRoleNames();
-						foreach ($roles as $item) {
-							$update->removeRole($item);
-						}
-						$update->assignRole($role['role']['name']);
-					}
-				}
+                if (isset($input['role_id'])) {
+                    $role = CommonServiceFactory::mRoleService()->findById($input['role_id']);
+                    if ($role) {
+                        $roles = $update->getRoleNames();
+                        foreach ($roles as $item) {
+                            $update->removeRole($item);
+                        }
+                        $update->assignRole($role['role']['name']);
+                    }
+                }
             }
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
