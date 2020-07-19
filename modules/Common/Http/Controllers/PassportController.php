@@ -339,7 +339,7 @@ class PassportController extends CommonController
 
         echo 1;exit;
         // Permissions
-        Permission::create(['name' => 'dashboard']);
+        /*Permission::create(['name' => 'dashboard']);
         Permission::create(['name' => 'mcustumer']);
         Permission::create(['name' => 'cart']);
         Permission::create(['name' => 'order']);
@@ -354,7 +354,7 @@ class PassportController extends CommonController
         Permission::create(['name' => 'wallet']);
         Permission::create(['name' => 'muser']);
         Permission::create(['name' => 'account']);
-        Permission::create(['name' => 'setting']);
+        Permission::create(['name' => 'setting']);*/
 
         // Role
         // administrator
@@ -388,8 +388,14 @@ class PassportController extends CommonController
         $role->givePermissionTo('order');
         $role->givePermissionTo('package');
         $role->givePermissionTo('complain');
+        $role->givePermissionTo('account');
+
+        // kho
+        $role = Role::findByName('stocker');
+        $role->givePermissionTo('dashboard');
+        $role->givePermissionTo('order');
+        $role->givePermissionTo('package');
         $role->givePermissionTo('warehouse');
-        $role->givePermissionTo('shipping');
         $role->givePermissionTo('account');
 
         // owner
