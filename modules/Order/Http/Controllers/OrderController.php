@@ -9,8 +9,8 @@ use Modules\Cart\Services\CartServiceFactory;
 use Modules\Common\Services\CommonServiceFactory;
 use Modules\Common\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Auth;
-use Excel;
-use File;
+use App\Exports\OrderExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends CommonController
 {
@@ -34,6 +34,26 @@ class OrderController extends CommonController
     }
 
     public function export(Request $request)
+    {
+        try {
+            $fileName = time() . '.orders.xlsx';
+            $file = Excel::store(new OrderExport, $fileName);
+            return $this->sendResponse($fileName, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function download(Request $request, $filename)
+    {
+        try {
+            return response()->download(storage_path("app/{$filename}"));
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function export1(Request $request)
     {
         $input = $request->all();
         try {
