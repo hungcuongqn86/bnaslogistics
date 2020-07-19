@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Notifications\SignupActivate;
 use Modules\Common\Services\CommonServiceFactory;
@@ -198,11 +199,37 @@ class PassportController extends CommonController
             $newobj->url = '/cart';
             $newobj->icon = 'fa fa-cart-plus';
             $nav[] = $newobj;
-			
-			$newobj = new \stdClass();
+        }
+
+        if ($user->hasPermissionTo('myshipping')) {
+            $newobj = new \stdClass();
             $newobj->name = 'Yêu cầu ký gửi';
             $newobj->url = '/shipping/myshipping';
             $newobj->icon = 'fa fa-truck';
+            $nav[] = $newobj;
+        }
+
+        if ($user->hasPermissionTo('myorder')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Đơn hàng';
+            $newobj->url = '/order/myorder';
+            $newobj->icon = 'fa fa-gavel';
+            $nav[] = $newobj;
+        }
+
+        if ($user->hasPermissionTo('mypackage')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Kiện hàng';
+            $newobj->url = '/mypackage';
+            $newobj->icon = 'fa fa-cubes';
+            $nav[] = $newobj;
+        }
+
+        if ($user->hasPermissionTo('wallet')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Ví điện tử';
+            $newobj->url = '/wallet';
+            $newobj->icon = 'fa fa-money';
             $nav[] = $newobj;
         }
 
@@ -227,73 +254,43 @@ class PassportController extends CommonController
 
             $newobj->children = $children;
             $nav[] = $newobj;
-			
-			$newobj = new \stdClass();
+        }
+
+        if ($user->hasPermissionTo('order')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Đơn hàng';
+            $newobj->url = '/order/list';
+            $newobj->icon = 'fa fa-gavel';
+            $nav[] = $newobj;
+        }
+
+        if ($user->hasPermissionTo('shipping')) {
+            $newobj = new \stdClass();
             $newobj->name = 'Yêu cầu ký gửi';
             $newobj->url = '/shipping/list';
             $newobj->icon = 'fa fa-truck';
             $nav[] = $newobj;
         }
 
-        if ($user->hasPermissionTo('order')) {			
-            $newobj = new \stdClass();
-            //$children = [];
-            $newobj->name = 'Đơn hàng';
-            if ($user->hasPermissionTo('wallet')) {
-                $newobj->url = '/order/myorder';
-            } else {
-                $newobj->url = '/order/list';
-            }
-            $newobj->icon = 'fa fa-gavel';
-
-            /*$newchildren = new \stdClass();
-            $newchildren->name = 'Tất cả';
-            $newchildren->url = '/order/list';
-            $newchildren->icon = 'fa fa-folder';
-            $children[] = $newchildren;*/
-
-            /*if($user->hasPermissionTo('order1')){
-                $newchildren = new \stdClass();
-                $newchildren->name = 'order1';
-                $newchildren->url = '/order/order1';
-                $newchildren->icon = 'fa fa-folder';
-                $children[] = $newchildren;
-            }
-            if($user->hasPermissionTo('order2')){
-                $newchildren = new \stdClass();
-                $newchildren->name = 'order2';
-                $newchildren->url = '/order/order2';
-                $newchildren->icon = 'fa fa-folder';
-                $children[] = $newchildren;
-            }*/
-            // $newobj->children = $children;
-            $nav[] = $newobj;
-        }
-
-        if ($user->hasPermissionTo('cart')) {
-            // Kien hang
-            $newobj = new \stdClass();
-            $newobj->name = 'Kiện hàng';
-            $newobj->url = '/mypackage';
-            $newobj->icon = 'fa fa-cubes';
-            $nav[] = $newobj;
-        }
-
-        if ($user->hasPermissionTo('mcustumer')) {
+        if ($user->hasPermissionTo('complain')) {
             // Khieu nai
             $newobj = new \stdClass();
             $newobj->name = 'Khiếu nại';
             $newobj->url = '/complain';
             $newobj->icon = 'fa fa-hand-paper-o';
             $nav[] = $newobj;
+        }
 
+        if ($user->hasPermissionTo('package')) {
             // Kien hang
             $newobj = new \stdClass();
             $newobj->name = 'Kiện hàng';
             $newobj->url = '/package';
             $newobj->icon = 'fa fa-cubes';
             $nav[] = $newobj;
+        }
 
+        if ($user->hasPermissionTo('warehouse')) {
             // Kho
             $newobj = new \stdClass();
             $newobj->name = 'Kho VN';
@@ -316,27 +313,7 @@ class PassportController extends CommonController
             $newobj->children = $children;
             $nav[] = $newobj;
         }
-        /*if($user->hasPermissionTo('package')){
-            $newobj = new \stdClass();
-            $newobj->name = 'Kiện hàng';
-            $newobj->url = '/package';
-            $newobj->icon = 'fa fa-cubes';
-            $nav[] = $newobj;
-        }*/
-        if ($user->hasPermissionTo('wallet')) {
-            $newobj = new \stdClass();
-            $newobj->name = 'Ví điện tử';
-            $newobj->url = '/wallet';
-            $newobj->icon = 'fa fa-money';
-            $nav[] = $newobj;
-        }
-        if ($user->hasPermissionTo('mpartner')) {
-            $newobj = new \stdClass();
-            $newobj->name = 'Đối tác';
-            $newobj->url = '/mpartner/partner';
-            $newobj->icon = 'icon-puzzle';
-            $nav[] = $newobj;
-        }
+
         if ($user->hasPermissionTo('muser')) {
             $newobj = new \stdClass();
             $newobj->name = 'Người dùng';
@@ -344,13 +321,7 @@ class PassportController extends CommonController
             $newobj->icon = 'fa fa-users';
             $nav[] = $newobj;
         }
-        /*if($user->hasPermissionTo('profile')){
-            $newobj = new \stdClass();
-            $newobj->name = 'Hồ sơ cá nhân';
-            $newobj->url = '/profile';
-            $newobj->icon = 'fa fa-user';
-            $nav[] = $newobj;
-        }*/
+
         if ($user->hasPermissionTo('setting')) {
             $newobj = new \stdClass();
             $newobj->name = 'Setting';
@@ -363,50 +334,73 @@ class PassportController extends CommonController
 
     public function setPermissions()
     {
-        // echo 1;exit;
+        /*$user = User::where('id', 11)->first();
+        $user->assignRole('custumer');*/
+
+        echo 1;exit;
         // Permissions
-        /*Permission::create(['name' => 'dashboard']);
+        Permission::create(['name' => 'dashboard']);
         Permission::create(['name' => 'mcustumer']);
         Permission::create(['name' => 'cart']);
         Permission::create(['name' => 'order']);
+        Permission::create(['name' => 'myorder']);
         Permission::create(['name' => 'package']);
+        Permission::create(['name' => 'mypackage']);
+        Permission::create(['name' => 'complain']);
+        Permission::create(['name' => 'mycomplain']);
+        Permission::create(['name' => 'warehouse']);
+        Permission::create(['name' => 'shipping']);
+        Permission::create(['name' => 'myshipping']);
         Permission::create(['name' => 'wallet']);
-        Permission::create(['name' => 'mpartner']);
         Permission::create(['name' => 'muser']);
-        Permission::create(['name' => 'profile']);
-        Permission::create(['name' => 'setting']);*/
+        Permission::create(['name' => 'account']);
+        Permission::create(['name' => 'setting']);
 
         // Role
         // administrator
-        /*$role = Role::findByName('administrator');
+        $role = Role::findByName('administrator');
         $role->givePermissionTo('dashboard');
-        $role->givePermissionTo('mpartner');
+        $role->givePermissionTo('mcustumer');
+        $role->givePermissionTo('order');
+        $role->givePermissionTo('package');
+        $role->givePermissionTo('complain');
+        $role->givePermissionTo('warehouse');
+        $role->givePermissionTo('shipping');
         $role->givePermissionTo('muser');
+        $role->givePermissionTo('account');
         $role->givePermissionTo('setting');
 
-        // adminpk
+        // quản lý
         $role = Role::findByName('admin');
         $role->givePermissionTo('dashboard');
         $role->givePermissionTo('mcustumer');
         $role->givePermissionTo('order');
         $role->givePermissionTo('package');
-        $role->givePermissionTo('muser');
-        $role->givePermissionTo('setting');*/
+        $role->givePermissionTo('complain');
+        $role->givePermissionTo('warehouse');
+        $role->givePermissionTo('shipping');
+        $role->givePermissionTo('account');
+        $role->givePermissionTo('setting');
 
-        // employees
+        // chuyên viên
         $role = Role::findByName('employees');
-        $role->givePermissionTo('mcustumer');
-        /*$role->givePermissionTo('dashboard');
-        $role->givePermissionTo('order');
-        $role->givePermissionTo('package');*/
-
-        // owner
-        /*$role = Role::findByName('custumer');
-        $role->givePermissionTo('cart');
+        $role->givePermissionTo('dashboard');
         $role->givePermissionTo('order');
         $role->givePermissionTo('package');
+        $role->givePermissionTo('complain');
+        $role->givePermissionTo('warehouse');
+        $role->givePermissionTo('shipping');
+        $role->givePermissionTo('account');
+
+        // owner
+        $role = Role::findByName('custumer');
+        $role->givePermissionTo('cart');
+        $role->givePermissionTo('myorder');
+        $role->givePermissionTo('mypackage');
         $role->givePermissionTo('wallet');
-        $role->givePermissionTo('profile');*/
+        $role->givePermissionTo('mycomplain');
+        $role->givePermissionTo('myshipping');
+        $role->givePermissionTo('account');
         echo 1;
         exit;
     }
