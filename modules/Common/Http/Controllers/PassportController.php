@@ -125,8 +125,9 @@ class PassportController extends CommonController
             'email.required' => 'Chưa nhập email!',
             'email.email' => 'Email không đúng!',
             'email.unique' => 'Email đã được sử dụng!',
-            'password.required' => 'Chưa nhập passwword!',
-            'password.c_password' => 'Chưa nhập passwword xác nhận!',
+            'password.required' => 'Chưa nhập mật khẩu!',
+            'c_password.required' => 'Chưa nhập mật khẩu xác nhận!',
+            'c_password.same' => 'Mật khẩu xác nhận không chính xác!',
         ];
 
         $validator = Validator::make($request->all(), $arrRules, $arrMessages);
