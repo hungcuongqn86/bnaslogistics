@@ -46,7 +46,7 @@ class OrderService extends CommonService implements IOrderService
             if ($package_code === '#') {
                 $query->whereHas('Package', function ($q) use ($package_code, $contract_code, $iPkStatus) {
                     $q->whereNull('package_code');
-                    if(!empty($contract_code)){
+                    if (!empty($contract_code)) {
                         $q->where('contract_code', '=', $contract_code);
                     }
                     if ($iPkStatus > 0) {
@@ -55,10 +55,10 @@ class OrderService extends CommonService implements IOrderService
                 });
             } else {
                 $query->whereHas('Package', function ($q) use ($package_code, $contract_code, $iPkStatus) {
-                    if(!empty($package_code)){
+                    if (!empty($package_code)) {
                         $q->where('package_code', '=', $package_code);
                     }
-                    if(!empty($contract_code)){
+                    if (!empty($contract_code)) {
                         $q->where('contract_code', '=', $contract_code);
                     }
                     if ($iPkStatus > 0) {
@@ -81,6 +81,10 @@ class OrderService extends CommonService implements IOrderService
         $iuser = isset($filter['user_id']) ? $filter['user_id'] : 0;
         if ($iuser > 0) {
             $query->where('user_id', '=', $iuser);
+        }
+        $ihander = isset($filter['hander']) ? $filter['hander'] : 0;
+        if ($ihander > 0) {
+            $query->where('hander', '=', $ihander);
         }
         $istatus = isset($filter['status']) ? $filter['status'] : 0;
         if ($istatus > 0) {
@@ -130,9 +134,14 @@ class OrderService extends CommonService implements IOrderService
         return $rResult;
     }
 
-    public function countByStatus()
+    public function countByStatus($filter)
     {
-        $rResult = Order::where('is_deleted', '=', 0)->groupBy('status')->selectRaw('status, count(*) as total')->get();
+        $query = Order::where('is_deleted', '=', 0);
+        $ihander = isset($filter['hander']) ? $filter['hander'] : 0;
+        if ($ihander > 0) {
+            $query->where('hander', '=', $ihander);
+        }
+        $rResult = $query->groupBy('status')->selectRaw('status, count(*) as total')->get();
         if (!empty($rResult)) {
             return $rResult;
         } else {

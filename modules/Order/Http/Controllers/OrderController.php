@@ -23,6 +23,10 @@ class OrderController extends CommonController
     {
         $input = $request->all();
         try {
+            $currentUser = Auth::user();
+            if ($currentUser->hasRole('employees')) {
+                $input['hander'] = $currentUser['id'];
+            }
             return $this->sendResponse(OrderServiceFactory::mOrderService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -69,7 +73,12 @@ class OrderController extends CommonController
     public function countByStatus(Request $request)
     {
         try {
-            return $this->sendResponse(OrderServiceFactory::mOrderService()->countByStatus(), 'Successfully.');
+            $input = $request->all();
+            $currentUser = Auth::user();
+            if ($currentUser->hasRole('employees')) {
+                $input['hander'] = $currentUser['id'];
+            }
+            return $this->sendResponse(OrderServiceFactory::mOrderService()->countByStatus($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
