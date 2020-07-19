@@ -44,6 +44,11 @@ class Order extends BaseEntity
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function Handle()
+    {
+        return $this->belongsTo(User::class, 'hander', 'id');
+    }
+
     public function Cart()
     {
         return $this->hasMany(Cart::class, 'order_id', 'id');
