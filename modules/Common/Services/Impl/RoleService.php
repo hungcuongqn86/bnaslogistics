@@ -20,7 +20,7 @@ class RoleService extends CommonService implements IRoleService
 
     public function search($filter)
     {
-        $rResult = Role::orderBy('id', 'asc')->get(['id', 'name'])->toArray();
+        $rResult = Role::whereIn('name', ['administrator', 'admin', 'employees'])->orderBy('id', 'asc')->get(['id', 'name', 'position'])->toArray();
         return $rResult;
     }
 

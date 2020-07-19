@@ -13,6 +13,7 @@ class Role extends BaseEntity
     public $timestamps = false;
     protected $fillable = [
         'name',
+        'position',
         'created_at',
         'updated_at'
     ];
