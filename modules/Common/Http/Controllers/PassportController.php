@@ -56,7 +56,7 @@ class PassportController extends CommonController
         ]);
         $credentials = request(['email', 'password']);
         $credentials['active'] = 1;
-        // $credentials['deleted_at'] = null;
+        $credentials['is_deleted'] = 0;
         if (!Auth::attempt($credentials))
             return response()->json([
                 'status' => false,
