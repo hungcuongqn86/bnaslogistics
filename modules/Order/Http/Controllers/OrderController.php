@@ -222,6 +222,10 @@ class OrderController extends CommonController
 
         $user = $request->user();
         $input['user_id'] = $user['id'];
+        if(isset($user['hander'])){
+            $input['hander'] = $user['hander'];
+        }
+
         $validator = Validator::make($input, $arrRules, $arrMessages);
         if ($validator->fails()) {
             return $this->sendError('Kết đơn không thành công!', $validator->errors()->all());
