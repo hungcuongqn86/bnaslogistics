@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->belongsTo(Partner::class, 'partner_id', 'id');
     }
 
+    public function Handle()
+    {
+        return $this->belongsTo(User::class, 'hander', 'id');
+    }
+
     public function Transaction()
     {
         return $this->hasMany(Transaction::class, 'user_id', 'id');
