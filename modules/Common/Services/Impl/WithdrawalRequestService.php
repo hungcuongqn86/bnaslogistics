@@ -93,4 +93,10 @@ class WithdrawalRequestService extends CommonService implements IWithdrawalReque
             throw $e;
         }
     }
+
+    public function status()
+    {
+        $shipping = new WithdrawalRequest();
+        return $shipping->status();
+    }
 }

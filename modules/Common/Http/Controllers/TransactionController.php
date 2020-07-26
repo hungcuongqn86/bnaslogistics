@@ -224,4 +224,13 @@ class TransactionController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
+
+    public function withdrawalrequestsstatus()
+    {
+        try {
+            return $this->sendResponse(CommonServiceFactory::mWithdrawalRequestService()->status(), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 }

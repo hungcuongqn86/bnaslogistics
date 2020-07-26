@@ -22,6 +22,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::post('/withdrawalrequest', 'TransactionController@withdrawalRequest');
                 Route::post('/updatewithdrawalrequest', 'TransactionController@updatewithdrawalrequest');
                 Route::get('/withdrawalrequests', 'TransactionController@withdrawalRequests');
+                Route::get('/withdrawalrequestsstatus', 'TransactionController@withdrawalrequestsstatus');
             });
         });
     });
