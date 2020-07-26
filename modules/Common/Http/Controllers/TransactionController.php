@@ -181,6 +181,36 @@ class TransactionController extends CommonController
         }
     }
 
+    public function updatewithdrawalrequest(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $arrRules = [
+                'id' => 'required',
+                'value' => 'required'
+            ];
+            $arrMessages = [
+                'id.required' => 'id.required',
+                'value.required' => 'value.required'
+            ];
+
+            $validator = Validator::make($input, $arrRules, $arrMessages);
+            if ($validator->fails()) {
+                return $this->sendError('Error', $validator->errors()->all());
+            }
+
+            $user = Auth::user();
+            if (!$user->hasRole('custumer')) {
+                return $this->sendError('Error', ['Not Permission!']);
+            }
+
+            $create = CommonServiceFactory::mWithdrawalRequestService()->update($input);
+            return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function withdrawalRequests(Request $request)
     {
         $input = $request->all();

@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/types', 'TransactionController@types');
                 Route::post('/create', 'TransactionController@create');
                 Route::post('/withdrawalrequest', 'TransactionController@withdrawalRequest');
+                Route::post('/updatewithdrawalrequest', 'TransactionController@updatewithdrawalrequest');
                 Route::get('/withdrawalrequests', 'TransactionController@withdrawalRequests');
             });
         });
