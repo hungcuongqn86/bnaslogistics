@@ -18,6 +18,10 @@ class TransactionController extends CommonController
     {
         $input = $request->all();
         try {
+            $user = Auth::user();
+            if ($user->hasRole('custumer')) {
+                $input['user_id'] = $user['id'];
+            }
             return $this->sendResponse(CommonServiceFactory::mTransactionService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -172,6 +176,20 @@ class TransactionController extends CommonController
             $input['created_by'] = $user['id'];
             $create = CommonServiceFactory::mWithdrawalRequestService()->create($input);
             return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function withdrawalRequests(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $user = Auth::user();
+            if ($user->hasRole('custumer')) {
+                $input['user_id'] = $user['id'];
+            }
+            return $this->sendResponse(CommonServiceFactory::mWithdrawalRequestService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
