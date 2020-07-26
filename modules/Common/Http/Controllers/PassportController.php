@@ -248,6 +248,12 @@ class PassportController extends CommonController
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
+            $newchildren->name = 'Yêu cầu rút tiền';
+            $newchildren->url = '/mcustumer/withdrawal';
+            $newchildren->icon = 'fa fa-cc-visa';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
             $newchildren->name = 'Chi nội bộ';
             $newchildren->url = '/mcustumer/internal';
             $newchildren->icon = 'fa fa-recycle';
