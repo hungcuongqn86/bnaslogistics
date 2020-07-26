@@ -72,6 +72,16 @@ class WithdrawalRequestService extends CommonService implements IWithdrawalReque
         }
     }
 
+    public function findById($id)
+    {
+        $rResult = WithdrawalRequest::with(['User'])->where('id', '=', $id)->first();
+        if (!empty($rResult)) {
+            return $rResult->toArray();
+        } else {
+            return null;
+        }
+    }
+
     public function findByIds($ids)
     {
         $rResult = WithdrawalRequest::wherein('id', $ids)->get()->toArray();

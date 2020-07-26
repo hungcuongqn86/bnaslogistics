@@ -240,6 +240,47 @@ class TransactionController extends CommonController
                 }
             }
 
+            if ($input['status'] == '2') {
+                if (empty($input['bank_account'])) {
+                    return $this->sendError('Error', ['Phải chọn ngân hàng!']);
+                }
+
+                $withdrawalrequest = CommonServiceFactory::mWithdrawalRequestService()->findById($input['id']);
+                if (empty($withdrawalrequest)) {
+                    return $this->sendError('Error', ['Không tìm thấy yêu cầu rút tiền!']);
+                }
+
+                // Du no
+                $duNo = 0;
+                if (!empty($withdrawalrequest['user_id'])) {
+                    $duNo = CommonServiceFactory::mTransactionService()->debt($withdrawalrequest['user_id']);
+                }
+                $duNoBank = CommonServiceFactory::mTransactionService()->bankdebt($input['bank_account']);
+
+                if ($duNo < $withdrawalrequest['value']) {
+                    return $this->sendError('Error', ['Dư nợ khách hàng không đủ để rut tiền!']);
+                }
+
+                if ($duNoBank < $withdrawalrequest['value']) {
+                    return $this->sendError('Error', ['Dư nợ tài khoản không đủ để chuyển tiền cho khách!']);
+                }
+
+                $duNo = $duNo - $input['value'];
+                $duNoBank = $duNoBank - $input['value'];
+
+                $transactionInput = [
+                    'user_id' => $withdrawalrequest['user_id'],
+                    'type' => 2,
+                    'code' => 'Request' . $input['id'],
+                    'value' => $withdrawalrequest['value'],
+                    'debt' => $duNo,
+                    'content' => 'Duyệt yêu cầu rút tiền #' . $input['id'],
+                    'bank_debt' => $duNoBank,
+                    'bank_account' => $input['bank_account']
+                ];
+
+                $create = CommonServiceFactory::mTransactionService()->create($transactionInput);
+            }
             $item = CommonServiceFactory::mWithdrawalRequestService()->update($input);
             return $this->sendResponse($item, 'Successfully.');
         } catch (\Exception $e) {
