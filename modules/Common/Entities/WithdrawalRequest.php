@@ -34,8 +34,8 @@ class WithdrawalRequest extends BaseEntity
     }
 
     public $list_of_status = [
-        self::CHO_DUYET => "Chờ nhận",
-        self::DA_DUYET => "Đã nhận",
+        self::CHO_DUYET => "Chờ duyệt",
+        self::DA_DUYET => "Đã duyệt",
         self::KHONG_DUYET => "Từ chối"
     ];
 

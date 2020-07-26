@@ -31,6 +31,24 @@ class WithdrawalRequestService extends CommonService implements IWithdrawalReque
         if ($iUser > 0) {
             $query->Where('user_id', '=', $iUser);
         }
+
+        $iStatus = isset($filter['status']) ? $filter['status'] : '';
+        if (!empty($iStatus)) {
+            $query->where('status', '=', $iStatus);
+        }
+
+        $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
+        if (!empty($sKeySearch)) {
+            $query->where(function ($q) use ($sKeySearch){
+                $q->whereHas('User', function ($q) use ($sKeySearch) {
+                    $q->where('name', 'LIKE', '%' . $sKeySearch . '%');
+                    $q->orWhere('email', 'LIKE', '%' . $sKeySearch . '%');
+                    $q->orWhere('phone_number', 'LIKE', '%' . $sKeySearch . '%');
+                });
+                $q->orWhere('content', 'LIKE', '%' . $sKeySearch . '%');
+            });
+        }
+
         $query->orderBy('id', 'desc');
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
         $rResult = $query->paginate($limit)->toArray();
