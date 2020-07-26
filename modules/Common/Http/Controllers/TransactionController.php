@@ -211,6 +211,42 @@ class TransactionController extends CommonController
         }
     }
 
+    public function approvewithdrawalrequest(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $user = Auth::user();
+            if (!$user->hasRole('admin')) {
+                return $this->sendError('Error', ['Not Permission!']);
+            }
+
+            $arrRules = [
+                'id' => 'required',
+                'status' => 'required'
+            ];
+            $arrMessages = [
+                'id.required' => 'id.required',
+                'status.required' => 'status.required'
+            ];
+
+            $validator = Validator::make($input, $arrRules, $arrMessages);
+            if ($validator->fails()) {
+                return $this->sendError('Error', $validator->errors()->all());
+            }
+
+            if ($input['status'] == '3') {
+                if (empty($input['feedback'])) {
+                    return $this->sendError('Error', ['Phải nhập lý do từ chối!']);
+                }
+            }
+
+            $item = CommonServiceFactory::mWithdrawalRequestService()->update($input);
+            return $this->sendResponse($item, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function withdrawalRequests(Request $request)
     {
         $input = $request->all();

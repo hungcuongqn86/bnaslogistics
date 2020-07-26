@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::post('/create', 'TransactionController@create');
                 Route::post('/withdrawalrequest', 'TransactionController@withdrawalRequest');
                 Route::post('/updatewithdrawalrequest', 'TransactionController@updatewithdrawalrequest');
+                Route::post('/approvewithdrawalrequest', 'TransactionController@approvewithdrawalrequest');
                 Route::get('/withdrawalrequests', 'TransactionController@withdrawalRequests');
                 Route::get('/withdrawalrequestsstatus', 'TransactionController@withdrawalrequestsstatus');
                 Route::get('/withdrawalrequestcount', 'TransactionController@withdrawalrequestcount');
