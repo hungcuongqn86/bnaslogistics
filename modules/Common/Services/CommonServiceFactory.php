@@ -9,6 +9,7 @@ use Modules\Common\Services\Impl\UserService;
 use Modules\Common\Services\Impl\RoleService;
 use Modules\Common\Services\Impl\TransactionService;
 use Modules\Common\Services\Impl\BankAccountService;
+use Modules\Common\Services\Impl\WithdrawalRequestService;
 
 class CommonServiceFactory
 {
@@ -19,6 +20,7 @@ class CommonServiceFactory
     protected static $mBankAccountService;
     protected static $mRoleService;
     protected static $mTransactionService;
+    protected static $mWithdrawalRequestService;
 
     public static function mVersionService()
     {
@@ -74,5 +76,13 @@ class CommonServiceFactory
             self::$mTransactionService = new TransactionService();
         }
         return self::$mTransactionService;
+    }
+
+    public static function mWithdrawalRequestService()
+    {
+        if (self::$mWithdrawalRequestService == null) {
+            self::$mWithdrawalRequestService = new WithdrawalRequestService();
+        }
+        return self::$mWithdrawalRequestService;
     }
 }

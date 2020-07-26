@@ -56,7 +56,7 @@ class TransactionController extends CommonController
             }
 
             $user = Auth::user();
-            if(!$user->hasRole('admin')){
+            if (!$user->hasRole('admin')) {
                 return $this->sendError('Error', ['Not Permission!']);
             }
 
@@ -141,6 +141,37 @@ class TransactionController extends CommonController
         try {
             CommonServiceFactory::mTransactionService()->delete($input);
             return $this->sendResponse(true, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function withdrawalRequest(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $arrRules = [
+                'value' => 'required'
+            ];
+            $arrMessages = [
+                'value.required' => 'value.required'
+            ];
+
+            $validator = Validator::make($input, $arrRules, $arrMessages);
+            if ($validator->fails()) {
+                return $this->sendError('Error', $validator->errors()->all());
+            }
+
+            $user = Auth::user();
+            if (!$user->hasRole('custumer')) {
+                return $this->sendError('Error', ['Not Permission!']);
+            }
+
+            $input['user_id'] = $user['id'];
+            $input['status'] = 1;
+            $input['created_by'] = $user['id'];
+            $create = CommonServiceFactory::mWithdrawalRequestService()->create($input);
+            return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }

@@ -19,6 +19,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/search', 'TransactionController@search');
                 Route::get('/types', 'TransactionController@types');
                 Route::post('/create', 'TransactionController@create');
+                Route::post('/withdrawalrequest', 'TransactionController@withdrawalRequest');
             });
         });
     });
