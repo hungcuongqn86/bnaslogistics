@@ -39,7 +39,7 @@ class WithdrawalRequestService extends CommonService implements IWithdrawalReque
 
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         if (!empty($sKeySearch)) {
-            $query->where(function ($q) use ($sKeySearch){
+            $query->where(function ($q) use ($sKeySearch) {
                 $q->whereHas('User', function ($q) use ($sKeySearch) {
                     $q->where('name', 'LIKE', '%' . $sKeySearch . '%');
                     $q->orWhere('email', 'LIKE', '%' . $sKeySearch . '%');
@@ -116,5 +116,15 @@ class WithdrawalRequestService extends CommonService implements IWithdrawalReque
     {
         $shipping = new WithdrawalRequest();
         return $shipping->status();
+    }
+
+    public function countByStatus()
+    {
+        $rResult = WithdrawalRequest::where('is_deleted', '=', 0)->groupBy('status')->selectRaw('status, count(*) as total')->get();
+        if (!empty($rResult)) {
+            return $rResult;
+        } else {
+            return null;
+        }
     }
 }
