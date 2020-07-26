@@ -158,7 +158,7 @@ class TransactionController extends CommonController
                 'value' => 'required'
             ];
             $arrMessages = [
-                'value.required' => 'value.required'
+                'value.required' => 'Phải nhập số tiền muốn rút!'
             ];
 
             $validator = Validator::make($input, $arrRules, $arrMessages);
