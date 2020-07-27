@@ -6,6 +6,10 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/neworders', 'DashboardController@neworders');
             Route::get('/newusers', 'DashboardController@newusers');
             Route::get('/newcomplains', 'DashboardController@newcomplains');
+
+            Route::get('/statisticbytaobao', 'DashboardController@statisticbytaobao');
+            Route::get('/statisticbytmall', 'DashboardController@statisticbytmall');
+            Route::get('/statisticby1688', 'DashboardController@statisticby1688');
         });
     });
 });

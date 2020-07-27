@@ -13,9 +13,8 @@ use Modules\Common\Entities\Complain;
 
 class DashboardController extends CommonController
 {
-    public function newlinks(Request $request)
+    public function newlinks()
     {
-        $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
             $count = Cart::whereDate('created_at', '>=', $date->toDateString())->count();
@@ -25,9 +24,8 @@ class DashboardController extends CommonController
         }
     }
 
-    public function neworders(Request $request)
+    public function neworders()
     {
-        $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
             $count = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
@@ -37,9 +35,8 @@ class DashboardController extends CommonController
         }
     }
 
-    public function newusers(Request $request)
+    public function newusers()
     {
-        $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
             $count = User::whereDate('created_at', '>=', $date->toDateString())
@@ -52,13 +49,66 @@ class DashboardController extends CommonController
         }
     }
 
-    public function newcomplains(Request $request)
+    public function newcomplains()
     {
-        $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
             $count = Complain::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
             return $this->sendResponse(['newcomplains' => $count], 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function statisticbytaobao()
+    {
+        try {
+            $date = Carbon::now()->subDays(10);
+            $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
+                ->where('domain', '=', 'taobao')->count();
+            $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
+                ->where('is_deleted', '=', 0)
+                ->whereHas('Cart', function ($q) {
+                    $q->where('domain', '=', 'taobao')->where('is_deleted', '=', 0);
+                })
+                ->count();
+            return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function statisticbytmall()
+    {
+        try {
+            $date = Carbon::now()->subDays(10);
+            $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
+                ->where('domain', '=', 'tmall')->count();
+            $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
+                ->where('is_deleted', '=', 0)
+                ->whereHas('Cart', function ($q) {
+                    $q->where('domain', '=', 'tmall')->where('is_deleted', '=', 0);
+                })
+                ->count();
+            return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function statisticby1688()
+    {
+        try {
+            $date = Carbon::now()->subDays(10);
+            $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
+                ->where('domain', '=', '1688')->count();
+            $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
+                ->where('is_deleted', '=', 0)
+                ->whereHas('Cart', function ($q) {
+                    $q->where('domain', '=', '1688')->where('is_deleted', '=', 0);
+                })
+                ->count();
+            return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
