@@ -1,15 +1,11 @@
 <?php
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => 'v1'], function () {
-        Route::group(['prefix' => 'shipping', 'namespace' => 'Modules\Order\Http\Controllers'], function () {
-            Route::get('/search', 'ShippingController@search');
-            Route::get('/myshipping', 'ShippingController@myshipping');
-			Route::get('/status', 'ShippingController@status');
-			Route::get('/count', 'ShippingController@countByStatus');
-            Route::post('/create', 'ShippingController@create');
-            Route::post('/update', 'ShippingController@update');
-            Route::post('/approve', 'ShippingController@approve');
-            Route::get('/detail/{id}', 'ShippingController@detail');
+        Route::group(['prefix' => 'dashboard', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/newlinks', 'DashboardController@newlinks');
+            Route::get('/neworders', 'DashboardController@neworders');
+            Route::get('/newusers', 'DashboardController@newusers');
+            Route::get('/newcomplains', 'DashboardController@newcomplains');
         });
     });
 });
