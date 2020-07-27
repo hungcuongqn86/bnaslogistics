@@ -30,7 +30,7 @@ class DashboardController extends CommonController
         $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
-            $count = Order::whereDate('created_at', '>=', $date->toDateString())->count();
+            $count = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
             return $this->sendResponse(['neworders' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -42,7 +42,10 @@ class DashboardController extends CommonController
         $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
-            $count = User::whereDate('created_at', '>=', $date->toDateString())->count();
+            $count = User::whereDate('created_at', '>=', $date->toDateString())
+                ->where('type', '=', 1)
+                ->where('active', '=', 1)
+                ->where('is_deleted', '=', 0)->count();
             return $this->sendResponse(['newusers' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -54,7 +57,7 @@ class DashboardController extends CommonController
         $input = $request->all();
         try {
             $date = Carbon::now()->subDays(10);
-            $count = Complain::whereDate('created_at', '>=', $date->toDateString())->count();
+            $count = Complain::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
             return $this->sendResponse(['newcomplains' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
