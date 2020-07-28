@@ -169,29 +169,36 @@ class DashboardController extends CommonController
             $total = Order::whereDate('created_at', '>=', $date->toDateString())
                 ->where('is_deleted', '=', 0)
                 ->count();
-
-            $result = Order::selectRaw("status, count(*) value")
-                ->whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0)
-                ->groupBy('status')
-                ->orderBy('status')
-                ->get();
-
-            $status = Order::status();
             $data = [];
-            foreach ($status as $item) {
-                $newItem = new \stdClass();
-                $newItem->id = $item['id'];
-                $newItem->total = $total;
-                $newItem->val = 0;
-                foreach ($result as $statusitem) {
-                    if ($item['id'] == $statusitem->status) {
-                        $newItem->val = $statusitem->value;
-                        break;
+
+            if ($total > 0) {
+                $result = Order::selectRaw("status, count(*) value")
+                    ->whereDate('created_at', '>=', $date->toDateString())
+                    ->where('is_deleted', '=', 0)
+                    ->groupBy('status')
+                    ->orderBy('status')
+                    ->get();
+
+                $status = Order::status();
+
+                foreach ($status as $item) {
+                    $newItem = new \stdClass();
+                    $newItem->id = $item['id'];
+                    $newItem->name = $item['name'];
+                    $newItem->total = $total;
+                    $newItem->val = 0;
+                    foreach ($result as $statusitem) {
+                        if ($item['id'] == $statusitem->status) {
+                            $newItem->val = $statusitem->value;
+                            break;
+                        }
                     }
+                    $newItem->valp = round($newItem->val * 100 / $total, 2);
+                    $newItem->valsub = 100 - $newItem->valp;
+                    $data[] = $newItem;
                 }
-                $data[] = $newItem;
             }
+
 
             return $this->sendResponse($data, 'Successfully.');
         } catch (\Exception $e) {
