@@ -10,6 +10,8 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/statisticbytaobao', 'DashboardController@statisticbytaobao');
             Route::get('/statisticbytmall', 'DashboardController@statisticbytmall');
             Route::get('/statisticby1688', 'DashboardController@statisticby1688');
+
+            Route::get('/orderstatisticbyday', 'DashboardController@orderStatisticByDay');
         });
     });
 });

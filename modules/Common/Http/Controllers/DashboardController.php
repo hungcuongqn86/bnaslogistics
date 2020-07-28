@@ -13,10 +13,16 @@ use Modules\Common\Entities\Complain;
 
 class DashboardController extends CommonController
 {
-    public function newlinks()
+    public function newlinks(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $count = Cart::whereDate('created_at', '>=', $date->toDateString())->count();
             return $this->sendResponse(['newlinks' => $count], 'Successfully.');
         } catch (\Exception $e) {
@@ -24,10 +30,16 @@ class DashboardController extends CommonController
         }
     }
 
-    public function neworders()
+    public function neworders(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $count = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
             return $this->sendResponse(['neworders' => $count], 'Successfully.');
         } catch (\Exception $e) {
@@ -35,10 +47,16 @@ class DashboardController extends CommonController
         }
     }
 
-    public function newusers()
+    public function newusers(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $count = User::whereDate('created_at', '>=', $date->toDateString())
                 ->where('type', '=', 1)
                 ->where('active', '=', 1)
@@ -49,10 +67,16 @@ class DashboardController extends CommonController
         }
     }
 
-    public function newcomplains()
+    public function newcomplains(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $count = Complain::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
             return $this->sendResponse(['newcomplains' => $count], 'Successfully.');
         } catch (\Exception $e) {
@@ -60,10 +84,16 @@ class DashboardController extends CommonController
         }
     }
 
-    public function statisticbytaobao()
+    public function statisticbytaobao(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
                 ->where('domain', '=', 'taobao')->count();
             $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
@@ -78,10 +108,16 @@ class DashboardController extends CommonController
         }
     }
 
-    public function statisticbytmall()
+    public function statisticbytmall(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
                 ->where('domain', '=', 'tmall')->count();
             $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
@@ -96,10 +132,16 @@ class DashboardController extends CommonController
         }
     }
 
-    public function statisticby1688()
+    public function statisticby1688(Request $request)
     {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
         try {
-            $date = Carbon::now()->subDays(10);
             $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
                 ->where('domain', '=', '1688')->count();
             $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
@@ -112,5 +154,54 @@ class DashboardController extends CommonController
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
+    }
+
+    public function orderStatisticByDay(Request $request)
+    {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
+        try {
+            $result = Order::selectRaw("DATE_FORMAT(created_at, '%d/%m/%Y') date, count(*) value")
+                ->whereDate('created_at', '>=', $date->toDateString())
+                ->where('is_deleted', '=', 0)
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            $datePeriod = self::returnDates($date->format('d/m/Y'), Carbon::now()->format('d/m/Y'));
+            $data = [];
+            foreach ($datePeriod as $date) {
+                $newDate = new \stdClass();
+                $newDate->name = $date->format('d/m/Y');
+                $newDate->value = 0;
+                foreach ($result as $item) {
+                    if ($date->format('d/m/Y') == $item->date) {
+                        $newDate->value = $item->value;
+                        break;
+                    }
+                }
+                $data[] = $newDate;
+            }
+
+            return $this->sendResponse($data, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    function returnDates($fromdate, $todate)
+    {
+        $fromdate = \DateTime::createFromFormat('d/m/Y', $fromdate);
+        $todate = \DateTime::createFromFormat('d/m/Y', $todate);
+        return new \DatePeriod(
+            $fromdate,
+            new \DateInterval('P1D'),
+            $todate->modify('+1 day')
+        );
     }
 }
