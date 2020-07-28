@@ -11,6 +11,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/statisticbytmall', 'DashboardController@statisticbytmall');
             Route::get('/statisticby1688', 'DashboardController@statisticby1688');
 
+            Route::get('/orderstatisticbystatus', 'DashboardController@orderStatisticByStatus');
             Route::get('/orderstatisticbyday', 'DashboardController@orderStatisticByDay');
         });
     });

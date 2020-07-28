@@ -156,6 +156,49 @@ class DashboardController extends CommonController
         }
     }
 
+    public function orderStatisticByStatus(Request $request)
+    {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
+        try {
+            $total = Order::whereDate('created_at', '>=', $date->toDateString())
+                ->where('is_deleted', '=', 0)
+                ->count();
+
+            $result = Order::selectRaw("status, count(*) value")
+                ->whereDate('created_at', '>=', $date->toDateString())
+                ->where('is_deleted', '=', 0)
+                ->groupBy('status')
+                ->orderBy('status')
+                ->get();
+
+            $status = Order::status();
+            $data = [];
+            foreach ($status as $item) {
+                $newItem = new \stdClass();
+                $newItem->id = $item['id'];
+                $newItem->total = $total;
+                $newItem->val = 0;
+                foreach ($result as $statusitem) {
+                    if ($item['id'] == $statusitem->status) {
+                        $newItem->val = $statusitem->value;
+                        break;
+                    }
+                }
+                $data[] = $newItem;
+            }
+
+            return $this->sendResponse($data, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function orderStatisticByDay(Request $request)
     {
         $input = $request->all();

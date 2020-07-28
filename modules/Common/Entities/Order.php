@@ -64,10 +64,10 @@ class Order extends BaseEntity
         return $this->hasMany(History::class, 'order_id', 'id');
     }
 
-    public function status()
+    public static function status()
     {
         $res = [];
-        $res[] = ['id' => 1, 'name' => 'Chờ báo giá'];
+        // $res[] = ['id' => 1, 'name' => 'Chờ báo giá'];
         $res[] = ['id' => 2, 'name' => 'Chờ đặt cọc'];
         $res[] = ['id' => 3, 'name' => 'Đang mua hàng'];
         $res[] = ['id' => 4, 'name' => 'Đã mua hàng'];
