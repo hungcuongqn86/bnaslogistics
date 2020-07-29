@@ -272,6 +272,7 @@ class OrderController extends CommonController
 
     public function update(Request $request)
     {
+        // dd(1);
         $input = $request->all();
         $arrRules = [
             'id' => 'required'
