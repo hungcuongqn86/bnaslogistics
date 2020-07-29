@@ -10,6 +10,7 @@ use Modules\Common\Entities\Cart;
 use Modules\Common\Entities\Order;
 use App\User;
 use Modules\Common\Entities\Complain;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends CommonController
 {
@@ -23,7 +24,17 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $count = Cart::whereDate('created_at', '>=', $date->toDateString())->count();
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+
+            $user = Auth::user();
+            if (!$user->hasRole('admin')) {
+                $userId = $user['id'];
+                $query->whereHas('User', function ($q) use ($userId) {
+                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                });
+            }
+
+            $count = $query->count();
             return $this->sendResponse(['newlinks' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -40,7 +51,15 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $count = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
+            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+
+            $user = Auth::user();
+            if (!$user->hasRole('admin')) {
+                $userId = $user['id'];
+                $query->where('hander', '=', $userId);
+            }
+
+            $count = $query->count();
             return $this->sendResponse(['neworders' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -57,10 +76,14 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $count = User::whereDate('created_at', '>=', $date->toDateString())
-                ->where('type', '=', 1)
-                ->where('active', '=', 1)
-                ->where('is_deleted', '=', 0)->count();
+            $query = User::whereDate('created_at', '>=', $date->toDateString())->where('type', '=', 1)->where('active', '=', 1)->where('is_deleted', '=', 0);
+            $user = Auth::user();
+            if (!$user->hasRole('admin')) {
+                $userId = $user['id'];
+                $query->where('hander', '=', $userId);
+            }
+
+            $count = $query->count();
             return $this->sendResponse(['newusers' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -77,7 +100,16 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $count = Complain::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0)->count();
+            $query = Complain::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $user = Auth::user();
+            if (!$user->hasRole('admin')) {
+                $userId = $user['id'];
+                $query->whereHas('User', function ($q) use ($userId) {
+                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                });
+            }
+
+            $count = $query->count();
             return $this->sendResponse(['newcomplains' => $count], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

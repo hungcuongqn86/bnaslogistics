@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Entities;
 
+use App\User;
 use Illuminate\Notifications\Notifiable;
 
 class Cart extends BaseEntity
@@ -44,5 +45,10 @@ class Cart extends BaseEntity
     public function Shop()
     {
         return $this->belongsTo(Shop::class, 'shop_id', 'id');
+    }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

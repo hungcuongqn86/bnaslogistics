@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Entities;
 
+use App\User;
 use Illuminate\Notifications\Notifiable;
 
 class Complain extends BaseEntity
@@ -58,5 +59,10 @@ class Complain extends BaseEntity
     public function Order()
     {
         return $this->belongsTo(Order::class, 'order_id', 'id');
+    }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
