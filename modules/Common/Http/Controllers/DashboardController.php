@@ -126,14 +126,26 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
-                ->where('domain', '=', 'taobao')->count();
-            $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0)
-                ->whereHas('Cart', function ($q) {
-                    $q->where('domain', '=', 'taobao')->where('is_deleted', '=', 0);
-                })
-                ->count();
+            $user = Auth::user();
+            $userId = $user['id'];
+
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString())->where('domain', '=', 'taobao');
+            if (!$user->hasRole('admin')) {
+                $query->whereHas('User', function ($q) use ($userId) {
+                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                });
+            }
+            $linkCount = $query->count();
+
+            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $query->whereHas('Cart', function ($q) {
+                $q->where('domain', '=', 'taobao')->where('is_deleted', '=', 0);
+            });
+            if (!$user->hasRole('admin')) {
+                $query->where('hander', '=', $userId);
+            }
+            $orderCount = $query->count();
+
             return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -150,14 +162,26 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
-                ->where('domain', '=', 'tmall')->count();
-            $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0)
-                ->whereHas('Cart', function ($q) {
-                    $q->where('domain', '=', 'tmall')->where('is_deleted', '=', 0);
-                })
-                ->count();
+            $user = Auth::user();
+            $userId = $user['id'];
+
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString())->where('domain', '=', 'tmall');
+            if (!$user->hasRole('admin')) {
+                $query->whereHas('User', function ($q) use ($userId) {
+                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                });
+            }
+            $linkCount = $query->count();
+
+            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $query->whereHas('Cart', function ($q) {
+                $q->where('domain', '=', 'tmall')->where('is_deleted', '=', 0);
+            });
+            if (!$user->hasRole('admin')) {
+                $query->where('hander', '=', $userId);
+            }
+            $orderCount = $query->count();
+
             return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -174,14 +198,26 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $linkCount = Cart::whereDate('created_at', '>=', $date->toDateString())
-                ->where('domain', '=', '1688')->count();
-            $orderCount = Order::whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0)
-                ->whereHas('Cart', function ($q) {
-                    $q->where('domain', '=', '1688')->where('is_deleted', '=', 0);
-                })
-                ->count();
+            $user = Auth::user();
+            $userId = $user['id'];
+
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString())->where('domain', '=', '1688');
+            if (!$user->hasRole('admin')) {
+                $query->whereHas('User', function ($q) use ($userId) {
+                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                });
+            }
+            $linkCount = $query->count();
+
+            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $query->whereHas('Cart', function ($q) {
+                $q->where('domain', '=', '1688')->where('is_deleted', '=', 0);
+            });
+            if (!$user->hasRole('admin')) {
+                $query->where('hander', '=', $userId);
+            }
+            $orderCount = $query->count();
+
             return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -198,21 +234,28 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $total = Order::whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0)
-                ->count();
-            $data = [];
+            $user = Auth::user();
+            $userId = $user['id'];
 
+            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            if (!$user->hasRole('admin')) {
+                $query->where('hander', '=', $userId);
+            }
+            $total = $query->count();
+
+            $data = [];
             if ($total > 0) {
-                $result = Order::selectRaw("status, count(*) value")
+                $query = Order::selectRaw("status, count(*) value")
                     ->whereDate('created_at', '>=', $date->toDateString())
-                    ->where('is_deleted', '=', 0)
-                    ->groupBy('status')
-                    ->orderBy('status')
-                    ->get();
+                    ->where('is_deleted', '=', 0);
+                if (!$user->hasRole('admin')) {
+                    $query->where('hander', '=', $userId);
+                }
+                $query->groupBy('status')->orderBy('status');
+                $result = $query->get();
+
 
                 $status = Order::status();
-
                 foreach ($status as $item) {
                     $newItem = new \stdClass();
                     $newItem->id = $item['id'];
@@ -231,7 +274,6 @@ class DashboardController extends CommonController
                 }
             }
 
-
             return $this->sendResponse($data, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -248,13 +290,17 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $result = Order::selectRaw("DATE_FORMAT(created_at, '%d/%m/%Y') date, count(*) value")
+            $user = Auth::user();
+            $userId = $user['id'];
+            $query = Order::selectRaw("DATE_FORMAT(created_at, '%d/%m/%Y') date, count(*) value")
                 ->whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0)
-                ->groupBy('date')
-                ->orderBy('date')
-                ->get();
+                ->where('is_deleted', '=', 0);
+            if (!$user->hasRole('admin')) {
+                $query->where('hander', '=', $userId);
+            }
+            $query->groupBy('date')->orderBy('date');
 
+            $result = $query->get();
             $datePeriod = self::returnDates($date->format('d/m/Y'), Carbon::now()->format('d/m/Y'));
             $data = [];
             foreach ($datePeriod as $date) {
