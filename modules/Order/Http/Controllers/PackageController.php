@@ -173,9 +173,9 @@ class PackageController extends CommonController
                         $tongTien = $tongTien + $vnd;
                     }
 
-                    if ($pk['phi_van_phat_sinh'] && $pk['phi_van_phat_sinh'] > 0) {
+                    /*if ($pk['phi_van_phat_sinh'] && $pk['phi_van_phat_sinh'] > 0) {
                         $tongTien = $tongTien + $pk['phi_van_phat_sinh'];
-                    }
+                    }*/
                 }
                 $thanh_toan = empty($order['order']['thanh_toan']) ? 0 : $order['order']['thanh_toan'];
                 $tienthanhly = $tongTien - $thanh_toan;
