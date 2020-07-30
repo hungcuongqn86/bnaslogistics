@@ -161,12 +161,20 @@ class PackageController extends CommonController
             $tienthanhly = 0;
             if ($arrPk[0]['id'] == $input['id']) {
                 $tongTien = $order['order']['tong'];
+                if(!empty($order['order']['phi_kiem_dem']) && $order['order']['phi_kiem_dem'] > 0){
+                    $tongTien = $tongTien + $order['order']['phi_kiem_dem'];
+                }
+
                 $tigia = $order['order']['rate'];
                 foreach ($arrPk as $pk) {
                     if ($pk['ship_khach'] && $pk['ship_khach'] > 0) {
                         $ndt = $pk['ship_khach'];
                         $vnd = $ndt * $tigia;
                         $tongTien = $tongTien + $vnd;
+                    }
+
+                    if ($pk['phi_van_phat_sinh'] && $pk['phi_van_phat_sinh'] > 0) {
+                        $tongTien = $tongTien + $pk['phi_van_phat_sinh'];
                     }
                 }
                 $thanh_toan = empty($order['order']['thanh_toan']) ? 0 : $order['order']['thanh_toan'];
