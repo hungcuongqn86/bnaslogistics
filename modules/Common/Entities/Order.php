@@ -21,6 +21,7 @@ class Order extends BaseEntity
         'count_link',
         'tien_hang',
         'phi_tam_tinh',
+        'phi_dich_vu',
         'phi_kiem_dem',
         'tong',
         'baogia_content',

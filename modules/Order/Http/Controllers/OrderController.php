@@ -222,7 +222,7 @@ class OrderController extends CommonController
 
         $user = $request->user();
         $input['user_id'] = $user['id'];
-        if(isset($user['hander'])){
+        if (isset($user['hander'])) {
             $input['hander'] = $user['hander'];
         }
 
@@ -286,8 +286,31 @@ class OrderController extends CommonController
             return $this->sendError('Error', $validator->errors()->all());
         }
 
+        $order = OrderServiceFactory::mOrderService()->findById($input['id']);
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn không tồn tại!']);
+        }
+
+        $user = $request->user();
+
+        if (!empty($input['phi_dich_vu'])) {
+            $input['phi_tam_tinh'] = round($input['tien_hang'] * $input['phi_dich_vu'] / 100, 2);
+        }
+
         try {
             $update = OrderServiceFactory::mOrderService()->update($input);
+            if (!empty($update)) {
+                // History
+                $content = 'Trước khi sửa, phí dịch vụ: ' . $order['order']['phi_dich_vu'] . '%, Phí kiểm đếm: ' . $order['order']['phi_kiem_dem'] . 'vnđ';
+                $content .= ' -> Sau khi sửa, phí dịch vụ: ' . $update['phi_dich_vu'] . '%, Phí kiểm đếm: ' . $update['phi_kiem_dem'] . 'vnđ';
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $update['id'],
+                    'type' => 8,
+                    'content' => $content
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
+            }
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
