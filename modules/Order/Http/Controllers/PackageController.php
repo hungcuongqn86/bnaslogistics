@@ -138,17 +138,23 @@ class PackageController extends CommonController
             if (!empty($input['weight_qd'])) {
                 $weight_qd = $input['weight_qd'];
                 $gia_can_nang = 0;
-                if (!empty($order['order']['user']['weight_price'])) {
-                    $gia_can_nang = $order['order']['user']['weight_price'];
+                if (!empty($input['gia_can'])) {
+                    $gia_can_nang = $input['gia_can'];
                 } else {
-                    if ($weight_qd < 10) {
-                        $gia_can_nang = 27000;
-                    }
-                    if (($weight_qd >= 10) && ($weight_qd <= 30)) {
-                        $gia_can_nang = 23000;
-                    }
-                    if ($weight_qd > 30) {
-                        $gia_can_nang = 19000;
+                    if (!empty($order['order']['user']['weight_price'])) {
+                        $gia_can_nang = $order['order']['user']['weight_price'];
+                    } else {
+                        $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
+                        $gia_can_nang = (int)$setting['setting']['value'];
+                        /*if ($weight_qd < 10) {
+                            $gia_can_nang = 27000;
+                        }
+                        if (($weight_qd >= 10) && ($weight_qd <= 30)) {
+                            $gia_can_nang = 23000;
+                        }
+                        if ($weight_qd > 30) {
+                            $gia_can_nang = 19000;
+                        }*/
                     }
                 }
                 $input['gia_can'] = $gia_can_nang;
