@@ -317,6 +317,52 @@ class OrderController extends CommonController
         }
     }
 
+    public function optionUpdate(Request $request)
+    {
+        $input = $request->all();
+        $arrRules = [
+            'id' => 'required'
+        ];
+        $arrMessages = [
+            'id.required' => 'id.required'
+        ];
+
+        $validator = Validator::make($input, $arrRules, $arrMessages);
+        if ($validator->fails()) {
+            return $this->sendError('Error', $validator->errors()->all());
+        }
+
+        $order = OrderServiceFactory::mOrderService()->findById($input['id']);
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn không tồn tại!']);
+        }
+
+        $user = $request->user();
+        try {
+            $update = OrderServiceFactory::mOrderService()->update($input);
+            if (!empty($update)) {
+                // History
+                $content = 'Tùy chọn:';
+                if (!empty($input['is_kiemdem']) && $input['is_kiemdem']) {
+                    $content .= ' Kiểm đếm,';
+                }
+                if (!empty($input['is_donggo']) && $input['is_donggo']) {
+                    $content .= ' Đóng gỗ,';
+                }
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $update['id'],
+                    'type' => 8,
+                    'content' => $content
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
+            }
+            return $this->sendResponse($update, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function phancong(Request $request)
     {
         $input = $request->all();

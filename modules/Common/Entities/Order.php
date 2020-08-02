@@ -23,6 +23,8 @@ class Order extends BaseEntity
         'phi_tam_tinh',
         'phi_dich_vu',
         'phi_kiem_dem',
+        'is_kiemdem',
+        'is_donggo',
         'tong',
         'baogia_content',
         'datcoc_content',
@@ -31,7 +33,7 @@ class Order extends BaseEntity
         'is_deleted',
         'created_at',
         'updated_at',
-		'shipping',
+        'shipping',
         'hander',
         'content_pc'
     ];
