@@ -234,7 +234,7 @@ class PassportController extends CommonController
             $nav[] = $newobj;
         }
 
-        if ($user->hasPermissionTo('mcustumer')) {
+        if ($user->hasPermissionTo('order')) {
             $newobj = new \stdClass();
             $newobj->name = 'Tài chính Việt Nam';
             $newobj->url = '/mcustumer';
@@ -247,17 +247,19 @@ class PassportController extends CommonController
             $newchildren->icon = 'fa fa-user-plus';
             $children[] = $newchildren;
 
-            $newchildren = new \stdClass();
-            $newchildren->name = 'Yêu cầu rút tiền';
-            $newchildren->url = '/mcustumer/withdrawal';
-            $newchildren->icon = 'fa fa-cc-visa';
-            $children[] = $newchildren;
+            if ($user->hasPermissionTo('mcustumer')) {
+                $newchildren = new \stdClass();
+                $newchildren->name = 'Yêu cầu rút tiền';
+                $newchildren->url = '/mcustumer/withdrawal';
+                $newchildren->icon = 'fa fa-cc-visa';
+                $children[] = $newchildren;
 
-            $newchildren = new \stdClass();
-            $newchildren->name = 'Chi nội bộ';
-            $newchildren->url = '/mcustumer/internal';
-            $newchildren->icon = 'fa fa-recycle';
-            $children[] = $newchildren;
+                $newchildren = new \stdClass();
+                $newchildren->name = 'Chi nội bộ';
+                $newchildren->url = '/mcustumer/internal';
+                $newchildren->icon = 'fa fa-recycle';
+                $children[] = $newchildren;
+            }
 
             $newobj->children = $children;
             $nav[] = $newobj;

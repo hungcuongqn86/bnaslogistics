@@ -45,6 +45,9 @@ class UserController extends CommonController
             if (!empty($user['partner_id']) && $user['partner_id'] > 0) {
                 $input['partner_id'] = $user['partner_id'];
             }
+            if ($user->hasRole('employees')) {
+                $input['hander'] = $user['id'];
+            }
             return $this->sendResponse(CommonServiceFactory::mUserService()->custumer($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

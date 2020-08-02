@@ -81,6 +81,11 @@ class UserService extends CommonService implements IUserService
             $query->Where('partner_id', '=', $iPartner);
         }
 
+        $iHander = isset($filter['hander']) ? $filter['hander'] : 0;
+        if ($iHander > 0) {
+            $query->Where('hander', '=', $iHander);
+        }
+
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         if (!empty($sKeySearch)) {
             $query->Where('name', 'like', '%' . $sKeySearch . '%');
