@@ -7,6 +7,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/search', 'UserController@search');
                 Route::get('/handles', 'UserController@handleGetAll');
                 Route::get('/custumers', 'UserController@custumers');
+                Route::get('/vips', 'UserController@getVip');
                 Route::get('/detail/{id}', 'UserController@detail');
                 Route::post('/create', 'UserController@create');
                 Route::post('/update', 'UserController@update');

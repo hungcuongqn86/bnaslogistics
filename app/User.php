@@ -22,7 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password', 'partner_id', 'phone_number', 'type', 'cost_percent', 'deposit',
         'rate', 'weight_price', 'active', 'activation_token', 'bank_number', 'bank_name', 'bank_username', 'bank_branch', 'address',
-        'hander', 'is_deleted'
+        'hander', 'vip', 'is_deleted'
     ];
 
     /**
