@@ -27,6 +27,7 @@ class Package extends BaseEntity
         'tien_can',
         'tien_thanh_ly',
         'phi_van_phat_sinh',
+        'vip_cn',
         'bill_id',
         'is_deleted',
         'created_at',

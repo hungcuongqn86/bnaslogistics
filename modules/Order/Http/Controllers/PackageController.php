@@ -11,6 +11,8 @@ use Modules\Common\Http\Controllers\CommonController;
 
 class PackageController extends CommonController
 {
+    const arrVipData = [0, 2, 4, 6, 8, 10, 15];
+
     public function index()
     {
         return $this->sendResponse([], 'Successfully.');
@@ -158,7 +160,13 @@ class PackageController extends CommonController
                     }
                 }
                 $input['gia_can'] = $gia_can_nang;
-                $input['tien_can'] = $gia_can_nang * $weight_qd;
+
+                $vip = $order['order']['vip'];
+                $vipCn = self::arrVipData[$vip];
+                $tiencan = $gia_can_nang * $weight_qd;
+                $chietkhau = round($tiencan * $vipCn / 100, 2);
+                $input['tien_can'] = $tiencan - $chietkhau;
+                $input['vip_cn'] = $vipCn;
             }
 
             // Tien thanh ly
@@ -167,7 +175,7 @@ class PackageController extends CommonController
             $tienthanhly = 0;
             if ($arrPk[0]['id'] == $input['id']) {
                 $tongTien = $order['order']['tong'];
-                if(!empty($order['order']['phi_kiem_dem']) && $order['order']['phi_kiem_dem'] > 0){
+                if (!empty($order['order']['phi_kiem_dem']) && $order['order']['phi_kiem_dem'] > 0) {
                     $tongTien = $tongTien + $order['order']['phi_kiem_dem'];
                 }
 
