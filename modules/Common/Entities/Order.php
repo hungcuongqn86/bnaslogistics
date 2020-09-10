@@ -17,6 +17,8 @@ class Order extends BaseEntity
         'shop_id',
         'status',
         'rate',
+        'vip',
+        'vip_dc',
         'count_product',
         'count_link',
         'tien_hang',
