@@ -166,23 +166,15 @@ class CartController extends CommonController
                 return $this->sendError('Error', ['Auth'], 401);
             }
             // return $this->sendResponse($decoded_token, 'Successfully.');
-
             $inputData = self::json_decode_nice($input['cart']);
 
-            //Check rate
-            // $user = $request->user();
-
             $rate = 0;
-            if (!empty($user)) {
-                $userData = CommonServiceFactory::mUserService()->findById($decoded_token['user_id']);
-                if (!empty($userData) && !empty($userData['user']) && !empty($userData['user']['rate'])) {
-                    $rate = (int)$userData['user']['rate'];
-                } else {
-                    $setting = CommonServiceFactory::mSettingService()->findByKey('rate');
-                    $rate = (int)$setting['setting']['value'];
-                }
+            $userData = CommonServiceFactory::mUserService()->findById($decoded_token['user_id']);
+            if (!empty($userData) && !empty($userData['user']) && !empty($userData['user']['rate'])) {
+                $rate = (int)$userData['user']['rate'];
             } else {
-                return $this->sendError('Error', ['Auth'], 401);
+                $setting = CommonServiceFactory::mSettingService()->findByKey('rate');
+                $rate = (int)$setting['setting']['value'];
             }
 
             foreach ((array)$inputData as $item) {
