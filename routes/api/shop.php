@@ -6,4 +6,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/create', 'ShopController@create');
     });
 });
+Route::group(['prefix' => 'shop', 'namespace' => 'Modules\Shop\Http\Controllers'], function () {
+    Route::post('/create', 'ShopController@create');
+});
 

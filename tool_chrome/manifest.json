@@ -43,9 +43,13 @@
     "activeTab",
     "storage",
     "tabs",
+    "https://*.bnaslogistics.com/*",
     "https://order.bnaslogistics.com/",
     "https://2.taobao.com/item.htm",
-    "https://item.taobao.com/"
+    "https://item.taobao.com/**",
+    "https://detail.1688.com/**",
+    "https://item.taobao.com/item.htm**",
+    "https://detail.tmall.com/item.htm**"
   ],
   "short_name": "bnas",
   "update_url": "https://clients2.google.com/service/update2/crx",
