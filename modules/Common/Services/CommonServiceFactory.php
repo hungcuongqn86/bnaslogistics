@@ -4,6 +4,7 @@ namespace Modules\Common\Services;
 
 use Modules\Common\Services\Impl\VersionService;
 use Modules\Common\Services\Impl\SettingService;
+use Modules\Common\Services\Impl\VipService;
 use Modules\Common\Services\Impl\MediaService;
 use Modules\Common\Services\Impl\UserService;
 use Modules\Common\Services\Impl\RoleService;
@@ -15,6 +16,7 @@ class CommonServiceFactory
 {
     protected static $mVersionService;
     protected static $mSettingService;
+    protected static $mVipService;
     protected static $mMediaService;
     protected static $mUserService;
     protected static $mBankAccountService;
@@ -36,6 +38,14 @@ class CommonServiceFactory
             self::$mSettingService = new SettingService();
         }
         return self::$mSettingService;
+    }
+
+    public static function mVipService()
+    {
+        if (self::$mVipService == null) {
+            self::$mVipService = new VipService();
+        }
+        return self::$mVipService;
     }
 
     public static function mUserService()

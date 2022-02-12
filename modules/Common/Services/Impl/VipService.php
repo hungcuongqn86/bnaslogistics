@@ -40,14 +40,8 @@ class VipService extends CommonService implements IVipService
 
     public function findById($id)
     {
-        $rResult = Setting::where('id', '=', $id)->first();
-        return array('setting' => $rResult);
-    }
-
-    public function findByKey($key)
-    {
-        $rResult = Setting::where('key', '=', $key)->first();
-        return array('setting' => $rResult);
+        $rResult = Vip::where('id', '=', $id)->first();
+        return $rResult;
     }
 
     public function update($arrInput)
@@ -55,7 +49,7 @@ class VipService extends CommonService implements IVipService
         $id = $arrInput['id'];
         DB::beginTransaction();
         try {
-            $version = Setting::find($id);
+            $version = Vip::find($id);
             $version->update($arrInput);
             DB::commit();
             return $version;
