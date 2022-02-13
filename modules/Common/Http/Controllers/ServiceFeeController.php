@@ -65,7 +65,7 @@ class ServiceFeeController extends CommonController
         }
     }
 
-    public function update(Request $request)
+    public function update($id, Request $request)
     {
         $input = $request->all();
         try {
@@ -85,8 +85,28 @@ class ServiceFeeController extends CommonController
                 return $this->sendError('Error', $validator->errors()->all());
             }
 
+            $serviceFee = CommonServiceFactory::mServiceFeeService()->findById($id);
+            if (empty($serviceFee)) {
+                return $this->sendError('Error', ['Không tồn tại dịch vụ!']);
+            }
+
             $update = CommonServiceFactory::mServiceFeeService()->update($input);
             return $this->sendResponse($update, 'Successfully.');
+        } catch (\PDOException $e) {
+            return $this->sendError('PDOError', $e->getMessage());
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $serviceFee = CommonServiceFactory::mServiceFeeService()->findById($id);
+            if (empty($serviceFee)) {
+                return $this->sendError('Error', ['Không tồn tại dịch vụ!']);
+            }
+            return $this->sendResponse(CommonServiceFactory::mServiceFeeService()->delete([$id]), 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
         } catch (\Exception $e) {

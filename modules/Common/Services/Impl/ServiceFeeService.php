@@ -78,4 +78,20 @@ class ServiceFeeService extends CommonService implements IServiceFeeService
             throw $e;
         }
     }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            ServiceFee::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }
