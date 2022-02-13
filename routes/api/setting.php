@@ -17,6 +17,30 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::post('/delete/{id}', 'ServiceFeeController@delete');
         });
 
+        Route::group(['prefix' => 'transport_fees', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/search', 'TransportFeeController@search');
+            Route::get('/detail/{id}', 'TransportFeeController@detail');
+            Route::post('/create', 'TransportFeeController@create');
+            Route::post('/update/{id}', 'TransportFeeController@update');
+            Route::post('/delete/{id}', 'TransportFeeController@delete');
+        });
+
+        Route::group(['prefix' => 'inspection_fees', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/search', 'InspectionFeeController@search');
+            Route::get('/detail/{id}', 'InspectionFeeController@detail');
+            Route::post('/create', 'InspectionFeeController@create');
+            Route::post('/update/{id}', 'InspectionFeeController@update');
+            Route::post('/delete/{id}', 'InspectionFeeController@delete');
+        });
+
+        Route::group(['prefix' => 'warehouses', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/search', 'WarehouseController@search');
+            Route::get('/detail/{id}', 'WarehouseController@detail');
+            Route::post('/create', 'WarehouseController@create');
+            Route::post('/update/{id}', 'WarehouseController@update');
+            Route::post('/delete/{id}', 'WarehouseController@delete');
+        });
+
         Route::group(['prefix' => 'vip', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
             Route::get('/search', 'VipController@search');
             Route::get('/detail/{id}', 'VipController@detail');

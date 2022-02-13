@@ -4,8 +4,11 @@ namespace Modules\Common\Services;
 
 use Modules\Common\Services\Impl\VersionService;
 use Modules\Common\Services\Impl\SettingService;
+use Modules\Common\Services\Impl\WarehouseService;
 use Modules\Common\Services\Impl\VipService;
 use Modules\Common\Services\Impl\ServiceFeeService;
+use Modules\Common\Services\Impl\TransportFeeService;
+use Modules\Common\Services\Impl\InspectionFeeService;
 use Modules\Common\Services\Impl\MediaService;
 use Modules\Common\Services\Impl\UserService;
 use Modules\Common\Services\Impl\RoleService;
@@ -17,8 +20,11 @@ class CommonServiceFactory
 {
     protected static $mVersionService;
     protected static $mSettingService;
+    protected static $mWarehouseService;
     protected static $mVipService;
     protected static $mServiceFeeService;
+    protected static $mTransportFeeService;
+    protected static $mInspectionFeeService;
     protected static $mMediaService;
     protected static $mUserService;
     protected static $mBankAccountService;
@@ -42,6 +48,14 @@ class CommonServiceFactory
         return self::$mSettingService;
     }
 
+    public static function mWarehouseService()
+    {
+        if (self::$mWarehouseService == null) {
+            self::$mWarehouseService = new WarehouseService();
+        }
+        return self::$mWarehouseService;
+    }
+
     public static function mVipService()
     {
         if (self::$mVipService == null) {
@@ -56,6 +70,22 @@ class CommonServiceFactory
             self::$mServiceFeeService = new ServiceFeeService();
         }
         return self::$mServiceFeeService;
+    }
+
+    public static function mTransportFeeService()
+    {
+        if (self::$mTransportFeeService == null) {
+            self::$mTransportFeeService = new TransportFeeService();
+        }
+        return self::$mTransportFeeService;
+    }
+
+    public static function mInspectionFeeService()
+    {
+        if (self::$mInspectionFeeService == null) {
+            self::$mInspectionFeeService = new InspectionFeeService();
+        }
+        return self::$mInspectionFeeService;
     }
 
     public static function mUserService()
