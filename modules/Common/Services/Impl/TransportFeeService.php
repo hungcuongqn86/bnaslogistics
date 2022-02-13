@@ -27,6 +27,16 @@ class TransportFeeService extends CommonService implements ITransportFeeService
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
         $query = TransportFee::where('id', '>', 0);
 
+        $type = isset($filter['type']) ? $filter['type'] : 0;
+        if ($type > 0) {
+            $query->where('type', '=', $type);
+        }
+
+        $warehouse_id = isset($filter['warehouse_id']) ? $filter['warehouse_id'] : 0;
+        if ($warehouse_id > 0) {
+            $query->where('warehouse_id', '=', $warehouse_id);
+        }
+
         $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'id';
         $sdir = isset($filter['sdir']) ? $filter['sdir'] : 'asc';
 
