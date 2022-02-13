@@ -37,7 +37,7 @@ class TransportFeeService extends CommonService implements ITransportFeeService
             $query->where('warehouse_id', '=', $warehouse_id);
         }
 
-        $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'id';
+        $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'min_r';
         $sdir = isset($filter['sdir']) ? $filter['sdir'] : 'asc';
 
         if ($sorder_type) {

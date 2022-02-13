@@ -27,7 +27,7 @@ class VipService extends CommonService implements IVipService
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
         $query = Vip::where('id', '>', 0);
 
-        $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'id';
+        $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'min_tot_tran';
         $sdir = isset($filter['sdir']) ? $filter['sdir'] : 'asc';
 
         if ($sorder_type) {
