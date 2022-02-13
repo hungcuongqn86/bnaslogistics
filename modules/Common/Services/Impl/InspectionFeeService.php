@@ -44,6 +44,23 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
         return $rResult;
     }
 
+    public function create($arrInput)
+    {
+        $owner = new InspectionFee($arrInput);
+        DB::beginTransaction();
+        try {
+            $owner->save();
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function update($arrInput)
     {
         $id = $arrInput['id'];
@@ -53,6 +70,22 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
             $version->update($arrInput);
             DB::commit();
             return $version;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            InspectionFee::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
         } catch (QueryException $e) {
             DB::rollBack();
             throw $e;
