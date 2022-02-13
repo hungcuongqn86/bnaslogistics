@@ -70,21 +70,22 @@ class ServiceFeeController extends CommonController
         $input = $request->all();
         try {
             $arrRules = [
-                'key' => 'required',
                 'title' => 'required',
-                'value' => 'required',
+                'min_tot_tran' => 'required',
+                'val' => 'required',
             ];
             $arrMessages = [
-                'key.required' => 'ERRORS_MS.BAD_REQUEST',
-                'title.required' => 'ERRORS_MS.BAD_REQUEST',
-                'value.required' => 'ERRORS_MS.BAD_REQUEST',
+                'title.required' => 'Phải nhập Dịch Vụ!',
+                'min_tot_tran.required' => 'Phải nhập Tiền Hàng Từ!',
+                'val.required' => 'Phải nhập Tính Phí!',
             ];
 
             $validator = Validator::make($input, $arrRules, $arrMessages);
             if ($validator->fails()) {
                 return $this->sendError('Error', $validator->errors()->all());
             }
-            $update = CommonServiceFactory::mSettingService()->update($input);
+
+            $update = CommonServiceFactory::mServiceFeeService()->update($input);
             return $this->sendResponse($update, 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
