@@ -44,6 +44,23 @@ class ServiceFeeService extends CommonService implements IServiceFeeService
         return $rResult;
     }
 
+    public function create($arrInput)
+    {
+        $owner = new ServiceFee($arrInput);
+        DB::beginTransaction();
+        try {
+            $owner->save();
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function update($arrInput)
     {
         $id = $arrInput['id'];
