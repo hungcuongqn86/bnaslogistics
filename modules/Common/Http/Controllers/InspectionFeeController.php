@@ -106,7 +106,7 @@ class InspectionFeeController extends CommonController
             if (empty($serviceFee)) {
                 return $this->sendError('Error', ['Không tồn tại dịch vụ!']);
             }
-            return $this->sendResponse(CommonServiceFactory::mInspectionFeeService()->delete([$id]), 'Successfully.');
+            return $this->sendResponse(CommonServiceFactory::mInspectionFeeService()->delete($id), 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
         } catch (\Exception $e) {

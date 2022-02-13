@@ -44,6 +44,23 @@ class VipService extends CommonService implements IVipService
         return $rResult;
     }
 
+    public function create($arrInput)
+    {
+        $owner = new Vip($arrInput);
+        DB::beginTransaction();
+        try {
+            $owner->save();
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function update($arrInput)
     {
         $id = $arrInput['id'];
@@ -53,6 +70,22 @@ class VipService extends CommonService implements IVipService
             $version->update($arrInput);
             DB::commit();
             return $version;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            Vip::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
         } catch (QueryException $e) {
             DB::rollBack();
             throw $e;
