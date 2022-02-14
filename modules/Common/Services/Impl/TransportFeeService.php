@@ -54,6 +54,23 @@ class TransportFeeService extends CommonService implements ITransportFeeService
         return $rResult;
     }
 
+    public function create($arrInput)
+    {
+        $owner = new TransportFee($arrInput);
+        DB::beginTransaction();
+        try {
+            $owner->save();
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function update($arrInput)
     {
         $id = $arrInput['id'];
@@ -63,6 +80,22 @@ class TransportFeeService extends CommonService implements ITransportFeeService
             $version->update($arrInput);
             DB::commit();
             return $version;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            TransportFee::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
         } catch (QueryException $e) {
             DB::rollBack();
             throw $e;
