@@ -41,14 +41,18 @@ class TransportFeeController extends CommonController
         $input = $request->all();
         try {
             $arrRules = [
-                'key' => 'required',
+                'warehouse_id' => 'required',
+                'type' => 'required',
                 'title' => 'required',
-                'value' => 'required',
+                'min_r' => 'required',
+                'val' => 'required',
             ];
             $arrMessages = [
-                'key.required' => 'ERRORS_MS.BAD_REQUEST',
-                'title.required' => 'ERRORS_MS.BAD_REQUEST',
-                'value.required' => 'ERRORS_MS.BAD_REQUEST',
+                'warehouse_id.required' => 'Phải chọn KHO!',
+                'type.required' => 'Phải chọn TÍNH THEO!',
+                'title.required' => 'Phải nhập dịch vụ!',
+                'min_r.required' => 'Phải nhập KHỐI LƯỢNG (THỂ TÍCH) TỪ',
+                'val.required' => 'Phải nhập PHÍ ÁP DỤNG',
             ];
 
             $validator = Validator::make($input, $arrRules, $arrMessages);
@@ -70,14 +74,18 @@ class TransportFeeController extends CommonController
         $input = $request->all();
         try {
             $arrRules = [
-                'key' => 'required',
+                'warehouse_id' => 'required',
+                'type' => 'required',
                 'title' => 'required',
-                'value' => 'required',
+                'min_r' => 'required',
+                'val' => 'required',
             ];
             $arrMessages = [
-                'key.required' => 'ERRORS_MS.BAD_REQUEST',
-                'title.required' => 'ERRORS_MS.BAD_REQUEST',
-                'value.required' => 'ERRORS_MS.BAD_REQUEST',
+                'warehouse_id.required' => 'Phải chọn KHO!',
+                'type.required' => 'Phải chọn TÍNH THEO!',
+                'title.required' => 'Phải nhập dịch vụ!',
+                'min_r.required' => 'Phải nhập KHỐI LƯỢNG (THỂ TÍCH) TỪ',
+                'val.required' => 'Phải nhập PHÍ ÁP DỤNG',
             ];
 
             $validator = Validator::make($input, $arrRules, $arrMessages);
