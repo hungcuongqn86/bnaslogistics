@@ -42,11 +42,11 @@ Route::group(['middleware' => 'auth:api'], function () {
         });
 
         Route::group(['prefix' => 'china_warehouses', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
-            Route::get('/search', 'WarehouseController@search');
-            Route::get('/detail/{id}', 'WarehouseController@detail');
-            Route::post('/create', 'WarehouseController@create');
-            Route::post('/update/{id}', 'WarehouseController@update');
-            Route::post('/delete/{id}', 'WarehouseController@delete');
+            Route::get('/search', 'ChinaWarehouseController@search');
+            Route::get('/detail/{id}', 'ChinaWarehouseController@detail');
+            Route::post('/create', 'ChinaWarehouseController@create');
+            Route::post('/update/{id}', 'ChinaWarehouseController@update');
+            Route::post('/delete/{id}', 'ChinaWarehouseController@delete');
         });
 
         Route::group(['prefix' => 'vip', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
