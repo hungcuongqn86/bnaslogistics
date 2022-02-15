@@ -141,7 +141,10 @@ class PassportController extends CommonController
         $input['activation_token'] = str::random(60);
         $input['type'] = 1;
         // Set Vip
-
+        $firstVip = CommonServiceFactory::mVipService()->getFirstVip();
+        if(!empty($firstVip)){
+            $input['vip'] = $firstVip['id'];
+        }
         $user = User::create($input);
         $user->assignRole('custumer');
         $user->notify(new SignupActivate($user));

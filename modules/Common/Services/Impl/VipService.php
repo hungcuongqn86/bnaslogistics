@@ -44,6 +44,11 @@ class VipService extends CommonService implements IVipService
         return $rResult;
     }
 
+    public function getFirstVip()
+    {
+        return Vip::where('id', '>', 0)->orderBy('min_tot_tran', 'asc')->first()->toArray();
+    }
+
     public function create($arrInput)
     {
         $owner = new Vip($arrInput);
