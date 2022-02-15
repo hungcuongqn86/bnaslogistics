@@ -5,6 +5,7 @@ namespace Modules\Common\Services;
 use Modules\Common\Services\Impl\VersionService;
 use Modules\Common\Services\Impl\SettingService;
 use Modules\Common\Services\Impl\WarehouseService;
+use Modules\Common\Services\Impl\ChinaWarehouseService;
 use Modules\Common\Services\Impl\VipService;
 use Modules\Common\Services\Impl\ServiceFeeService;
 use Modules\Common\Services\Impl\TransportFeeService;
@@ -21,6 +22,7 @@ class CommonServiceFactory
     protected static $mVersionService;
     protected static $mSettingService;
     protected static $mWarehouseService;
+    protected static $mChinaWarehouseService;
     protected static $mVipService;
     protected static $mServiceFeeService;
     protected static $mTransportFeeService;
@@ -54,6 +56,14 @@ class CommonServiceFactory
             self::$mWarehouseService = new WarehouseService();
         }
         return self::$mWarehouseService;
+    }
+
+    public static function mChinaWarehouseService()
+    {
+        if (self::$mChinaWarehouseService == null) {
+            self::$mChinaWarehouseService = new ChinaWarehouseService();
+        }
+        return self::$mChinaWarehouseService;
     }
 
     public static function mVipService()
