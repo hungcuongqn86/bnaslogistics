@@ -54,18 +54,6 @@ class UserController extends CommonController
         }
     }
 
-    public function getVip()
-    {
-        return $this->sendResponse([
-            ['id' => 1, 'name' => 'Vip 1'],
-            ['id' => 2, 'name' => 'Vip 2'],
-            ['id' => 3, 'name' => 'Vip 3'],
-            ['id' => 4, 'name' => 'Vip 4'],
-            ['id' => 5, 'name' => 'Vip 5'],
-            ['id' => 6, 'name' => 'VVIP']
-        ], 'Successfully.');
-    }
-
     public function detail($id)
     {
         try {
