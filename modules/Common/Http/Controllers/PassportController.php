@@ -145,12 +145,31 @@ class PassportController extends CommonController
         if(!empty($firstVip)){
             $input['vip'] = $firstVip['id'];
         }
+        $input['code'] = self::genCode();
         $user = User::create($input);
         $user->assignRole('custumer');
         $user->notify(new SignupActivate($user));
         $success['token'] = $user->createToken('MyApp')->accessToken;
         $success['name'] = $user->name;
         return $this->sendResponse($success, 'Successfully.');
+    }
+
+    private function genCode($rec = 0)
+    {
+        try {
+            $code = random_int(100000, 999999);
+            $existing = User::where('code', '=', $code)->count();
+            if ($existing > 0) {
+                if ($rec < 25) {
+                    $uri = $this->genCode($rec + 1);
+                } else {
+                    $uri = '';
+                }
+            }
+            return $uri;
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     public function signupActivate($token)
