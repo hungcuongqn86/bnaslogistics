@@ -19,11 +19,6 @@ class AppServiceProvider extends ServiceProvider
         //
 		Schema::defaultStringLength(191);
 		Order::observe(OrderObserver::class);
-        if (config('app.debug')) {
-            error_reporting(E_ALL & ~E_USER_DEPRECATED);
-        } else {
-            error_reporting(0);
-        }
     }
 
     /**
