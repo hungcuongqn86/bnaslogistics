@@ -161,12 +161,12 @@ class PassportController extends CommonController
             $existing = User::where('code', '=', $code)->count();
             if ($existing > 0) {
                 if ($rec < 25) {
-                    $uri = $this->genCode($rec + 1);
+                    $code = $this->genCode($rec + 1);
                 } else {
-                    $uri = '';
+                    $code = '';
                 }
             }
-            return $uri;
+            return $code;
         } catch (\Exception $e) {
             return '';
         }
