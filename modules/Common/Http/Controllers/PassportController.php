@@ -212,6 +212,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Bảng tổng hợp';
             $newobj->url = '/dashboard';
+            $newobj->icon = 'iconsax isax-house';
             $nav[] = $newobj;
         }
 
@@ -219,6 +220,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Giỏ hàng';
             $newobj->url = '/cart';
+            $newobj->icon = 'fa fa-cart-plus';
             $nav[] = $newobj;
         }
 
@@ -226,6 +228,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Yêu cầu ký gửi';
             $newobj->url = '/shipping/myshipping';
+            $newobj->icon = 'fa fa-truck';
             $nav[] = $newobj;
         }
 
@@ -233,6 +236,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Đơn hàng';
             $newobj->url = '/order/myorder';
+            $newobj->icon = 'fa fa-gavel';
             $nav[] = $newobj;
         }
 
@@ -240,6 +244,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Kiện hàng';
             $newobj->url = '/mypackage';
+            $newobj->icon = 'fa fa-cubes';
             $nav[] = $newobj;
         }
 
@@ -247,6 +252,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Ví điện tử';
             $newobj->url = '/wallet';
+            $newobj->icon = 'fa fa-money';
             $nav[] = $newobj;
         }
 
@@ -254,10 +260,11 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Tài chính Việt Nam';
             $newobj->url = '/mcustumer';
+            $newobj->icon = 'iconsax isax-empty-wallet';
             $children = [];
 
             $newchildren = new \stdClass();
-            $newchildren->name = 'TK khách';
+            $newchildren->name = 'Tài khoản khách';
             $newchildren->url = '/mcustumer/custumer';
             $children[] = $newchildren;
 
@@ -265,13 +272,11 @@ class PassportController extends CommonController
                 $newchildren = new \stdClass();
                 $newchildren->name = 'Yêu cầu rút tiền';
                 $newchildren->url = '/mcustumer/withdrawal';
-                $newchildren->icon = 'fa fa-cc-visa';
                 $children[] = $newchildren;
 
                 $newchildren = new \stdClass();
                 $newchildren->name = 'Chi nội bộ';
                 $newchildren->url = '/mcustumer/internal';
-                $newchildren->icon = 'fa fa-recycle';
                 $children[] = $newchildren;
             }
 
@@ -283,6 +288,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Đơn hàng';
             $newobj->url = '/order/list';
+            $newobj->icon = 'iconsax isax-receipt-edit';
             $nav[] = $newobj;
         }
 
@@ -290,6 +296,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Yêu cầu ký gửi';
             $newobj->url = '/shipping/list';
+            $newobj->icon = 'iconsax isax-truck';
             $nav[] = $newobj;
         }
 
@@ -298,6 +305,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Khiếu nại';
             $newobj->url = '/complain';
+            $newobj->icon = 'iconsax isax-dislike';
             $nav[] = $newobj;
         }
 
@@ -306,14 +314,16 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Kiện hàng';
             $newobj->url = '/package';
+            $newobj->icon = 'iconsax isax-dcube';
             $nav[] = $newobj;
         }
 
         if ($user->hasPermissionTo('warehouse')) {
             // Kho
             $newobj = new \stdClass();
-            $newobj->name = 'Kho VN';
+            $newobj->name = 'Kho hàng Việt Nam';
             $newobj->url = '/warehouse';
+            $newobj->icon = 'iconsax isax-box';
             $children = [];
 
             $newchildren = new \stdClass();
@@ -334,13 +344,15 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Người dùng';
             $newobj->url = '/muser/user';
+            $newobj->icon = 'iconsax isax-user';
             $nav[] = $newobj;
         }
 
         if ($user->hasPermissionTo('setting')) {
             $newobj = new \stdClass();
-            $newobj->name = 'Setting';
+            $newobj->name = 'Cài đặt';
             $newobj->url = '/setting';
+            $newobj->icon = 'iconsax isax-setting-2';
             $nav[] = $newobj;
         }
         return $nav;
