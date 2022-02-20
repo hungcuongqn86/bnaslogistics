@@ -2,53 +2,29 @@
 
 namespace Modules\Common\Entities;
 
-use App\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class Cart extends BaseEntity
+class  Cart extends BaseEntity
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
-    protected $table = 'cart';
+    protected $table = 'carts';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'user_id',
         'shop_id',
-        'order_id',
-        'amount',
-        'begin_amount',
-        'color',
-        'colortxt',
-        'count',
-        'domain',
-        'image',
-        'method',
-        'name',
-        'note',
-        'nv_note',
-        'kho_note',
-        'price',
-        'price_arr',
-        'pro_link',
-        'pro_properties',
-        'rate',
-        'site',
-        'size',
-        'sizetxt',
+        'user_id',
+        'kiem_hang',
+        'dong_go',
+        'bao_hiem',
         'status',
-        'is_deleted',
         'created_at',
         'updated_at'
     ];
 
-    public function Shop()
+    public function CartItems()
     {
-        return $this->belongsTo(Shop::class, 'shop_id', 'id');
-    }
-
-    public function User()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->hasMany(CartItem::class, 'cart_id', 'id');
     }
 }

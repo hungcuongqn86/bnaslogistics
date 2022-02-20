@@ -20,7 +20,7 @@ class  Shop extends BaseEntity
         'updated_at'
     ];
 
-    public function CartItems()
+    public function Carts()
     {
         return $this->hasMany(Cart::class, 'shop_id', 'id');
     }
