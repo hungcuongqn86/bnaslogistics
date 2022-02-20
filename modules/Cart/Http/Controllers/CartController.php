@@ -264,38 +264,27 @@ class CartController extends CommonController
     private function json_decode_nice($json, $assoc = FALSE)
     {
         $json = str_replace(array("\n", "\r"), "", $json);
-        //$json = preg_replace('/([{,]+)(\s*)([^"]+?)\s*:/', '$1"$3":', $json);
-        //$json = preg_replace('/(,)\s*}$/', '}', $json);
         return json_decode($json, $assoc);
     }
 
-    public function delete(Request $request)
+    public function delete($id, Request $request)
     {
-        $input = $request->all();
-        $arrId = explode(',', $input['ids']);
-        $carts = CartServiceFactory::mCartService()->findByIds($arrId);
-        $deleteData = array();
-        $errData = array();
-        foreach ($arrId as $id) {
-            $check = false;
-            foreach ($carts as $cart) {
-                if ($id == $cart['id']) {
-                    $check = true;
-                    $cart['is_deleted'] = 1;
-                    $deleteData[] = $cart;
-                }
-            }
-            if (!$check) {
-                $errData[] = 'Cart Id ' . $id . ' NotExist';
-            }
-        }
-
-        if (!empty($errData)) {
-            return $this->sendError('Error', $errData);
-        }
-
         try {
-            CartServiceFactory::mCartService()->delete($arrId);
+            $user = $request->user();
+            $cart = CartServiceFactory::mCartService()->findById($id);
+            if (empty($cart)) {
+                return $this->sendError('Error', ['Không tồn tại giỏ hàng!']);
+            }
+
+            if ($cart['user_id'] != $user->id) {
+                return $this->sendError('Error', ['Không có quyền thay đổi giỏ hàng!']);
+            }
+
+            if ($cart['status'] == 2) {
+                return $this->sendError('Error', ['Không thể thay đổi giỏ hàng!']);
+            }
+
+            CartServiceFactory::mCartService()->delete($id);
             return $this->sendResponse(true, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

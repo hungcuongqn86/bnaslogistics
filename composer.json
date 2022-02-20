@@ -18,7 +18,8 @@
         "paragonie/random_compat": "2.*",
         "peterpetrus/passport-token": "^0.0.9",
         "spatie/laravel-permission": "^2.36",
-      "ext-pdo": "*"
+      "ext-pdo": "*",
+      "ext-json": "*"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

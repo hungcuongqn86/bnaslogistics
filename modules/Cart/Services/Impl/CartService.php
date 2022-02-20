@@ -2,11 +2,11 @@
 
 namespace Modules\Cart\Services\Impl;
 
+use Illuminate\Support\Facades\DB;
+use Modules\Cart\Services\Intf\ICartService;
 use Modules\Common\Entities\Cart;
 use Modules\Common\Entities\CartItem;
 use Modules\Common\Services\Impl\CommonService;
-use Modules\Cart\Services\Intf\ICartService;
-use Illuminate\Support\Facades\DB;
 
 class CartService extends CommonService implements ICartService
 {
@@ -35,16 +35,6 @@ class CartService extends CommonService implements ICartService
     public function findById($id)
     {
         $rResult = Cart::with(['CartItems', 'User', 'Shop'])->where('id', '=', $id)->first();
-        if (!empty($rResult)) {
-            return $rResult->toArray();
-        } else {
-            return null;
-        }
-    }
-
-    public function findByIds($ids)
-    {
-        $rResult = Cart::wherein('id', $ids)->get();
         if (!empty($rResult)) {
             return $rResult->toArray();
         } else {
@@ -91,7 +81,7 @@ class CartService extends CommonService implements ICartService
     {
         DB::beginTransaction();
         try {
-            $cart = Cart::where('order_id','=',$orderId)->update(['amount' => 0]);
+            $cart = Cart::where('order_id', '=', $orderId)->update(['amount' => 0]);
             DB::commit();
             return $cart;
         } catch (QueryException $e) {
@@ -103,11 +93,11 @@ class CartService extends CommonService implements ICartService
         }
     }
 
-    public function delete($ids)
+    public function delete($id)
     {
         DB::beginTransaction();
         try {
-            Cart::wherein('id', $ids)->delete();
+            Cart::where('id', '=', $id)->delete();
             DB::commit();
             return true;
         } catch (QueryException $e) {
