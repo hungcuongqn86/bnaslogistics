@@ -20,6 +20,17 @@ class CreateCartsTable extends Migration
             $table->tinyInteger('kiem_hang')->nullable();
             $table->tinyInteger('dong_go')->nullable();
             $table->tinyInteger('bao_hiem')->nullable();
+            $table->integer('count_product')->nullable();
+            $table->integer('tien_hang')->nullable();
+            $table->integer('vip_id')->nullable();
+            $table->double('ck_dv')->nullable();
+            $table->integer('ck_dv_tt')->nullable();
+            $table->double('phi_dat_hang_cs')->nullable();
+            $table->integer('phi_dat_hang')->nullable();
+            $table->integer('phi_dat_hang_tt')->nullable();
+            $table->double('phi_bao_hiem_cs')->nullable();
+            $table->integer('phi_bao_hiem_tt')->nullable();
+            $table->integer('ti_gia')->nullable();
             $table->tinyInteger('status')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -3,6 +3,7 @@
 namespace Modules\Cart\Services\Impl;
 
 use Modules\Common\Entities\Cart;
+use Modules\Common\Entities\CartItem;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Cart\Services\Intf\ICartService;
 use Illuminate\Support\Facades\DB;
@@ -33,9 +34,9 @@ class CartService extends CommonService implements ICartService
 
     public function findById($id)
     {
-        $rResult = Cart::where('id', '=', $id)->first();
+        $rResult = Cart::with(['CartItems', 'Shop'])->where('id', '=', $id)->first();
         if (!empty($rResult)) {
-            return array('cart' => $rResult->toArray());
+            return $rResult->toArray();
         } else {
             return null;
         }
@@ -114,6 +115,32 @@ class CartService extends CommonService implements ICartService
             throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
+            throw $e;
+        }
+    }
+
+
+    // Cart Item
+    public function itemFindById($id)
+    {
+        $rResult = CartItem::where('id', '=', $id)->first();
+        if (!empty($rResult)) {
+            return $rResult->toArray();
+        } else {
+            return null;
+        }
+    }
+
+    public function itemUpdate($arrInput)
+    {
+        $id = $arrInput['id'];
+        try {
+            $owner = CartItem::find($id);
+            $owner->update($arrInput);
+            return $owner;
+        } catch (QueryException $e) {
+            throw $e;
+        } catch (\Exception $e) {
             throw $e;
         }
     }

@@ -3,6 +3,7 @@
 namespace Modules\Cart\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Modules\Common\Services\CommonServiceFactory;
 use Modules\Cart\Services\CartServiceFactory;
@@ -24,110 +25,79 @@ class CartController extends CommonController
         }
     }
 
-    public function update(Request $request)
+    public function reUpdate($id)
+    {
+        try {
+            $cart = CartServiceFactory::mCartService()->findById($id);
+            if ($cart) {
+                $cartItems = $cart['cart_items'];
+
+                $tien_hang = 0;
+                $count_product = 0;
+                foreach ($cartItems as $cartItem) {
+                    $price = self::convertPrice($cartItem['price']);
+                    $rate = $cartItem['rate'];
+                    $amount = $cartItem['amount'];
+                    $tien_hang = $tien_hang + round($price * $rate * $amount);
+                    $count_product = $count_product + $cartItem['amount'];
+                }
+
+                if ($tien_hang_old > 0) {
+                    $phi_tt = round(($tien_hang * $phi_tt_old) / $tien_hang_old);
+                } else {
+                    if (!empty($order['user']['cost_percent'])) {
+                        $tigia = $order['user']['cost_percent'];
+                        $phi_tt = round($tien_hang * $tigia / 100);
+                    } else {
+                        $phi_tt = 0;
+                    }
+                }
+
+                $orderInput = array();
+                $orderInput['id'] = $input['order_id'];
+                $orderInput['tien_hang'] = $tien_hang;
+                $orderInput['phi_tam_tinh'] = $phi_tt;
+                $orderInput['tong'] = $tien_hang + $phi_tt;
+                $orderInput['count_product'] = $count_product;
+                OrderServiceFactory::mOrderService()->update($orderInput);
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function itemUpdate(Request $request)
     {
         $input = $request->all();
+        DB::beginTransaction();
         try {
-            $arrRules = [
-                'id' => 'required',
-                'amount' => 'required',
-                'domain' => 'required',
-                'image' => 'required',
-                'method' => 'required',
-                // 'name' => 'required',
-                'pro_link' => 'required',
-                'rate' => 'required',
-                'price' => 'required',
-                'site' => 'required'
-            ];
-            $arrMessages = [
-                'id.required' => 'id.required',
-                'amount.required' => 'Phải nhập số lượng!',
-                'domain.required' => 'domain.required',
-                'image.required' => 'image.required',
-                'method.required' => 'method.required',
-                // 'name.required' => 'name.required',
-                'pro_link.required' => 'pro_link.required',
-                'rate.required' => 'rate.required',
-                'price.required' => 'Phải nhập đơn giá!',
-                'site.required' => 'site.required'
-            ];
-
-            $validator = Validator::make($input, $arrRules, $arrMessages);
-            if ($validator->fails()) {
-                return $this->sendError('Error', $validator->errors()->all());
-            }
             $user = $request->user();
-            $cartI = CartServiceFactory::mCartService()->findById($input['id']);
-            if (empty($cartI)) {
+            $cartItem = CartServiceFactory::mCartService()->itemFindById($input['id']);
+            if (empty($cartItem)) {
                 return $this->sendError('Error', ['Không tồn tại sản phẩm!']);
             }
 
-            $order = array();
-            if (!empty($input['order_id'])) {
-                $order = OrderServiceFactory::mOrderService()->findById($input['order_id']);
-                if ($order) {
-                    $order = $order['order'];
-                    if ($order['status'] == 5) {
-                        return $this->sendError('Error', ['Đơn đã thanh lý!']);
-                    }
-                }
+            $cart = CartServiceFactory::mCartService()->findById($input['cart_id']);
+            if (empty($cart)) {
+                return $this->sendError('Error', ['Không tồn tại giỏ hàng!']);
             }
 
-            $input['price'] = self::convertPrice($input['price']);
-            $update = CartServiceFactory::mCartService()->update($input);
-            if (!empty($input['order_id']) && $update) {
-                $order = OrderServiceFactory::mOrderService()->findById($input['order_id']);
-                if ($order) {
-                    $order = $order['order'];
-                }
-                if ($order) {
-                    $arrCarts = $order['cart'];
-                    $tien_hang_old = $order['tien_hang'];
-                    $phi_tt_old = $order['phi_tam_tinh'];
-                    $tien_hang = 0;
-                    $count_product = 0;
-                    foreach ($arrCarts as $cartItem) {
-                        $price = self::convertPrice($cartItem['price']);
-                        $rate = $cartItem['rate'];
-                        $amount = $cartItem['amount'];
-                        $tien_hang = $tien_hang + round($price * $rate * $amount);
-                        $count_product = $count_product + $cartItem['amount'];
-                    }
-                    if ($tien_hang_old > 0) {
-                        $phi_tt = round(($tien_hang * $phi_tt_old) / $tien_hang_old);
-                    } else {
-                        if (!empty($order['user']['cost_percent'])) {
-                            $tigia = $order['user']['cost_percent'];
-                            $phi_tt = round($tien_hang * $tigia / 100);
-                        } else {
-                            $phi_tt = 0;
-                        }
-                    }
-
-                    $orderInput = array();
-                    $orderInput['id'] = $input['order_id'];
-                    $orderInput['tien_hang'] = $tien_hang;
-                    $orderInput['phi_tam_tinh'] = $phi_tt;
-                    $orderInput['tong'] = $tien_hang + $phi_tt;
-                    $orderInput['count_product'] = $count_product;
-                    OrderServiceFactory::mOrderService()->update($orderInput);
-                }
-
-                // History
-                $content = 'Mã ' . $input['id'] . ', Trước khi sửa, SL: ' . $cartI['cart']['amount'] . ', đơn giá: ' . $cartI['cart']['price'] . '¥';
-                $content .= ' -> Sau khi sửa, SL: ' . $input['amount'] . ', đơn giá: ' . $input['price'] . '¥';
-                $history = [
-                    'user_id' => $user['id'],
-                    'order_id' => $input['order_id'],
-                    'type' => 8,
-                    'content' => $content
-                ];
-                OrderServiceFactory::mHistoryService()->create($history);
+            if ($cart['user_id'] != $user->id) {
+                return $this->sendError('Error', ['Không có quyền sửa giỏ hàng!']);
             }
 
+            if ($cart['status'] == 2) {
+                return $this->sendError('Error', ['Không thể sửa giỏ hàng!']);
+            }
+
+            $update = CartServiceFactory::mCartService()->itemUpdate($input);
+            if ($update) {
+                self::reUpdate($cart['id']);
+            }
+            DB::commit();
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
