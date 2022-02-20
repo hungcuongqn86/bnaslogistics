@@ -5,11 +5,11 @@ namespace Modules\Cart\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Modules\Common\Services\CommonServiceFactory;
 use Modules\Cart\Services\CartServiceFactory;
-use Modules\Shop\Services\ShopServiceFactory;
-use Modules\Order\Services\OrderServiceFactory;
 use Modules\Common\Http\Controllers\CommonController;
+use Modules\Common\Services\CommonServiceFactory;
+use Modules\Order\Services\OrderServiceFactory;
+use Modules\Shop\Services\ShopServiceFactory;
 use PeterPetrus\Auth\PassportToken;
 
 class CartController extends CommonController
@@ -31,35 +31,63 @@ class CartController extends CommonController
             $cart = CartServiceFactory::mCartService()->findById($id);
             if ($cart) {
                 $cartItems = $cart['cart_items'];
+                if (sizeof($cartItems) > 0) {
+                    // Lay ti gia tu setting
+                    $settingRate = CommonServiceFactory::mSettingService()->findByKey('rate');
+                    $rate = (int)$settingRate['setting']['value'];
 
-                $tien_hang = 0;
-                $count_product = 0;
-                foreach ($cartItems as $cartItem) {
-                    $price = self::convertPrice($cartItem['price']);
-                    $rate = $cartItem['rate'];
-                    $amount = $cartItem['amount'];
-                    $tien_hang = $tien_hang + round($price * $rate * $amount);
-                    $count_product = $count_product + $cartItem['amount'];
-                }
-
-                if ($tien_hang_old > 0) {
-                    $phi_tt = round(($tien_hang * $phi_tt_old) / $tien_hang_old);
-                } else {
-                    if (!empty($order['user']['cost_percent'])) {
-                        $tigia = $order['user']['cost_percent'];
-                        $phi_tt = round($tien_hang * $tigia / 100);
-                    } else {
-                        $phi_tt = 0;
+                    // Lay vip
+                    $ck_dv = 0;
+                    $vip = CommonServiceFactory::mVipService()->findById($cart['user']['vip']);
+                    if (!empty($vip)) {
+                        $ck_dv = $vip['ck_dv'];
                     }
-                }
 
-                $orderInput = array();
-                $orderInput['id'] = $input['order_id'];
-                $orderInput['tien_hang'] = $tien_hang;
-                $orderInput['phi_tam_tinh'] = $phi_tt;
-                $orderInput['tong'] = $tien_hang + $phi_tt;
-                $orderInput['count_product'] = $count_product;
-                OrderServiceFactory::mOrderService()->update($orderInput);
+                    // Lay bang gia dv
+                    $serviceFee = CommonServiceFactory::mServiceFeeService()->getAll();
+
+                    $tien_hang = 0;
+                    $count_product = 0;
+                    foreach ($cartItems as $cartItem) {
+                        $price = self::convertPrice($cartItem['price']);
+                        $amount = $cartItem['amount'];
+                        $tien_hang = $tien_hang + round($price * $rate * $amount, 0);
+                        $count_product = $count_product + $cartItem['amount'];
+                    }
+
+                    // Tinh phi dich vu
+                    $phi_dat_hang_cs = 0;
+                    foreach ($serviceFee as $feeItem) {
+                        if ($feeItem->min_tot_tran * 1000000 <= $tien_hang) {
+                            $phi_dat_hang_cs = $feeItem->val;
+                            break;
+                        }
+                    }
+
+                    $phi_dat_hang = round(($phi_dat_hang_cs * $tien_hang) / 100);
+                    $ck_dv_tt = round(($phi_dat_hang * $ck_dv) / 100);
+                    $phi_dat_hang_tt = $phi_dat_hang - $ck_dv_tt;
+
+                    $phi_bao_hiem_cs = 0;
+                    if ($cart['bao_hiem'] == 1) {
+                        $settingBh = CommonServiceFactory::mSettingService()->findByKey('bh_price');
+                        $phi_bao_hiem_cs = (int)$settingBh['setting']['value'];
+                    }
+
+                    $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang)/100;
+
+                    $cart['count_product'] = $count_product;
+                    $cart['tien_hang'] = $tien_hang;
+                    $cart['vip_id'] = $vip['id'];
+                    $cart['ck_dv'] = $ck_dv;
+                    $cart['ck_dv_tt'] = $ck_dv_tt;
+                    $cart['phi_dat_hang_cs'] = $phi_dat_hang_cs;
+                    $cart['phi_dat_hang'] = $phi_dat_hang;
+                    $cart['phi_dat_hang_tt'] = $phi_dat_hang_tt;
+                    $cart['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
+                    $cart['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
+                    CartServiceFactory::mCartService()->update($cart);
+                }
             }
         } catch (\Exception $e) {
             throw $e;

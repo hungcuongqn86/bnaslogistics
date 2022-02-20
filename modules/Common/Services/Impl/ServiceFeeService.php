@@ -38,6 +38,11 @@ class ServiceFeeService extends CommonService implements IServiceFeeService
         return $rResult;
     }
 
+    public function getAll()
+    {
+        return ServiceFee::where('id', '>', 0)->orderBy('min_tot_tran', 'DESC')->get();
+    }
+
     public function findById($id)
     {
         $rResult = ServiceFee::where('id', '=', $id)->first();

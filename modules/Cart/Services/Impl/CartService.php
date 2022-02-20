@@ -34,7 +34,7 @@ class CartService extends CommonService implements ICartService
 
     public function findById($id)
     {
-        $rResult = Cart::with(['CartItems', 'Shop'])->where('id', '=', $id)->first();
+        $rResult = Cart::with(['CartItems', 'User', 'Shop'])->where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return $rResult->toArray();
         } else {
