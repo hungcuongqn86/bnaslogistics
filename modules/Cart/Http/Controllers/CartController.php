@@ -95,6 +95,41 @@ class CartController extends CommonController
         }
     }
 
+    public function update($id, Request $request)
+    {
+        $input = $request->all();
+        DB::beginTransaction();
+        try {
+            $user = $request->user();
+            $cart = CartServiceFactory::mCartService()->findById($id);
+            if (empty($cart)) {
+                return $this->sendError('Error', ['Không tồn tại giỏ hàng!']);
+            }
+
+            if ($cart['user_id'] != $user->id) {
+                return $this->sendError('Error', ['Không có quyền sửa giỏ hàng!']);
+            }
+
+            if ($cart['status'] == 2) {
+                return $this->sendError('Error', ['Không thể sửa giỏ hàng!']);
+            }
+
+            $cart['kiem_hang'] = (int)$input['kiem_hang'];
+            $cart['dong_go'] = (int)$input['dong_go'];
+            $cart['bao_hiem'] = (int)$input['bao_hiem'];
+
+            $update = CartServiceFactory::mCartService()->update($cart);
+            if ($update) {
+                self::reUpdate($cart['id']);
+            }
+            DB::commit();
+            return $this->sendResponse($update, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function itemUpdate(Request $request)
     {
         $input = $request->all();
