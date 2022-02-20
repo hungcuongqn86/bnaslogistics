@@ -144,4 +144,20 @@ class CartService extends CommonService implements ICartService
             throw $e;
         }
     }
+
+    public function itemDelete($id)
+    {
+        DB::beginTransaction();
+        try {
+            CartItem::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use Modules\Cart\Services\CartServiceFactory;
 use Modules\Common\Http\Controllers\CommonController;
 use Modules\Common\Services\CommonServiceFactory;
-use Modules\Order\Services\OrderServiceFactory;
 use Modules\Shop\Services\ShopServiceFactory;
 use PeterPetrus\Auth\PassportToken;
 
@@ -74,7 +73,7 @@ class CartController extends CommonController
                         $phi_bao_hiem_cs = (int)$settingBh['setting']['value'];
                     }
 
-                    $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang)/100;
+                    $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang) / 100;
 
                     $cart['count_product'] = $count_product;
                     $cart['tien_hang'] = $tien_hang;
@@ -299,6 +298,40 @@ class CartController extends CommonController
             CartServiceFactory::mCartService()->delete($arrId);
             return $this->sendResponse(true, 'Successfully.');
         } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function itemDelete($id, Request $request)
+    {
+        $input = $request->all();
+        DB::beginTransaction();
+        try {
+            $user = $request->user();
+            $cartItem = CartServiceFactory::mCartService()->itemFindById($id);
+            if (empty($cartItem)) {
+                return $this->sendError('Error', ['Không tồn tại sản phẩm!']);
+            }
+
+            $cart = CartServiceFactory::mCartService()->findById($cartItem['cart_id']);
+            if (empty($cart)) {
+                return $this->sendError('Error', ['Không tồn tại giỏ hàng!']);
+            }
+
+            if ($cart['user_id'] != $user->id) {
+                return $this->sendError('Error', ['Không có quyền thay đổi giỏ hàng!']);
+            }
+
+            if ($cart['status'] == 2) {
+                return $this->sendError('Error', ['Không thể thay đổi giỏ hàng!']);
+            }
+
+            CartServiceFactory::mCartService()->itemDelete($id);
+            self::reUpdate($cart['id']);
+            DB::commit();
+            return $this->sendResponse(1, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
