@@ -17,9 +17,7 @@ class CartController extends CommonController
     {
         $user = $request->user();
         try {
-            // Lay theo shop
-            $shopids = CartServiceFactory::mCartService()->getDistinctShopCart($user->id);
-            $shops = ShopServiceFactory::mShopService()->getByIds($shopids, $user->id);
+            $shops = ShopServiceFactory::mShopService()->getByIds($user->id);
             return $this->sendResponse($shops, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

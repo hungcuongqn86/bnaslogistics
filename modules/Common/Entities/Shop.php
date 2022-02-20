@@ -4,7 +4,7 @@ namespace Modules\Common\Entities;
 
 use Illuminate\Notifications\Notifiable;
 
-class Shop extends BaseEntity
+class  Shop extends BaseEntity
 {
     use Notifiable;
 
@@ -12,6 +12,7 @@ class Shop extends BaseEntity
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
+        'user_id',
         'name',
         'url',
         'is_deleted',
@@ -32,7 +33,7 @@ class Shop extends BaseEntity
         return (int)$rowRate->value;
     }
 
-    public function Cart()
+    public function CartItems()
     {
         return $this->hasMany(Cart::class, 'shop_id', 'id');
     }
