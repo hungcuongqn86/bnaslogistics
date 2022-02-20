@@ -24,12 +24,10 @@ class CartService extends CommonService implements ICartService
         return [];
     }
 
-    public function getDistinctShopCart($userId)
+    public function getByUser($userid)
     {
-        $query = Cart::distinct('shop_id')->where('is_deleted', '=', 0);
-        $query->where('status', '=', 1);
-        $query->where('user_id', '=', $userId);
-        $rResult = $query->pluck('shop_id');
+        $query = Cart::with(['CartItems', 'Shop'])->where('user_id', '=', $userid)->where('status', '=', 1)->orderBy('id', 'desc');
+        $rResult = $query->get()->toArray();
         return $rResult;
     }
 
@@ -108,7 +106,7 @@ class CartService extends CommonService implements ICartService
     {
         DB::beginTransaction();
         try {
-            Cart::wherein('id', $ids)->update(['is_deleted' => 1]);
+            Cart::wherein('id', $ids)->delete();
             DB::commit();
             return true;
         } catch (QueryException $e) {

@@ -14,9 +14,6 @@ class CartItem extends BaseEntity
     public $timestamps = false;
     protected $fillable = [
         'cart_id',
-        'user_id',
-        'shop_id',
-        'order_id',
         'amount',
         'begin_amount',
         'color',
@@ -37,19 +34,8 @@ class CartItem extends BaseEntity
         'site',
         'size',
         'sizetxt',
-        'status',
         'is_deleted',
         'created_at',
         'updated_at'
     ];
-
-    public function Shop()
-    {
-        return $this->belongsTo(Shop::class, 'shop_id', 'id');
-    }
-
-    public function User()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
 }

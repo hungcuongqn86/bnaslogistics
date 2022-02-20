@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Entities;
 
+use App\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
@@ -26,5 +27,15 @@ class  Cart extends BaseEntity
     public function CartItems()
     {
         return $this->hasMany(CartItem::class, 'cart_id', 'id');
+    }
+
+    public function Shop()
+    {
+        return $this->belongsTo(Shop::class, 'shop_id', 'id');
+    }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
