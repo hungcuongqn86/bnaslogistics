@@ -86,6 +86,7 @@ class CartController extends CommonController
                     $cart['phi_dat_hang_tt'] = $phi_dat_hang_tt;
                     $cart['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
                     $cart['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
+                    $cart['ti_gia'] = $rate;
                     CartServiceFactory::mCartService()->update($cart);
                 }
             }
