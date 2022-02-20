@@ -25,8 +25,6 @@ class CartItem extends BaseEntity
         'method',
         'name',
         'note',
-        'nv_note',
-        'kho_note',
         'price',
         'price_arr',
         'pro_link',
@@ -35,7 +33,6 @@ class CartItem extends BaseEntity
         'site',
         'size',
         'sizetxt',
-        'is_deleted',
         'created_at',
         'updated_at'
     ];
