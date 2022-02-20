@@ -3,11 +3,12 @@
 namespace Modules\Common\Entities;
 
 use App\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class CartItem extends BaseEntity
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $table = 'cart_items';
     protected $primaryKey = 'id';
