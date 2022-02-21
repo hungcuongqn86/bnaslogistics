@@ -150,13 +150,13 @@ sub {
 }
 
 .btn-tbex-success {
-/*    background-image: -webkit-linear-gradient(top, #5cb85c 0, #419641 100%);
+    background-image: -webkit-linear-gradient(top, #5cb85c 0, #419641 100%);
     background-image: -o-linear-gradient(top, #5cb85c 0, #419641 100%);
     background-image: -webkit-gradient(linear, left top, left bottom, from(#5cb85c), to(#419641));
     background-image: linear-gradient(to bottom, #5cb85c 0, #419641 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5cb85c', endColorstr='#ff419641', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-    border-color: #3e8f3e*/
+    border-color: #3e8f3e
 }
 
 .btn-tbex-success.active, .btn-tbex-success:active {
@@ -165,7 +165,7 @@ sub {
 }
 
 .btn-tbex-success.disabled, .btn-tbex-success.disabled.active, .btn-tbex-success.disabled.focus, .btn-tbex-success.disabled:active, .btn-tbex-success.disabled:focus, .btn-tbex-success.disabled:hover, .btn-tbex-success[disabled], .btn-tbex-success[disabled].active, .btn-tbex-success[disabled].focus, .btn-tbex-success[disabled]:active, .btn-tbex-success[disabled]:focus, .btn-tbex-success[disabled]:hover, fieldset[disabled] .btn-tbex-success, fieldset[disabled] .btn-tbex-success.active, fieldset[disabled] .btn-tbex-success.focus, fieldset[disabled] .btn-tbex-success:active, fieldset[disabled] .btn-tbex-success:focus, fieldset[disabled] .btn-tbex-success:hover {
-    background-color: #000000;
+    background-color: #419641;
     background-image: none
 }
 
@@ -277,7 +277,7 @@ sub {
     background-image: linear-gradient(to bottom, #fcf8e3 0, #f8efc0 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcf8e3', endColorstr='#fff8efc0', GradientType=0);
     background-repeat: repeat-x;
-    border-color: #f5e79e;
+    border-color: #f5e79e
 }
 
 .alert-tbex-danger {
@@ -287,7 +287,7 @@ sub {
     background-image: linear-gradient(to bottom, #f2dede 0, #e7c3c3 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2dede', endColorstr='#ffe7c3c3', GradientType=0);
     background-repeat: repeat-x;
-    border-color: #dca7a7;
+    border-color: #dca7a7
 }
 
 .progress {
@@ -296,7 +296,7 @@ sub {
     background-image: -webkit-gradient(linear, left top, left bottom, from(#ebebeb), to(#f5f5f5));
     background-image: linear-gradient(to bottom, #ebebeb 0, #f5f5f5 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffebebeb', endColorstr='#fff5f5f5', GradientType=0);
-    background-repeat: repeat-x;
+    background-repeat: repeat-x
 }
 
 #cart-thqc-warning {
@@ -307,40 +307,29 @@ sub {
     color: #8a6d3b;
     display: none;
     border-radius: 4px
-    text-align: center;
-    margin: 15px auto;
 }
 
 #cart-thqc-warning:hover {
     background-color: #F2DEDE;
     color: #a94442;
-    border-color: #ebccd1;
+    border-color: #ebccd1
 }
 
 #pro-thqc-note {
-    margin: 0 15px;
-    line-height: 30px;
-    height: 30px;
-    padding: 0 5px;
+    margin-top: 15px
 }
 
 #cart-thqc-parent {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    left: 0;
-    text-align: center;
-    background: #dc3545;
-    z-index: 99999999;
-    padding: 10px 0;
+    text-align: left;
+    padding: 10px 0
 }
 
 .clearfix {
-    clear: both;
+    clear: both
 }
 
 #tbe-info, #tbe-menubar, #tbe-notes, #tbe-warning-bar {
-    display: none !important;
+    display: none !important
 }
 
 .btn-thqc-add {
@@ -351,69 +340,68 @@ sub {
     display: inline-block;
     border: none;
     color: #fff !important;
-    background-color: #000000 !important;
+    background-image: linear-gradient(rgb(51, 232, 71) 0px, rgb(26, 121, 36) 100%) !important;
 }
 
 .btn-thqc-add img {
     display: inline-block;
     vertical-align: middle;
-    width: 30px;
+    width: 30px
 }
 
 .btn-thqc-add span {
     display: inline-block;
     vertical-align: middle;
-    padding-left: 10px;
+    padding-left: 10px
 }
 
 .btn-thqc-cart-url img {
-    height: 28px;
+    height: 28px
 }
 
 .btn-thqc-cart-url {
     height: 28px;
     line-height: 28px;
-    margin-left: 15px;
-    display: inline-block;
+    margin-right: 15px;
+    display: inline-block
 }
 
 #tbe-info-shop, #thqc-info-shop {
     padding: 15px 0;
-    border: 3px solid #000000;
-    display: flex;
-    clear: both;
+    border: 3px solid #26ab34;
+    clear: both
 }
 
 #tbe-info-shop img, #thqc-info-shop img {
     float: left;
-    margin: 0 10px;
+    margin: 0 10px
 }
 
 .pro-thqc-add-new {
-    color: #fff;
+    color: #fff
 }
 
 #thqc-info-shop .bg-info {
-    float: left;
+    float: left
 }
 
 #thqc-info-shop .thqc-info-warning {
     clear: both;
     text-align: center;
-    font-weight: 700;
+    font-weight: 700
 }
 
 #tbe-info-shop .bg-info {
-    float: left;
+    float: left
 }
 
 #tbe-info-shop .tbe-info-warning {
     clear: both;
     text-align: center;
-    font-weight: 700;
+    font-weight: 700
 }
 
 a.disabled {
     pointer-events: none;
-    cursor: default;
+    cursor: default
 }

@@ -8,8 +8,8 @@
         "/dist/all.min.js"
       ],
       "matches": [
-        "https://*.bnaslogistics.com/*",
-        "http://*.bnaslogistics.com/*",
+        "https://*.quangchau247online.com/*",
+        "http://*.quangchau247online.com/*",
         "http://*.taobao.com/*",
         "https://*.taobao.com/*",
         "http://*.tmall.com/*",
@@ -17,13 +17,12 @@
         "https://*.tmall.hk/*",
         "http://detail.1688.com/*",
         "https://detail.1688.com/*",
-        "https://order.bnaslogistics.com/*",
-        "http://order.bnaslogistics.com/*"
+        "http://api.quangchau247online.com/*"
       ]
     }
   ],
-  "description": "cong cu dat hang taobao, tmall, 1688, mua hang trung quoc, đặt hàng nhanh chóng",
-  "homepage_url": "https://order.bnaslogistics.com",
+  "description": "Hỗ trợ người Việt tìm và đặt các sản phẩm trên các website thương mại điện tử Trung Quốc",
+  "homepage_url": "https://api.quangchau247online.com/public",
   "icons": {
     "128": "images/128x128.png",
     "16": "images/16x16.png",
@@ -34,7 +33,7 @@
     "rate": 3470
   },
   "manifest_version": 2,
-  "name": "bnaslogistics.com",
+  "name": "Quảng Châu Online 247",
   "page_action": {
     "default_icon": "images/128x128.png",
     "default_popup": "popup.html"
@@ -43,17 +42,12 @@
     "activeTab",
     "storage",
     "tabs",
-    "https://*.bnaslogistics.com/*",
-    "https://order.bnaslogistics.com/",
-    "https://2.taobao.com/item.htm",
-    "https://item.taobao.com/**",
-    "https://detail.1688.com/**",
-    "https://item.taobao.com/item.htm**",
-    "https://detail.tmall.com/item.htm**"
+    "https://api.quangchau247online.com/",
+    "https://item.taobao.com/"
   ],
-  "short_name": "bnas",
+  "short_name": "qc247",
   "update_url": "https://clients2.google.com/service/update2/crx",
-  "version": "1.0.0",
+  "version": "1.2.2",
   "web_accessible_resources": [
     "images/*"
   ]
