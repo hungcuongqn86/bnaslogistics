@@ -206,7 +206,6 @@ class CartController extends CommonController
                 $input['tk']
             );
             if ($decoded_token['valid']) {
-                // Check if token exists in DB (table 'oauth_access_tokens'), require \Illuminate\Support\Facades\DB class
                 $token_exists = PassportToken::existsValidToken(
                     $decoded_token['token_id'],
                     $decoded_token['user_id']
@@ -218,27 +217,21 @@ class CartController extends CommonController
             } else {
                 return $this->sendError('Error', ['Auth'], 401);
             }
-            // return $this->sendResponse($decoded_token, 'Successfully.');
+
+            // Add Cart
+            $cartInput = [];
+            $cartInput['user_id'] = $decoded_token['user_id'];
+            $cartInput['status'] = 1;
+
+            // Add CartItems
             $inputData = self::json_decode_nice($input['cart']);
-
-            $rate = 0;
-            $userData = CommonServiceFactory::mUserService()->findById($decoded_token['user_id']);
-            if (!empty($userData) && !empty($userData['user']) && !empty($userData['user']['rate'])) {
-                $rate = (int)$userData['user']['rate'];
-            } else {
-                $setting = CommonServiceFactory::mSettingService()->findByKey('rate');
-                $rate = (int)$setting['setting']['value'];
-            }
-
             foreach ((array)$inputData as $item) {
                 $inputCart = (array)$item;
-                $inputCart['rate'] = $rate;
                 $arrRules = [
                     'amount' => 'required',
                     'domain' => 'required',
                     'image' => 'required',
                     'method' => 'required',
-                    //'name' => 'required',
                     'pro_link' => 'required',
                     'rate' => 'required',
                     'site' => 'required'
@@ -248,7 +241,6 @@ class CartController extends CommonController
                     'domain.required' => 'domain.required',
                     'image.required' => 'image.required',
                     'method.required' => 'method.required',
-                    //'name.required' => 'name.required',
                     'pro_link.required' => 'pro_link.required',
                     'rate.required' => 'rate.required',
                     'site.required' => 'site.required'
@@ -267,7 +259,6 @@ class CartController extends CommonController
                         'url' => $inputCart['shop_link']
                     ];
                     $shop = ShopServiceFactory::mShopService()->create($inputShop);
-                    // return $this->sendError('Error', 'Shop.' . $inputCart['shop_nick'] . '.NotExit');
                 }
 
                 $inputCart['shop_id'] = $shop['id'];
