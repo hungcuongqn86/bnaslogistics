@@ -29,6 +29,8 @@ class  Cart extends BaseEntity
         'phi_dat_hang_tt',
         'phi_bao_hiem_cs',
         'phi_bao_hiem_tt',
+        'phi_kiem_dem_cs',
+        'phi_kiem_dem_tt',
         'ti_gia',
         'status',
         'created_at',

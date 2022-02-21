@@ -45,6 +45,9 @@ class CartController extends CommonController
                     // Lay bang gia dv
                     $serviceFee = CommonServiceFactory::mServiceFeeService()->getAll();
 
+                    // Lay bang gia kiem dem
+                    $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
+
                     $tien_hang = 0;
                     $count_product = 0;
                     foreach ($cartItems as $cartItem) {
@@ -67,6 +70,7 @@ class CartController extends CommonController
                     $ck_dv_tt = round(($phi_dat_hang * $ck_dv) / 100);
                     $phi_dat_hang_tt = $phi_dat_hang - $ck_dv_tt;
 
+                    // Bao hiem
                     $phi_bao_hiem_cs = 0;
                     if ($cart['bao_hiem'] == 1) {
                         $settingBh = CommonServiceFactory::mSettingService()->findByKey('bh_price');
@@ -74,6 +78,22 @@ class CartController extends CommonController
                     }
 
                     $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang) / 100;
+
+                    // Kiem dem
+                    $phi_kiem_dem_cs = 0;
+                    if($cart['kiem_hang'] == 1){
+                        foreach ($inspectionFee as $feeItem) {
+                            if ($feeItem->min_count <= $count_product) {
+                                $phi_kiem_dem_cs = $feeItem->val;
+                                break;
+                            }
+                        }
+                    }
+
+                    $phi_kiem_dem_tt = 0;
+                    if ($phi_kiem_dem_cs != 0) {
+                        $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
+                    }
 
                     $cart['count_product'] = $count_product;
                     $cart['tien_hang'] = $tien_hang;
@@ -85,6 +105,8 @@ class CartController extends CommonController
                     $cart['phi_dat_hang_tt'] = $phi_dat_hang_tt;
                     $cart['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
                     $cart['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
+                    $cart['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
+                    $cart['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
                     $cart['ti_gia'] = $rate;
                     CartServiceFactory::mCartService()->update($cart);
                 }

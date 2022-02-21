@@ -38,6 +38,11 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
         return $rResult;
     }
 
+    public function getAll()
+    {
+        return InspectionFee::where('id', '>', 0)->orderBy('min_count', 'DESC')->get();
+    }
+
     public function findById($id)
     {
         $rResult = InspectionFee::where('id', '=', $id)->first();

@@ -30,6 +30,8 @@ class CreateCartsTable extends Migration
             $table->integer('phi_dat_hang_tt')->nullable();
             $table->double('phi_bao_hiem_cs')->nullable();
             $table->integer('phi_bao_hiem_tt')->nullable();
+            $table->double('phi_kiem_dem_cs')->nullable();
+            $table->integer('phi_kiem_dem_tt')->nullable();
             $table->integer('ti_gia')->nullable();
             $table->tinyInteger('status')->nullable();
             $table->timestamps();
