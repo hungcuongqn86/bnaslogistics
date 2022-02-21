@@ -198,6 +198,7 @@ class CartController extends CommonController
     public function create(Request $request)
     {
         $input = $request->all();
+        // $input['tk'] = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImE5N2FjYjdkMjEyNGU0NzAzNTg4MGNmMjE4NWU0OGRjMzg0OTY2ZWNhNjA5Mjc1ZDBjZWVkNDU3MjkwMTU2ZjFiZTZkY2ViYmQwYjJhZGUwIn0.eyJhdWQiOiIxIiwianRpIjoiYTk3YWNiN2QyMTI0ZTQ3MDM1ODgwY2YyMTg1ZTQ4ZGMzODQ5NjZlY2E2MDkyNzVkMGNlZWQ0NTcyOTAxNTZmMWJlNmRjZWJiZDBiMmFkZTAiLCJpYXQiOjE2NDU0NTU5ODksIm5iZiI6MTY0NTQ1NTk4OSwiZXhwIjoxNjc2OTkxOTg5LCJzdWIiOiIxNTMiLCJzY29wZXMiOltdfQ.t1-hCd9xR0kX_pB7uLmxvbFND0YqeeVDpBvNk1K9VhjI1eCyEUTGqUZ_4A8ewx-f3EIXNBGMpnzF6OiZLec1NQ_PM13wLWzzL7TZXI1ugnFwniLlMZpjRTFKCBnT37nMU-CClF64iqGNVuMpqSzcX71lQFskj5pWbF1wPAFeu1sxXCHKbxfDm0g_86uGvFv36Gg4qK78tyoQcUoGNkKQZyuWPICgJpKCwMCVJDXMt_fSgA-nqulPFEL2PbCwnwdjaEeJW8Ba4EBGdrtQ4otUHo-uzq9u2r4fc0vDgirEbNueB-0LIPp1chj6n-0Tkt2nRvyBVvr-BiWUs0q-cykKp5BLd-Emzrabd-SsU0OaSbMylUnfXAQHgliic0SLRaUqjcUVojj47f_rksTdTwis-BghutzSfmg-rLak2wFriFLmcA09oOPF8KTZr99q7Vw-jzU2WtL5ex_XALlzrxMSiWVE07TWf6fyqFg-VBbuGq1z4sqeru3kSfuKVARE12blcXOSh9LAUhU6jEslwRHN4eO5Aajwtw6VGiVnk9EyhqjdlvFwuU-CTFZwcq8aXNZIw0nfzX36AleZBzxNXyWWNYUO_vVaBbLWj8LjhjPI3TJ8Qoxz8sKrNMaqmvyuyHUdozYVN7PcUXKrRKJQ3VrteOfBroYuVE1nBAwu1G97Yo4';
         DB::beginTransaction();
         try {
             if (empty($input['tk'])) {
@@ -223,8 +224,8 @@ class CartController extends CommonController
             $inputData = (array)self::json_decode_nice($input['cart']);
             if (sizeof($inputData) > 0) {
                 // Shop
-                $shopNick = $inputData[0]['shop_nick'];
-                $shopLink = $inputData[0]['shop_link'];
+                $shopNick = $inputData[0]->shop_nick;
+                $shopLink = $inputData[0]->shop_link;
                 $shop = ShopServiceFactory::mShopService()->findByUrl($shopLink);
                 if (!$shop) {
                     $inputShop = [
@@ -235,10 +236,11 @@ class CartController extends CommonController
                 }
 
                 // Add Cart
-                $cartInput = [];
-                $cartInput['user_id'] = $decoded_token['user_id'];
-                $cartInput['shop_id'] = $shop['id'];
-                $cartInput['status'] = 1;
+                $cartInput = array(
+                    'user_id'  => (int)$decoded_token['user_id'],
+                    'shop_id'  => $shop['id'],
+                    'status'  => 1,
+                );
 
                 $cart = CartServiceFactory::mCartService()->create($cartInput);
                 if (!empty($cart)) {
@@ -273,7 +275,7 @@ class CartController extends CommonController
                         $inputCart['cart_id'] = $cart['id'];
                         $inputCart['price'] = self::convertPrice($inputCart['price']);
                         $inputCart['price_arr'] = json_encode($inputCart['price_arr']);
-                        CartServiceFactory::mCartService()->create($inputCart);
+                        CartServiceFactory::mCartService()->itemCreate($inputCart);
                     }
                 }
 

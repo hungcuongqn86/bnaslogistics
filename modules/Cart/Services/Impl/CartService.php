@@ -111,6 +111,23 @@ class CartService extends CommonService implements ICartService
 
 
     // Cart Item
+    public function itemCreate($arrInput)
+    {
+        $owner = new CartItem($arrInput);
+        DB::beginTransaction();
+        try {
+            $owner->save();
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function itemFindById($id)
     {
         $rResult = CartItem::where('id', '=', $id)->first();
