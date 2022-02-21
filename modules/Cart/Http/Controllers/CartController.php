@@ -81,7 +81,7 @@ class CartController extends CommonController
 
                     // Kiem dem
                     $phi_kiem_dem_cs = 0;
-                    if($cart['kiem_hang'] == 1){
+                    if ($cart['kiem_hang'] == 1) {
                         foreach ($inspectionFee as $feeItem) {
                             if ($feeItem->min_count <= $count_product) {
                                 $phi_kiem_dem_cs = $feeItem->val;
@@ -198,6 +198,7 @@ class CartController extends CommonController
     public function create(Request $request)
     {
         $input = $request->all();
+        DB::beginTransaction();
         try {
             if (empty($input['tk'])) {
                 return $this->sendError('Error', ['Auth'], 401);
@@ -218,58 +219,71 @@ class CartController extends CommonController
                 return $this->sendError('Error', ['Auth'], 401);
             }
 
-            // Add Cart
-            $cartInput = [];
-            $cartInput['user_id'] = $decoded_token['user_id'];
-            $cartInput['status'] = 1;
-
-            // Add CartItems
-            $inputData = self::json_decode_nice($input['cart']);
-            foreach ((array)$inputData as $item) {
-                $inputCart = (array)$item;
-                $arrRules = [
-                    'amount' => 'required',
-                    'domain' => 'required',
-                    'image' => 'required',
-                    'method' => 'required',
-                    'pro_link' => 'required',
-                    'rate' => 'required',
-                    'site' => 'required'
-                ];
-                $arrMessages = [
-                    'amount.required' => 'amount.required',
-                    'domain.required' => 'domain.required',
-                    'image.required' => 'image.required',
-                    'method.required' => 'method.required',
-                    'pro_link.required' => 'pro_link.required',
-                    'rate.required' => 'rate.required',
-                    'site.required' => 'site.required'
-                ];
-
-                $validator = Validator::make($inputCart, $arrRules, $arrMessages);
-                if ($validator->fails()) {
-                    return $this->sendError('Error', $validator->errors()->all());
-                }
-
+            $cart = null;
+            $inputData = (array)self::json_decode_nice($input['cart']);
+            if (sizeof($inputData) > 0) {
                 // Shop
-                $shop = ShopServiceFactory::mShopService()->findByUrl($inputCart['shop_link']);
+                $shopNick = $inputData[0]['shop_nick'];
+                $shopLink = $inputData[0]['shop_link'];
+                $shop = ShopServiceFactory::mShopService()->findByUrl($shopLink);
                 if (!$shop) {
                     $inputShop = [
-                        'name' => $inputCart['shop_nick'],
-                        'url' => $inputCart['shop_link']
+                        'name' => $shopNick,
+                        'url' => $shopLink
                     ];
                     $shop = ShopServiceFactory::mShopService()->create($inputShop);
                 }
 
-                $inputCart['shop_id'] = $shop['id'];
-                $inputCart['user_id'] = $decoded_token['user_id'];
-                $inputCart['price'] = self::convertPrice($inputCart['price']);
-                $inputCart['price_arr'] = json_encode($inputCart['price_arr']);
-                $create = CartServiceFactory::mCartService()->create($inputCart);
+                // Add Cart
+                $cartInput = [];
+                $cartInput['user_id'] = $decoded_token['user_id'];
+                $cartInput['shop_id'] = $shop['id'];
+                $cartInput['status'] = 1;
+
+                $cart = CartServiceFactory::mCartService()->create($cartInput);
+                if (!empty($cart)) {
+                    // Add CartItems
+                    foreach ((array)$inputData as $item) {
+                        $inputCart = (array)$item;
+                        $arrRules = [
+                            'amount' => 'required',
+                            'domain' => 'required',
+                            'image' => 'required',
+                            'method' => 'required',
+                            'pro_link' => 'required',
+                            'rate' => 'required',
+                            'site' => 'required'
+                        ];
+                        $arrMessages = [
+                            'amount.required' => 'amount.required',
+                            'domain.required' => 'domain.required',
+                            'image.required' => 'image.required',
+                            'method.required' => 'method.required',
+                            'pro_link.required' => 'pro_link.required',
+                            'rate.required' => 'rate.required',
+                            'site.required' => 'site.required'
+                        ];
+
+                        $validator = Validator::make($inputCart, $arrRules, $arrMessages);
+                        if ($validator->fails()) {
+                            DB::rollBack();
+                            return $this->sendError('Error', $validator->errors()->all());
+                        }
+
+                        $inputCart['cart_id'] = $cart['id'];
+                        $inputCart['price'] = self::convertPrice($inputCart['price']);
+                        $inputCart['price_arr'] = json_encode($inputCart['price_arr']);
+                        CartServiceFactory::mCartService()->create($inputCart);
+                    }
+                }
+
+                self::reUpdate($cart['id']);
             }
 
-            return $this->sendResponse(1, 'Successfully.');
+            DB::commit();
+            return $this->sendResponse($cart, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
