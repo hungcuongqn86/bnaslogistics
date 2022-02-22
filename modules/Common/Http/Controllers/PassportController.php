@@ -314,7 +314,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Kiện hàng';
             $newobj->url = '/package';
-            $newobj->icon = 'iconsax isax-dcube';
+            $newobj->icon = 'iconsax isax-d-cube-scan';
             $nav[] = $newobj;
         }
 
