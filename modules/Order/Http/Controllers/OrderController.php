@@ -2,15 +2,15 @@
 
 namespace Modules\Order\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Modules\Order\Services\OrderServiceFactory;
-use Modules\Cart\Services\CartServiceFactory;
-use Modules\Common\Services\CommonServiceFactory;
-use Modules\Common\Http\Controllers\CommonController;
-use Illuminate\Support\Facades\Auth;
 use App\Exports\OrderExport;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Modules\Cart\Services\CartServiceFactory;
+use Modules\Common\Http\Controllers\CommonController;
+use Modules\Common\Services\CommonServiceFactory;
+use Modules\Order\Services\OrderServiceFactory;
 
 class OrderController extends CommonController
 {
@@ -208,52 +208,72 @@ class OrderController extends CommonController
         }
     }
 
+    private function genOrderCode()
+    {
+        try {
+            // 7.	Mã đơn hàng, mã số khách hàng+ số đơn đã mua, như: mã KH 224655+0001, 224655+0002…..
+            return "";
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function create(Request $request)
     {
-
-
-
-        $input = $request->all();
-        $arrRules = [
-            'shop_id' => 'required',
-            'cart_ids' => 'required'
-        ];
-        $arrMessages = [
-            'shop_id.required' => 'Không xác định được shop!',
-            'cart_ids.required' => 'Không có sản phẩm!'
-        ];
-
-        $user = $request->user();
-        $input['user_id'] = $user['id'];
-        if (isset($user['hander'])) {
-            $input['hander'] = $user['hander'];
-        }
-
-        $validator = Validator::make($input, $arrRules, $arrMessages);
-        if ($validator->fails()) {
-            return $this->sendError('Kết đơn không thành công!', $validator->errors()->all());
-        }
-
-        $arrCartId = explode(',', $input['cart_ids']);
-        $carts = CartServiceFactory::mCartService()->findByIds($arrCartId);
-        foreach ($carts as $cart) {
-            if (!empty($cart['order_id'])) {
-                return $this->sendError('Kết đơn không thành công!', ['Xin vui lòng thực hiện lại!']);
-            }
-        }
-
         try {
-            $input['status'] = 2;
-            $create = OrderServiceFactory::mOrderService()->create($input);
+            $input = $request->all();
+            $user = $request->user();
+
+            $cartId = $input['id'];
+            $cart = CartServiceFactory::mCartService()->findById($cartId);
+            if (empty($cart)) {
+                return $this->sendError('Error', ['Không tồn tại giỏ hàng!']);
+            }
+
+            if ($cart['user_id'] != $user->id) {
+                return $this->sendError('Error', ['Không có quyền sửa giỏ hàng!']);
+            }
+
+            // Add Order
+            $orderInput = array(
+                'user_id'  => (int)$user['id'],
+                'cart_id'  => $cartId,
+                'code'  => self::genOrderCode(),
+                'shipping'  => 0,
+                'ti_gia'  => $cart['ti_gia'],
+                'count_product'  => $cart['count_product'],
+                'kiem_hang'  => $cart['kiem_hang'],
+                'dong_go'  => $cart['dong_go'],
+                'bao_hiem'  => $cart['bao_hiem'],
+                'tien_hang'  => $cart['tien_hang'],
+                'vip_id'  => $cart['vip_id'],
+                'ck_dv'  => $cart['ck_dv'],
+                'ck_dv_tt'  => $cart['ck_dv_tt'],
+                'phi_dat_hang_cs'  => $cart['phi_dat_hang_cs'],
+                'phi_dat_hang'  => $cart['phi_dat_hang'],
+                'phi_dat_hang_tt'  => $cart['phi_dat_hang_tt'],
+                'phi_bao_hiem_cs'  => $cart['phi_bao_hiem_cs'],
+                'phi_bao_hiem_tt'  => $cart['phi_bao_hiem_tt'],
+                'phi_kiem_dem_cs'  => $cart['phi_kiem_dem_cs'],
+                'phi_kiem_dem_tt'  => $cart['phi_kiem_dem_tt'],
+                'status'  => 2,
+            );
+
+            if (isset($user['hander'])) {
+                $orderInput['hander'] = $user['hander'];
+            }
+
+            $create = OrderServiceFactory::mOrderService()->create($orderInput);
             if (!empty($create)) {
-                foreach ($arrCartId as $id) {
-                    $cartInput = array(
-                        'id' => $id,
-                        'order_id' => $create['id'],
-                        'status' => 2
-                    );
-                    CartServiceFactory::mCartService()->update($cartInput);
+                // Add Order Items
+                foreach ($cart['cart_items'] as $cart_item) {
+                    $orderItemInput = [];
+                    $orderItemInput['order_id'] = $create['id'];
+                    OrderServiceFactory::mOrderService()->itemCreate($orderItemInput);
                 }
+
+                // Update cart
+
                 // History
                 $history = [
                     'user_id' => $user['id'],
@@ -261,7 +281,8 @@ class OrderController extends CommonController
                     'type' => 1
                 ];
                 OrderServiceFactory::mHistoryService()->create($history);
-                //Package
+
+                // Package
                 $package = [
                     'order_id' => $create['id']
                 ];

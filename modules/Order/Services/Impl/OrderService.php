@@ -3,6 +3,7 @@
 namespace Modules\Order\Services\Impl;
 
 use Modules\Common\Entities\Order;
+use Modules\Common\Entities\OrderItem;
 use Modules\Common\Entities\Comment;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Order\Services\Intf\IOrderService;
@@ -292,6 +293,64 @@ class OrderService extends CommonService implements IOrderService
             return true;
         } else {
             return false;
+        }
+    }
+
+    // Order Item
+    public function itemCreate($arrInput)
+    {
+        $owner = new OrderItem($arrInput);
+        DB::beginTransaction();
+        try {
+            $owner->save();
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function itemFindById($id)
+    {
+        $rResult = OrderItem::where('id', '=', $id)->first();
+        if (!empty($rResult)) {
+            return $rResult->toArray();
+        } else {
+            return null;
+        }
+    }
+
+    public function itemUpdate($arrInput)
+    {
+        $id = $arrInput['id'];
+        try {
+            $owner = OrderItem::find($id);
+            $owner->update($arrInput);
+            return $owner;
+        } catch (QueryException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function itemDelete($id)
+    {
+        DB::beginTransaction();
+        try {
+            OrderItem::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
     }
 }
