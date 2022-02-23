@@ -210,6 +210,9 @@ class OrderController extends CommonController
 
     public function create(Request $request)
     {
+
+
+
         $input = $request->all();
         $arrRules = [
             'shop_id' => 'required',

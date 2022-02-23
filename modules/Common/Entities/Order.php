@@ -14,35 +14,39 @@ class Order extends BaseEntity
     public $timestamps = false;
     protected $fillable = [
         'user_id',
-        'shop_id',
-        'status',
-        'rate',
-        'vip',
-        'vip_dc',
+        'cart_id',
+        'shipping',
+        'ti_gia',
         'count_product',
-        'count_link',
+        'kiem_hang',
+        'dong_go',
+        'bao_hiem',
         'tien_hang',
-        'phi_tam_tinh',
-        'phi_dich_vu',
-        'phi_kiem_dem',
-        'is_kiemdem',
-        'is_donggo',
+        'vip_id',
+        'ck_dv',
+        'ck_dv_tt',
+        'phi_dat_hang_cs',
+        'phi_dat_hang',
+        'phi_dat_hang_tt',
+        'phi_bao_hiem_cs',
+        'phi_bao_hiem_tt',
+        'phi_kiem_dem_cs',
+        'phi_kiem_dem_tt',
         'tong',
-        'baogia_content',
-        'datcoc_content',
-        'thanh_toan',
+        'dat_coc',
+        'dat_coc_content',
         'con_thieu',
-        'is_deleted',
+        'hander',
+        'content_pc',
+        'status',
         'created_at',
         'updated_at',
-        'shipping',
-        'hander',
-        'content_pc'
+        'deleted_at'
     ];
 
-    public function Shop()
+    public function OrderItem()
     {
-        return $this->belongsTo(Shop::class, 'shop_id', 'id');
+        return $this->hasMany(CartItem::class, 'order_id', 'id');
     }
 
     public function User()
@@ -57,7 +61,7 @@ class Order extends BaseEntity
 
     public function Cart()
     {
-        return $this->hasMany(Cart::class, 'order_id', 'id');
+        return $this->belongsTo(Cart::class, 'cart_id', 'id');
     }
 
     public function Package()
@@ -73,7 +77,6 @@ class Order extends BaseEntity
     public static function status()
     {
         $res = [];
-        // $res[] = ['id' => 1, 'name' => 'Chờ báo giá'];
         $res[] = ['id' => 2, 'name' => 'Chờ đặt cọc'];
         $res[] = ['id' => 3, 'name' => 'Đang mua hàng'];
         $res[] = ['id' => 4, 'name' => 'Đã mua hàng'];
