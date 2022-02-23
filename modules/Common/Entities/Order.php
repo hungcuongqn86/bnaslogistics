@@ -15,6 +15,7 @@ class Order extends BaseEntity
     protected $fillable = [
         'user_id',
         'cart_id',
+        'code',
         'shipping',
         'ti_gia',
         'count_product',
