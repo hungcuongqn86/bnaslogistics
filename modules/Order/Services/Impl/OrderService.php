@@ -23,20 +23,15 @@ class OrderService extends CommonService implements IOrderService
 
     public function search($filter)
     {
-        $query = Order::with(['User', 'Cart', 'Shop', 'Handle'])->with(array('Package' => function ($query) {
+        $query = Order::with(['User', 'OrderItems', 'Handle'])->with(array('Package' => function ($query) {
             $query->where('is_deleted', '=', 0)->orderBy('id');
-        }))->where('is_deleted', '=', 0);
+        }));
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         if (!empty($sKeySearch)) {
             $query->whereHas('User', function ($q) use ($sKeySearch) {
                 $q->where('name', 'LIKE', '%' . $sKeySearch . '%');
                 $q->orWhere('email', 'LIKE', '%' . $sKeySearch . '%');
                 $q->orWhere('phone_number', 'LIKE', '%' . $sKeySearch . '%');
-            });
-            $query->orWhereHas('Cart', function ($q) use ($sKeySearch) {
-                $q->whereHas('Shop', function ($q) use ($sKeySearch) {
-                    $q->where('name', 'LIKE', '%' . $sKeySearch . '%');
-                });
             });
         }
 
@@ -77,7 +72,7 @@ class OrderService extends CommonService implements IOrderService
 
         $code = isset($filter['code']) ? trim($filter['code']) : '';
         if (!empty($code)) {
-            $query->where('id', '=', $code);
+            $query->where('code', '=', $code);
         }
         $iuser = isset($filter['user_id']) ? $filter['user_id'] : 0;
         if ($iuser > 0) {
@@ -137,7 +132,7 @@ class OrderService extends CommonService implements IOrderService
 
     public function countByStatus($filter)
     {
-        $query = Order::where('is_deleted', '=', 0);
+        $query = Order::where('id', '>', 0);
         $ihander = isset($filter['hander']) ? $filter['hander'] : 0;
         if ($ihander > 0) {
             $query->where('hander', '=', $ihander);
