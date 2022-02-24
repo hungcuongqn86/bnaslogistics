@@ -16,9 +16,9 @@ class OrderObserver
 	
     public function saved(Order $order)
     {
-		if($order->isDirty('status') || $order->isDirty('is_deleted')){
+		if($order->isDirty('status') || $order->isDirty('deleted_at')){
 			$userid = $order->user_id;
-			$rResult1 = Order::where('is_deleted', '=', 0)->where('user_id', '=', $userid)->groupBy('status')->selectRaw('status, count(*) as total, "od" as type')->get();
+			$rResult1 = Order::where('user_id', '=', $userid)->groupBy('status')->selectRaw('status, count(*) as total, "od" as type')->get();
 			
 			$rResult2 = Package::where('is_deleted', '=', 0)->whereHas('Order', function ($q) use ($userid) {
 				$q->where('user_id', '=', $userid);

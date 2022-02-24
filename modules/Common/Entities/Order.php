@@ -3,11 +3,12 @@
 namespace Modules\Common\Entities;
 
 use App\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class Order extends BaseEntity
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $table = 'orders';
     protected $primaryKey = 'id';
@@ -45,9 +46,9 @@ class Order extends BaseEntity
         'deleted_at'
     ];
 
-    public function OrderItem()
+    public function OrderItems()
     {
-        return $this->hasMany(CartItem::class, 'order_id', 'id');
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
     public function User()

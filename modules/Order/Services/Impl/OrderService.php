@@ -218,7 +218,7 @@ class OrderService extends CommonService implements IOrderService
 
     public function findById($id)
     {
-        $rResult = Order::with(['User', 'OrderItem', 'History', 'Handle'])->with(array('Package' => function ($query) {
+        $rResult = Order::with(['User', 'OrderItems', 'History', 'Handle'])->with(array('Package' => function ($query) {
             $query->where('is_deleted', '=', 0)->orderBy('id');
         }))->where('id', '=', $id)->first();
         if (!empty($rResult)) {
