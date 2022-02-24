@@ -209,30 +209,45 @@ class OrderController extends CommonController
         }
     }
 
-    private function genOrderCode()
+    private function genOrderCode($uId, $uCode)
     {
         try {
             // 7.	Mã đơn hàng, mã số khách hàng+ số đơn đã mua, như: mã KH 224655+0001, 224655+0002…..
-            return "";
+            $code = '';
+            $topOrder = OrderServiceFactory::mOrderService()->findByTopCode($uId);
+            if (!empty($topOrder)) {
+                $code = (string)((int)$topOrder + 1);
+            } else {
+                $code = $uCode . '0001';
+            }
+            return $code;
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
     }
 
+    private function convertPrice($priceStr)
+    {
+        $price = str_replace(' ', '', $priceStr);
+        $price = explode('-', $price)[0];
+        $price = str_replace(',', '.', $price);
+        return $price;
+    }
+
     private function reUpdate($id)
     {
         try {
-            $cart = CartServiceFactory::mCartService()->findById($id);
-            if ($cart) {
-                $cartItems = $cart['cart_items'];
-                if (sizeof($cartItems) > 0) {
+            $order = OrderServiceFactory::mOrderService()->findById($id);
+            if ($order) {
+                $orderItems = $order['order_items'];
+                if (sizeof($orderItems) > 0) {
                     // Lay ti gia tu setting
                     $settingRate = CommonServiceFactory::mSettingService()->findByKey('rate');
                     $rate = (int)$settingRate['setting']['value'];
 
                     // Lay vip
                     $ck_dv = 0;
-                    $vip = CommonServiceFactory::mVipService()->findById($cart['user']['vip']);
+                    $vip = CommonServiceFactory::mVipService()->findById($order['user']['vip']);
                     if (!empty($vip)) {
                         $ck_dv = $vip['ck_dv'];
                     }
@@ -245,11 +260,11 @@ class OrderController extends CommonController
 
                     $tien_hang = 0;
                     $count_product = 0;
-                    foreach ($cartItems as $cartItem) {
-                        $price = self::convertPrice($cartItem['price']);
-                        $amount = $cartItem['amount'];
+                    foreach ($orderItems as $orderItem) {
+                        $price = self::convertPrice($orderItem['price']);
+                        $amount = $orderItem['amount'];
                         $tien_hang = $tien_hang + round($price * $rate * $amount, 0);
-                        $count_product = $count_product + $cartItem['amount'];
+                        $count_product = $count_product + $orderItem['amount'];
                     }
 
                     // Tinh phi dich vu
@@ -267,7 +282,7 @@ class OrderController extends CommonController
 
                     // Bao hiem
                     $phi_bao_hiem_cs = 0;
-                    if ($cart['bao_hiem'] == 1) {
+                    if ($order['bao_hiem'] == 1) {
                         $settingBh = CommonServiceFactory::mSettingService()->findByKey('bh_price');
                         $phi_bao_hiem_cs = (int)$settingBh['setting']['value'];
                     }
@@ -276,7 +291,7 @@ class OrderController extends CommonController
 
                     // Kiem dem
                     $phi_kiem_dem_cs = 0;
-                    if ($cart['kiem_hang'] == 1) {
+                    if ($order['kiem_hang'] == 1) {
                         foreach ($inspectionFee as $feeItem) {
                             if ($feeItem->min_count <= $count_product) {
                                 $phi_kiem_dem_cs = $feeItem->val;
@@ -290,20 +305,20 @@ class OrderController extends CommonController
                         $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
                     }
 
-                    $cart['count_product'] = $count_product;
-                    $cart['tien_hang'] = $tien_hang;
-                    $cart['vip_id'] = $vip['id'];
-                    $cart['ck_dv'] = $ck_dv;
-                    $cart['ck_dv_tt'] = $ck_dv_tt;
-                    $cart['phi_dat_hang_cs'] = $phi_dat_hang_cs;
-                    $cart['phi_dat_hang'] = $phi_dat_hang;
-                    $cart['phi_dat_hang_tt'] = $phi_dat_hang_tt;
-                    $cart['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
-                    $cart['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
-                    $cart['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
-                    $cart['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
-                    $cart['ti_gia'] = $rate;
-                    CartServiceFactory::mCartService()->update($cart);
+                    $order['count_product'] = $count_product;
+                    $order['tien_hang'] = $tien_hang;
+                    $order['vip_id'] = $vip['id'];
+                    $order['ck_dv'] = $ck_dv;
+                    $order['ck_dv_tt'] = $ck_dv_tt;
+                    $order['phi_dat_hang_cs'] = $phi_dat_hang_cs;
+                    $order['phi_dat_hang'] = $phi_dat_hang;
+                    $order['phi_dat_hang_tt'] = $phi_dat_hang_tt;
+                    $order['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
+                    $order['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
+                    $order['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
+                    $order['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
+                    $order['ti_gia'] = $rate;
+                    OrderServiceFactory::mOrderService()->update($order);
                 }
             }
         } catch (\Exception $e) {
@@ -330,27 +345,27 @@ class OrderController extends CommonController
 
             // Add Order
             $orderInput = array(
-                'user_id'  => (int)$user['id'],
-                'cart_id'  => $cartId,
-                'code'  => self::genOrderCode(),
-                'shipping'  => 0,
-                'ti_gia'  => $cart['ti_gia'],
-                'count_product'  => $cart['count_product'],
-                'kiem_hang'  => $cart['kiem_hang'],
-                'dong_go'  => $cart['dong_go'],
-                'bao_hiem'  => $cart['bao_hiem'],
-                'tien_hang'  => $cart['tien_hang'],
-                'vip_id'  => $cart['vip_id'],
-                'ck_dv'  => $cart['ck_dv'],
-                'ck_dv_tt'  => $cart['ck_dv_tt'],
-                'phi_dat_hang_cs'  => $cart['phi_dat_hang_cs'],
-                'phi_dat_hang'  => $cart['phi_dat_hang'],
-                'phi_dat_hang_tt'  => $cart['phi_dat_hang_tt'],
-                'phi_bao_hiem_cs'  => $cart['phi_bao_hiem_cs'],
-                'phi_bao_hiem_tt'  => $cart['phi_bao_hiem_tt'],
-                'phi_kiem_dem_cs'  => $cart['phi_kiem_dem_cs'],
-                'phi_kiem_dem_tt'  => $cart['phi_kiem_dem_tt'],
-                'status'  => 2,
+                'user_id' => (int)$user['id'],
+                'cart_id' => $cartId,
+                'code' => self::genOrderCode($user->id, $user->code),
+                'shipping' => 0,
+                'ti_gia' => $cart['ti_gia'],
+                'count_product' => $cart['count_product'],
+                'kiem_hang' => $cart['kiem_hang'],
+                'dong_go' => $cart['dong_go'],
+                'bao_hiem' => $cart['bao_hiem'],
+                'tien_hang' => $cart['tien_hang'],
+                'vip_id' => $cart['vip_id'],
+                'ck_dv' => $cart['ck_dv'],
+                'ck_dv_tt' => $cart['ck_dv_tt'],
+                'phi_dat_hang_cs' => $cart['phi_dat_hang_cs'],
+                'phi_dat_hang' => $cart['phi_dat_hang'],
+                'phi_dat_hang_tt' => $cart['phi_dat_hang_tt'],
+                'phi_bao_hiem_cs' => $cart['phi_bao_hiem_cs'],
+                'phi_bao_hiem_tt' => $cart['phi_bao_hiem_tt'],
+                'phi_kiem_dem_cs' => $cart['phi_kiem_dem_cs'],
+                'phi_kiem_dem_tt' => $cart['phi_kiem_dem_tt'],
+                'status' => 2,
             );
 
             if (isset($user['hander'])) {
@@ -385,6 +400,10 @@ class OrderController extends CommonController
                 }
 
                 // Update cart
+                $cartInput = [];
+                $cartInput['id'] = $cartId;
+                $cartInput['status'] = 2;
+                CartServiceFactory::mCartService()->update($cartInput);
 
                 // History
                 $history = [
@@ -399,6 +418,9 @@ class OrderController extends CommonController
                     'order_id' => $create['id']
                 ];
                 OrderServiceFactory::mPackageService()->create($package);
+
+                // Re update
+                self::reUpdate($create['id']);
             }
 
             DB::commit();

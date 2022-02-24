@@ -2,12 +2,12 @@
 
 namespace Modules\Order\Services\Impl;
 
+use Illuminate\Support\Facades\DB;
+use Modules\Common\Entities\Comment;
 use Modules\Common\Entities\Order;
 use Modules\Common\Entities\OrderItem;
-use Modules\Common\Entities\Comment;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Order\Services\Intf\IOrderService;
-use Illuminate\Support\Facades\DB;
 
 class OrderService extends CommonService implements IOrderService
 {
@@ -218,13 +218,23 @@ class OrderService extends CommonService implements IOrderService
 
     public function findById($id)
     {
-        $rResult = Order::with(['User', 'Cart', 'Shop', 'History', 'Handle'])->with(array('Package' => function ($query) {
+        $rResult = Order::with(['User', 'OrderItem', 'History', 'Handle'])->with(array('Package' => function ($query) {
             $query->where('is_deleted', '=', 0)->orderBy('id');
         }))->where('id', '=', $id)->first();
         if (!empty($rResult)) {
-            return array('order' => $rResult->toArray());
+            return $rResult->toArray();
         } else {
             return null;
+        }
+    }
+
+    public function findByTopCode($uId)
+    {
+        $rResult = Order::where('user_id', '=', $uId)->orderBy('code', 'desc')->first();
+        if (!empty($rResult)) {
+            return $rResult['code'];
+        } else {
+            return '';
         }
     }
 
