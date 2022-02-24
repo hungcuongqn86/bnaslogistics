@@ -5,6 +5,7 @@ namespace Modules\Order\Http\Controllers;
 use App\Exports\OrderExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Cart\Services\CartServiceFactory;
@@ -218,8 +219,101 @@ class OrderController extends CommonController
         }
     }
 
+    private function reUpdate($id)
+    {
+        try {
+            $cart = CartServiceFactory::mCartService()->findById($id);
+            if ($cart) {
+                $cartItems = $cart['cart_items'];
+                if (sizeof($cartItems) > 0) {
+                    // Lay ti gia tu setting
+                    $settingRate = CommonServiceFactory::mSettingService()->findByKey('rate');
+                    $rate = (int)$settingRate['setting']['value'];
+
+                    // Lay vip
+                    $ck_dv = 0;
+                    $vip = CommonServiceFactory::mVipService()->findById($cart['user']['vip']);
+                    if (!empty($vip)) {
+                        $ck_dv = $vip['ck_dv'];
+                    }
+
+                    // Lay bang gia dv
+                    $serviceFee = CommonServiceFactory::mServiceFeeService()->getAll();
+
+                    // Lay bang gia kiem dem
+                    $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
+
+                    $tien_hang = 0;
+                    $count_product = 0;
+                    foreach ($cartItems as $cartItem) {
+                        $price = self::convertPrice($cartItem['price']);
+                        $amount = $cartItem['amount'];
+                        $tien_hang = $tien_hang + round($price * $rate * $amount, 0);
+                        $count_product = $count_product + $cartItem['amount'];
+                    }
+
+                    // Tinh phi dich vu
+                    $phi_dat_hang_cs = 0;
+                    foreach ($serviceFee as $feeItem) {
+                        if ($feeItem->min_tot_tran * 1000000 <= $tien_hang) {
+                            $phi_dat_hang_cs = $feeItem->val;
+                            break;
+                        }
+                    }
+
+                    $phi_dat_hang = round(($phi_dat_hang_cs * $tien_hang) / 100);
+                    $ck_dv_tt = round(($phi_dat_hang * $ck_dv) / 100);
+                    $phi_dat_hang_tt = $phi_dat_hang - $ck_dv_tt;
+
+                    // Bao hiem
+                    $phi_bao_hiem_cs = 0;
+                    if ($cart['bao_hiem'] == 1) {
+                        $settingBh = CommonServiceFactory::mSettingService()->findByKey('bh_price');
+                        $phi_bao_hiem_cs = (int)$settingBh['setting']['value'];
+                    }
+
+                    $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang) / 100;
+
+                    // Kiem dem
+                    $phi_kiem_dem_cs = 0;
+                    if ($cart['kiem_hang'] == 1) {
+                        foreach ($inspectionFee as $feeItem) {
+                            if ($feeItem->min_count <= $count_product) {
+                                $phi_kiem_dem_cs = $feeItem->val;
+                                break;
+                            }
+                        }
+                    }
+
+                    $phi_kiem_dem_tt = 0;
+                    if ($phi_kiem_dem_cs != 0) {
+                        $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
+                    }
+
+                    $cart['count_product'] = $count_product;
+                    $cart['tien_hang'] = $tien_hang;
+                    $cart['vip_id'] = $vip['id'];
+                    $cart['ck_dv'] = $ck_dv;
+                    $cart['ck_dv_tt'] = $ck_dv_tt;
+                    $cart['phi_dat_hang_cs'] = $phi_dat_hang_cs;
+                    $cart['phi_dat_hang'] = $phi_dat_hang;
+                    $cart['phi_dat_hang_tt'] = $phi_dat_hang_tt;
+                    $cart['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
+                    $cart['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
+                    $cart['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
+                    $cart['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
+                    $cart['ti_gia'] = $rate;
+                    CartServiceFactory::mCartService()->update($cart);
+                }
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     public function create(Request $request)
     {
+        DB::beginTransaction();
         try {
             $input = $request->all();
             $user = $request->user();
@@ -269,6 +363,24 @@ class OrderController extends CommonController
                 foreach ($cart['cart_items'] as $cart_item) {
                     $orderItemInput = [];
                     $orderItemInput['order_id'] = $create['id'];
+                    $orderItemInput['amount'] = $cart_item['amount'];
+                    $orderItemInput['begin_amount'] = $cart_item['begin_amount'];
+                    $orderItemInput['color'] = $cart_item['color'];
+                    $orderItemInput['colortxt'] = $cart_item['colortxt'];
+                    $orderItemInput['count'] = $cart_item['count'];
+                    $orderItemInput['domain'] = $cart_item['domain'];
+                    $orderItemInput['image'] = $cart_item['image'];
+                    $orderItemInput['method'] = $cart_item['method'];
+                    $orderItemInput['name'] = $cart_item['name'];
+                    $orderItemInput['note'] = $cart_item['note'];
+                    $orderItemInput['price'] = $cart_item['price'];
+                    $orderItemInput['price_arr'] = $cart_item['price_arr'];
+                    $orderItemInput['pro_link'] = $cart_item['pro_link'];
+                    $orderItemInput['pro_properties'] = $cart_item['pro_properties'];
+                    $orderItemInput['rate'] = $cart_item['rate'];
+                    $orderItemInput['site'] = $cart_item['site'];
+                    $orderItemInput['size'] = $cart_item['size'];
+                    $orderItemInput['sizetxt'] = $cart_item['sizetxt'];
                     OrderServiceFactory::mOrderService()->itemCreate($orderItemInput);
                 }
 
@@ -288,8 +400,11 @@ class OrderController extends CommonController
                 ];
                 OrderServiceFactory::mPackageService()->create($package);
             }
+
+            DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
