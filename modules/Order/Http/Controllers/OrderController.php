@@ -431,6 +431,72 @@ class OrderController extends CommonController
         }
     }
 
+    public function itemUpdate($id, Request $request)
+    {
+        $input = $request->all();
+        $user = $request->user();
+
+        if ($user['type'] == 1) {
+            return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
+        }
+
+        $orderItem = OrderServiceFactory::mOrderService()->itemFindById($id);
+        if (empty($orderItem)) {
+            return $this->sendError('Error', ['Không tồn tại đơn hàng!']);
+        }
+
+        $order = OrderServiceFactory::mOrderService()->findById($orderItem['order_id']);
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+        }
+
+        DB::beginTransaction();
+        try {
+
+            $dirty = $input['dirty'];
+            $value = $input['value'];
+            if ($orderItem[$dirty] == $value) {
+                return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
+            }
+
+            $content = 'Thay đổi ';
+            $colName = '';
+            switch ($dirty) {
+                case 'amount':
+                    $colName = 'số lượng';
+                    break;
+                case 'price':
+                    $colName = 'giá';
+                    break;
+                case 2:
+                    $colName = 'đơn hàng';
+                    break;
+            }
+
+            $content .= $colName . ': ' . $orderItem[$dirty] . ' -> ' . $value;
+
+            $orderItem[$dirty] = $value;
+            $update = OrderServiceFactory::mOrderService()->itemUpdate($orderItem);
+            if (!empty($update)) {
+                // Re update
+                self::reUpdate($orderItem['order_id']);
+                // History
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $orderItem['order_id'],
+                    'type' => 8,
+                    'content' => $content
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
+            }
+            DB::commit();
+            return $this->sendResponse($update, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function update(Request $request)
     {
         // dd(1);
