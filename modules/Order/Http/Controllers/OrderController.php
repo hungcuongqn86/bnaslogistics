@@ -459,7 +459,7 @@ class OrderController extends CommonController
                 return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
             }
 
-            $content = 'Thay đổi ';
+            $content = 'Mã ' . $id . ', Thay đổi ';
             $colName = '';
             switch ($dirty) {
                 case 'amount':
