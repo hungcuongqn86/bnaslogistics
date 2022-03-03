@@ -220,7 +220,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Giỏ hàng';
             $newobj->url = '/cart';
-            $newobj->icon = 'fa fa-cart-plus';
+            $newobj->icon = 'iconsax isax-bag';
             $nav[] = $newobj;
         }
 
@@ -228,7 +228,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Yêu cầu ký gửi';
             $newobj->url = '/shipping/myshipping';
-            $newobj->icon = 'fa fa-truck';
+            $newobj->icon = 'iconsax isax-truck';
             $nav[] = $newobj;
         }
 
@@ -236,7 +236,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Đơn hàng';
             $newobj->url = '/order/myorder';
-            $newobj->icon = 'fa fa-gavel';
+            $newobj->icon = 'iconsax isax-receipt-edit';
             $nav[] = $newobj;
         }
 
@@ -244,7 +244,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Kiện hàng';
             $newobj->url = '/mypackage';
-            $newobj->icon = 'fa fa-cubes';
+            $newobj->icon = 'iconsax isax-d-cube-scan';
             $nav[] = $newobj;
         }
 
@@ -252,7 +252,7 @@ class PassportController extends CommonController
             $newobj = new \stdClass();
             $newobj->name = 'Ví điện tử';
             $newobj->url = '/wallet';
-            $newobj->icon = 'fa fa-money';
+            $newobj->icon = 'iconsax isax-empty-wallet';
             $nav[] = $newobj;
         }
 
