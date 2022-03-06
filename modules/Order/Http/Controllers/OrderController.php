@@ -508,27 +508,29 @@ class OrderController extends CommonController
         try {
             $dirty = $input['dirty'];
             $value = $input['value'];
-            if ($order[$dirty] == $value) {
-                return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
-            }
 
             $content = 'Mã ' . $id . ', Thay đổi ';
             $colName = '';
             switch ($dirty) {
                 case 'kiem_hang':
                     $colName = 'kiểm hàng';
+                    $value = (int)$value;
                     break;
                 case 'dong_go':
                     $colName = 'đóng gỗ';
+                    $value = (int)$value;
                     break;
                 case 'bao_hiem':
                     $colName = 'chống sốc';
+                    $value = (int)$value;
                     break;
                 case 'chinh_ngach':
                     $colName = 'chính ngạch';
+                    $value = (int)$value;
                     break;
                 case 'vat':
                     $colName = 'VAT';
+                    $value = (int)$value;
                     break;
                 case 'phi_dat_hang_cs':
                     $colName = 'Phí đặt hàng';
@@ -536,6 +538,10 @@ class OrderController extends CommonController
                 case 'phi_kiem_dem_cs':
                     $colName = 'Phí kiểm đếm';
                     break;
+            }
+
+            if ($order[$dirty] == $value) {
+                return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
             }
 
             $content .= $colName . ': ' . $order[$dirty] . ' -> ' . $value;
