@@ -23,6 +23,8 @@ class Order extends BaseEntity
         'kiem_hang',
         'dong_go',
         'bao_hiem',
+        'chinh_ngach',
+        'vat',
         'tien_hang',
         'vip_id',
         'ck_dv',
