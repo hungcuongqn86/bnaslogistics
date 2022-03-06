@@ -77,14 +77,14 @@ class HistoryController extends CommonController
                 return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
             }
 
-            $userId = $order['order']['user_id'];
+            $userId = $order['user_id'];
             $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $userId]);
 
             $create = OrderServiceFactory::mHistoryService()->create($input);
             if (!empty($create)) {
                 // Update order status
                 $orderInput = array();
-                $orderInput['id'] = $order['order']['id'];
+                $orderInput['id'] = $order['id'];
 
                 if ($input['type'] == 4) {
                     $orderInput['status'] = 4;
@@ -93,7 +93,7 @@ class HistoryController extends CommonController
                     $orderInput['status'] = 6;
                 }
                 if ($input['type'] == 7) {
-                    $tiencoc = $order['order']['dat_coc'];
+                    $tiencoc = $order['dat_coc'];
                     if (!empty($tiencoc) && $tiencoc > 0) {
                         // Hoan tien
                         $orderInput['dat_coc_content'] = $input['content'];
@@ -103,7 +103,7 @@ class HistoryController extends CommonController
                         $transaction = [
                             'user_id' => $userId,
                             'type' => 5,
-                            'code' => $order['order']['id'] . '.H' . $create['id'],
+                            'code' => $order['id'] . '.H' . $create['id'],
                             'value' => $tiencoc,
                             'debt' => $debt + $tiencoc,
                             'content' => $input['content']
