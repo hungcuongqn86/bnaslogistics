@@ -267,11 +267,15 @@ class OrderController extends CommonController
                     $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
                     $phi_kiem_dem_cs = 0;
                     if ($order['kiem_hang'] == 1) {
-                        foreach ($inspectionFee as $feeItem) {
-                            if ($feeItem->min_count <= $count_product) {
-                                $phi_kiem_dem_cs = $feeItem->val;
-                                break;
+                        if ($order['phi_kiem_dem_cs'] == 0) {
+                            foreach ($inspectionFee as $feeItem) {
+                                if ($feeItem->min_count <= $count_product) {
+                                    $phi_kiem_dem_cs = $feeItem->val;
+                                    break;
+                                }
                             }
+                        } else {
+                            $phi_kiem_dem_cs = $order['phi_kiem_dem_cs'];
                         }
                     }
 
