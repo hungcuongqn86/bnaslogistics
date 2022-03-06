@@ -2,15 +2,13 @@
 
 namespace Modules\Common\Http\Controllers;
 
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Modules\Common\Services\CommonServiceFactory;
-use Modules\Common\Entities\Cart;
-use Modules\Common\Entities\Order;
-use App\User;
-use Modules\Common\Entities\Complain;
 use Illuminate\Support\Facades\Auth;
+use Modules\Common\Entities\Cart;
+use Modules\Common\Entities\Complain;
+use Modules\Common\Entities\Order;
 
 class DashboardController extends CommonController
 {
@@ -51,7 +49,7 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $query = Order::whereDate('created_at', '>=', $date->toDateString());
 
             $user = Auth::user();
             if (!$user->hasRole('admin')) {
@@ -129,17 +127,27 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::whereDate('created_at', '>=', $date->toDateString())->where('domain', '=', 'taobao');
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+            $query->whereHas('CartItems', function ($q) {
+                $q->where('domain', '=', 'taobao');
+            });
             if (!$user->hasRole('admin')) {
                 $query->whereHas('User', function ($q) use ($userId) {
                     $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
                 });
             }
-            $linkCount = $query->count();
 
-            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $carts = $query->get();
+            $linkCount = 0;
+            foreach ($carts as $cart) {
+                $linkCount = $linkCount + sizeof($cart['cart_items']);
+            }
+
+            $query = Order::whereDate('created_at', '>=', $date->toDateString());
             $query->whereHas('Cart', function ($q) {
-                $q->where('domain', '=', 'taobao')->where('is_deleted', '=', 0);
+                $q->whereHas('CartItems', function ($q) {
+                    $q->where('domain', '=', 'taobao');
+                });
             });
             if (!$user->hasRole('admin')) {
                 $query->where('hander', '=', $userId);
@@ -165,17 +173,27 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::whereDate('created_at', '>=', $date->toDateString())->where('domain', '=', 'tmall');
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+            $query->whereHas('CartItems', function ($q) {
+                $q->where('domain', '=', 'tmall');
+            });
             if (!$user->hasRole('admin')) {
                 $query->whereHas('User', function ($q) use ($userId) {
                     $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
                 });
             }
-            $linkCount = $query->count();
 
-            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $carts = $query->get();
+            $linkCount = 0;
+            foreach ($carts as $cart) {
+                $linkCount = $linkCount + sizeof($cart['cart_items']);
+            }
+
+            $query = Order::whereDate('created_at', '>=', $date->toDateString());
             $query->whereHas('Cart', function ($q) {
-                $q->where('domain', '=', 'tmall')->where('is_deleted', '=', 0);
+                $q->whereHas('CartItems', function ($q) {
+                    $q->where('domain', '=', 'tmall');
+                });
             });
             if (!$user->hasRole('admin')) {
                 $query->where('hander', '=', $userId);
@@ -201,17 +219,27 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::whereDate('created_at', '>=', $date->toDateString())->where('domain', '=', '1688');
+            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+            $query->whereHas('CartItems', function ($q) {
+                $q->where('domain', '=', '1688');
+            });
             if (!$user->hasRole('admin')) {
                 $query->whereHas('User', function ($q) use ($userId) {
                     $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
                 });
             }
-            $linkCount = $query->count();
 
-            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $carts = $query->get();
+            $linkCount = 0;
+            foreach ($carts as $cart) {
+                $linkCount = $linkCount + sizeof($cart['cart_items']);
+            }
+
+            $query = Order::whereDate('created_at', '>=', $date->toDateString());
             $query->whereHas('Cart', function ($q) {
-                $q->where('domain', '=', '1688')->where('is_deleted', '=', 0);
+                $q->whereHas('CartItems', function ($q) {
+                    $q->where('domain', '=', '1688');
+                });
             });
             if (!$user->hasRole('admin')) {
                 $query->where('hander', '=', $userId);
@@ -237,7 +265,7 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Order::whereDate('created_at', '>=', $date->toDateString())->where('is_deleted', '=', 0);
+            $query = Order::whereDate('created_at', '>=', $date->toDateString());
             if (!$user->hasRole('admin')) {
                 $query->where('hander', '=', $userId);
             }
@@ -246,8 +274,7 @@ class DashboardController extends CommonController
             $data = [];
             if ($total > 0) {
                 $query = Order::selectRaw("status, count(*) value")
-                    ->whereDate('created_at', '>=', $date->toDateString())
-                    ->where('is_deleted', '=', 0);
+                    ->whereDate('created_at', '>=', $date->toDateString());
                 if (!$user->hasRole('admin')) {
                     $query->where('hander', '=', $userId);
                 }
@@ -293,8 +320,7 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
             $query = Order::selectRaw("DATE_FORMAT(created_at, '%d/%m/%Y') date, count(*) value")
-                ->whereDate('created_at', '>=', $date->toDateString())
-                ->where('is_deleted', '=', 0);
+                ->whereDate('created_at', '>=', $date->toDateString());
             if (!$user->hasRole('admin')) {
                 $query->where('hander', '=', $userId);
             }
