@@ -65,21 +65,22 @@ class HistoryController extends CommonController
             return $this->sendError('Error', $validator->errors()->all());
         }
 
+        // Order
+        $order = OrderServiceFactory::mOrderService()->findById($input['order_id']);
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+        }
+
+        $userId = $order['user_id'];
         if ($user['type'] == 1) {
-            return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
+            if($user['id'] != $userId){
+                return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
+            }
         }
 
         DB::beginTransaction();
         try {
-            // Order
-            $order = OrderServiceFactory::mOrderService()->findById($input['order_id']);
-            if (empty($order)) {
-                return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
-            }
-
-            $userId = $order['user_id'];
             $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $userId]);
-
             $create = OrderServiceFactory::mHistoryService()->create($input);
             if (!empty($create)) {
                 // Update order status
