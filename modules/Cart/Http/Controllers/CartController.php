@@ -70,15 +70,6 @@ class CartController extends CommonController
                     $ck_dv_tt = round(($phi_dat_hang * $ck_dv) / 100);
                     $phi_dat_hang_tt = $phi_dat_hang - $ck_dv_tt;
 
-                    // Bao hiem
-                    $phi_bao_hiem_cs = 0;
-                    if ($cart['bao_hiem'] == 1) {
-                        $settingBh = CommonServiceFactory::mSettingService()->findByKey('bh_price');
-                        $phi_bao_hiem_cs = (int)$settingBh['setting']['value'];
-                    }
-
-                    $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang) / 100;
-
                     // Kiem dem
                     $phi_kiem_dem_cs = 0;
                     if ($cart['kiem_hang'] == 1) {
@@ -103,8 +94,6 @@ class CartController extends CommonController
                     $cart['phi_dat_hang_cs'] = $phi_dat_hang_cs;
                     $cart['phi_dat_hang'] = $phi_dat_hang;
                     $cart['phi_dat_hang_tt'] = $phi_dat_hang_tt;
-                    $cart['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
-                    $cart['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
                     $cart['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
                     $cart['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
                     $cart['ti_gia'] = $rate;
