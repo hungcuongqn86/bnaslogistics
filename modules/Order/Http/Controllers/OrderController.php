@@ -280,15 +280,6 @@ class OrderController extends CommonController
                     $ck_dv_tt = round(($phi_dat_hang * $ck_dv) / 100);
                     $phi_dat_hang_tt = $phi_dat_hang - $ck_dv_tt;
 
-                    // Bao hiem
-                    $phi_bao_hiem_cs = 0;
-                    if ($order['bao_hiem'] == 1) {
-                        $settingBh = CommonServiceFactory::mSettingService()->findByKey('bh_price');
-                        $phi_bao_hiem_cs = (int)$settingBh['setting']['value'];
-                    }
-
-                    $phi_bao_hiem_tt = ($phi_bao_hiem_cs * $tien_hang) / 100;
-
                     // Kiem dem
                     $phi_kiem_dem_cs = 0;
                     if ($order['kiem_hang'] == 1) {
@@ -313,8 +304,6 @@ class OrderController extends CommonController
                     $order['phi_dat_hang_cs'] = $phi_dat_hang_cs;
                     $order['phi_dat_hang'] = $phi_dat_hang;
                     $order['phi_dat_hang_tt'] = $phi_dat_hang_tt;
-                    $order['phi_bao_hiem_cs'] = $phi_bao_hiem_cs;
-                    $order['phi_bao_hiem_tt'] = $phi_bao_hiem_tt;
                     $order['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
                     $order['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
                     $order['ti_gia'] = $rate;
@@ -456,7 +445,6 @@ class OrderController extends CommonController
 
         DB::beginTransaction();
         try {
-
             $dirty = $input['dirty'];
             $value = $input['value'];
             if ($orderItem[$dirty] == $value) {
@@ -471,9 +459,6 @@ class OrderController extends CommonController
                     break;
                 case 'price':
                     $colName = 'giá';
-                    break;
-                case 2:
-                    $colName = 'đơn hàng';
                     break;
             }
 
@@ -501,88 +486,70 @@ class OrderController extends CommonController
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        // dd(1);
         $input = $request->all();
-        $arrRules = [
-            'id' => 'required'
-        ];
-        $arrMessages = [
-            'id.required' => 'id.required'
-        ];
+        $user = $request->user();
 
-        $validator = Validator::make($input, $arrRules, $arrMessages);
-        if ($validator->fails()) {
-            return $this->sendError('Error', $validator->errors()->all());
+        if ($user['type'] == 1) {
+            return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
         }
 
-        $order = OrderServiceFactory::mOrderService()->findById($input['id']);
+        $order = OrderServiceFactory::mOrderService()->findById($id);
         if (empty($order)) {
             return $this->sendError('Error', ['Đơn không tồn tại!']);
         }
 
-        $user = $request->user();
-
-        if (!empty($input['phi_dich_vu'])) {
-            $input['phi_tam_tinh'] = round($input['tien_hang'] * $input['phi_dich_vu'] / 100, 2);
+        if ($order['status'] > 4) {
+            return $this->sendError('Error', ['Đơn đã mua, không thể thay đổi!']);
         }
 
+        DB::beginTransaction();
         try {
-            $update = OrderServiceFactory::mOrderService()->update($input);
-            if (!empty($update)) {
-                // History
-                $content = 'Trước khi sửa, phí dịch vụ: ' . $order['order']['phi_dich_vu'] . '%, Phí kiểm đếm: ' . $order['order']['phi_kiem_dem'] . 'vnđ';
-                $content .= ' -> Sau khi sửa, phí dịch vụ: ' . $update['phi_dich_vu'] . '%, Phí kiểm đếm: ' . $update['phi_kiem_dem'] . 'vnđ';
-                $history = [
-                    'user_id' => $user['id'],
-                    'order_id' => $update['id'],
-                    'type' => 8,
-                    'content' => $content
-                ];
-                OrderServiceFactory::mHistoryService()->create($history);
+            $dirty = $input['dirty'];
+            $value = $input['value'];
+            if ($order[$dirty] == $value) {
+                return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
             }
-            return $this->sendResponse($update, 'Successfully.');
-        } catch (\Exception $e) {
-            return $this->sendError('Error', $e->getMessage());
-        }
-    }
 
-    public function optionUpdate(Request $request)
-    {
-        $input = $request->all();
-        $arrRules = [
-            'id' => 'required'
-        ];
-        $arrMessages = [
-            'id.required' => 'id.required'
-        ];
+            $content = 'Mã ' . $id . ', Thay đổi ';
+            $colName = '';
+            switch ($dirty) {
+                case 'kiem_hang':
+                    $colName = 'kiểm hàng';
+                    break;
+                case 'dong_go':
+                    $colName = 'đóng gỗ';
+                    break;
+                case 'bao_hiem':
+                    $colName = 'chống sốc';
+                    break;
+                case 'chinh_ngach':
+                    $colName = 'chính ngạch';
+                    break;
+                case 'vat':
+                    $colName = 'VAT';
+                    break;
+                case 'phi_dat_hang_cs':
+                    $colName = 'Phí đặt hàng';
+                    break;
+                case 'phi_kiem_dem_cs':
+                    $colName = 'Phí kiểm đếm';
+                    break;
+            }
 
-        $validator = Validator::make($input, $arrRules, $arrMessages);
-        if ($validator->fails()) {
-            return $this->sendError('Error', $validator->errors()->all());
-        }
+            $content .= $colName . ': ' . $order[$dirty] . ' -> ' . $value;
 
-        $order = OrderServiceFactory::mOrderService()->findById($input['id']);
-        if (empty($order)) {
-            return $this->sendError('Error', ['Đơn không tồn tại!']);
-        }
-
-        $user = $request->user();
-        try {
-            $update = OrderServiceFactory::mOrderService()->update($input);
+            $order[$dirty] = $value;
+            $update = OrderServiceFactory::mOrderService()->update($order);
             if (!empty($update)) {
+                // Re update
+                self::reUpdate($id);
+
                 // History
-                $content = 'Tùy chọn:';
-                if (!empty($input['is_kiemdem']) && $input['is_kiemdem']) {
-                    $content .= ' Kiểm đếm,';
-                }
-                if (!empty($input['is_donggo']) && $input['is_donggo']) {
-                    $content .= ' Đóng gỗ,';
-                }
                 $history = [
                     'user_id' => $user['id'],
-                    'order_id' => $update['id'],
+                    'order_id' => $id,
                     'type' => 8,
                     'content' => $content
                 ];
