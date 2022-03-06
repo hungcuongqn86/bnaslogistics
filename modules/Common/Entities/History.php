@@ -42,16 +42,16 @@ class History extends BaseEntity
     public function types()
     {
         $res = [];
-        $res[] = ['id' => 1, 'name' => 'Kết đơn'];
-        $res[] = ['id' => 2, 'name' => 'Phân công thực hiện'];
-        $res[] = ['id' => 3, 'name' => 'Đặt cọc'];
-        $res[] = ['id' => 4, 'name' => 'Mua hàng'];
-        $res[] = ['id' => 5, 'name' => 'Thanh lý'];
-        $res[] = ['id' => 6, 'name' => 'Hủy'];
-        $res[] = ['id' => 7, 'name' => 'Hoàn cọc'];
-        $res[] = ['id' => 8, 'name' => 'Sửa đơn đặt hàng'];
-        $res[] = ['id' => 9, 'name' => 'Xuất kho thanh lý'];
-        $res[] = ['id' => 10, 'name' => 'Xác nhận đơn ký gửi'];
+        $res[] = ['id' => 1, 'name' => 'Kết đơn', 'sys' => 1];
+        $res[] = ['id' => 2, 'name' => 'Phân công thực hiện', 'sys' => 1];
+        $res[] = ['id' => 3, 'name' => 'Đặt cọc', 'sys' => 1];
+        $res[] = ['id' => 4, 'name' => 'Mua hàng', 'sys' => 0];
+        $res[] = ['id' => 5, 'name' => 'Thanh lý', 'sys' => 0];
+        $res[] = ['id' => 6, 'name' => 'Hủy', 'sys' => 0];
+        $res[] = ['id' => 7, 'name' => 'Hoàn cọc', 'sys' => 0];
+        $res[] = ['id' => 8, 'name' => 'Sửa đơn đặt hàng', 'sys' => 1];
+        $res[] = ['id' => 9, 'name' => 'Xuất kho thanh lý', 'sys' => 1];
+        $res[] = ['id' => 10, 'name' => 'Xác nhận đơn ký gửi', 'sys' => 1];
         return $res;
     }
 }
