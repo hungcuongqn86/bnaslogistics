@@ -321,7 +321,7 @@ class PassportController extends CommonController
         if ($user->hasPermissionTo('warehouse')) {
             // Kho
             $newobj = new \stdClass();
-            $newobj->name = 'Kho hàng Việt Nam';
+            $newobj->name = 'Kho Việt';
             $newobj->url = '/warehouse';
             $newobj->icon = 'iconsax isax-box';
             $children = [];
