@@ -241,22 +241,11 @@ class OrderController extends CommonController
             if ($order) {
                 $orderItems = $order['order_items'];
                 if (sizeof($orderItems) > 0) {
-                    // Lay ti gia tu setting
-                    $settingRate = CommonServiceFactory::mSettingService()->findByKey('rate');
-                    $rate = (int)$settingRate['setting']['value'];
+                    // Lay ti gia
+                    $rate = (int)$order['ti_gia'];
 
                     // Lay vip
-                    $ck_dv = 0;
-                    $vip = CommonServiceFactory::mVipService()->findById($order['user']['vip']);
-                    if (!empty($vip)) {
-                        $ck_dv = $vip['ck_dv'];
-                    }
-
-                    // Lay bang gia dv
-                    $serviceFee = CommonServiceFactory::mServiceFeeService()->getAll();
-
-                    // Lay bang gia kiem dem
-                    $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
+                    $ck_dv = $order['ck_dv'];
 
                     $tien_hang = 0;
                     $count_product = 0;
@@ -268,19 +257,14 @@ class OrderController extends CommonController
                     }
 
                     // Tinh phi dich vu
-                    $phi_dat_hang_cs = 0;
-                    foreach ($serviceFee as $feeItem) {
-                        if ($feeItem->min_tot_tran * 1000000 <= $tien_hang) {
-                            $phi_dat_hang_cs = $feeItem->val;
-                            break;
-                        }
-                    }
-
+                    $phi_dat_hang_cs = $order['phi_dat_hang_cs'];
                     $phi_dat_hang = round(($phi_dat_hang_cs * $tien_hang) / 100);
                     $ck_dv_tt = round(($phi_dat_hang * $ck_dv) / 100);
                     $phi_dat_hang_tt = $phi_dat_hang - $ck_dv_tt;
 
                     // Kiem dem
+                    // Lay bang gia kiem dem
+                    $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
                     $phi_kiem_dem_cs = 0;
                     if ($order['kiem_hang'] == 1) {
                         foreach ($inspectionFee as $feeItem) {
@@ -298,8 +282,6 @@ class OrderController extends CommonController
 
                     $order['count_product'] = $count_product;
                     $order['tien_hang'] = $tien_hang;
-                    $order['vip_id'] = $vip['id'];
-                    $order['ck_dv'] = $ck_dv;
                     $order['ck_dv_tt'] = $ck_dv_tt;
                     $order['phi_dat_hang_cs'] = $phi_dat_hang_cs;
                     $order['phi_dat_hang'] = $phi_dat_hang;
