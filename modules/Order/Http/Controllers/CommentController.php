@@ -45,7 +45,7 @@ class CommentController extends CommonController
             }
             $user = $request->user();
             $order = OrderServiceFactory::mOrderService()->findById($input['orderId']);
-            if ($order && ($user['type'] == 1) && $order['order']['user_id'] != $user['id']) {
+            if ($order && ($user['type'] == 1) && $order['user_id'] != $user['id']) {
                 return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
             }
 
@@ -77,7 +77,7 @@ class CommentController extends CommonController
             return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
         }
 
-        if (($user['type'] == 1) && $order['order']['user_id'] != $user['id']) {
+        if (($user['type'] == 1) && $order['user_id'] != $user['id']) {
             return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
         }
 

@@ -182,7 +182,7 @@ class OrderController extends CommonController
         try {
             $user = $request->user();
             $order = OrderServiceFactory::mOrderService()->findById($id);
-            if ($order && ($user['type'] == 1) && $order['order']['user_id'] != $user['id']) {
+            if ($order && ($user['type'] == 1) && $order['user_id'] != $user['id']) {
                 return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
             }
             return $this->sendResponse($order, 'Successfully.');
