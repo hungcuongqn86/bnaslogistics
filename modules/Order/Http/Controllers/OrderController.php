@@ -555,8 +555,10 @@ class OrderController extends CommonController
                 ];
                 OrderServiceFactory::mHistoryService()->create($history);
             }
+            DB::commit();
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
