@@ -138,6 +138,8 @@ class CartController extends CommonController
             $cart['kiem_hang'] = (int)$input['kiem_hang'];
             $cart['dong_go'] = (int)$input['dong_go'];
             $cart['bao_hiem'] = (int)$input['bao_hiem'];
+            $cart['chinh_ngach'] = (int)$input['chinh_ngach'];
+            $cart['vat'] = (int)$input['vat'];
 
             $update = CartServiceFactory::mCartService()->update($cart);
             if ($update) {
