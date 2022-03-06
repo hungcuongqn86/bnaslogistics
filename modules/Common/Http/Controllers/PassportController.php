@@ -241,11 +241,11 @@ class PassportController extends CommonController
         }
 
         if ($user->hasPermissionTo('mypackage')) {
-            $newobj = new \stdClass();
+            /*$newobj = new \stdClass();
             $newobj->name = 'Kiện hàng';
             $newobj->url = '/mypackage';
             $newobj->icon = 'iconsax isax-d-cube-scan';
-            $nav[] = $newobj;
+            $nav[] = $newobj;*/
         }
 
         if ($user->hasPermissionTo('wallet')) {
