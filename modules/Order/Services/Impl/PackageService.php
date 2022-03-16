@@ -3,11 +3,10 @@
 namespace Modules\Order\Services\Impl;
 
 use App\User;
-use Modules\Common\Entities\Order;
+use Illuminate\Support\Facades\DB;
 use Modules\Common\Entities\Package;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Order\Services\Intf\IPackageService;
-use Illuminate\Support\Facades\DB;
 
 class PackageService extends CommonService implements IPackageService
 {
@@ -128,7 +127,9 @@ class PackageService extends CommonService implements IPackageService
 
     public function findById($id)
     {
-        $rResult = Package::with(['Order'])->where('id', '=', $id)->first();
+        $rResult = Package::with(array('Order' => function ($q) {
+            $q->with(['User']);
+        }))->where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return $rResult->toArray();
         } else {
