@@ -128,7 +128,7 @@ class PackageService extends CommonService implements IPackageService
 
     public function findById($id)
     {
-        $rResult = Package::where('id', '=', $id)->first();
+        $rResult = Package::with(['Order'])->where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return $rResult->toArray();
         } else {
