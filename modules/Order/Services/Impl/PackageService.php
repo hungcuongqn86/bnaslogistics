@@ -130,7 +130,7 @@ class PackageService extends CommonService implements IPackageService
     {
         $rResult = Package::where('id', '=', $id)->first();
         if (!empty($rResult)) {
-            return array('package' => $rResult->toArray());
+            return $rResult->toArray();
         } else {
             return null;
         }

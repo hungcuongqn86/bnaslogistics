@@ -111,7 +111,7 @@ class PackageController extends CommonController
             $orderInput = array();
 
             if (!empty($input['contract_code'])) {
-                if ($package['package']['status'] < 2) {
+                if ($package['status'] < 2) {
                     $input['status'] = 2;
                 }
                 if ($order['order']['status'] < 4) {
@@ -127,7 +127,7 @@ class PackageController extends CommonController
             }
 
             if (!empty($input['package_code'])) {
-                if ($package['package']['status'] < 3) {
+                if ($package['status'] < 3) {
                     $input['status'] = 3;
                 }
                 if ($order['order']['status'] < 4) {

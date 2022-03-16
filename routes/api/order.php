@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             });
             Route::group(['prefix' => 'package'], function () {
                 Route::get('/search', 'PackageController@search');
+                Route::get('/detail/{id}', 'PackageController@detail');
                 Route::get('/status', 'PackageController@status');
                 Route::post('/create', 'PackageController@create');
                 Route::post('/update', 'PackageController@update');
