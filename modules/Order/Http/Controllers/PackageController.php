@@ -114,12 +114,12 @@ class PackageController extends CommonController
                 if ($package['status'] < 2) {
                     $input['status'] = 2;
                 }
-                if ($order['order']['status'] < 4) {
-                    $orderInput['id'] = $order['order']['id'];
+                if ($order['status'] < 4) {
+                    $orderInput['id'] = $order['id'];
                     $orderInput['status'] = 4;
                     $history = [
                         'user_id' => $user['id'],
-                        'order_id' => $order['order']['id'],
+                        'order_id' => $order['id'],
                         'type' => 4,
                         'content' => 'Mã hợp đồng ' . $input['contract_code']
                     ];
@@ -130,8 +130,8 @@ class PackageController extends CommonController
                 if ($package['status'] < 3) {
                     $input['status'] = 3;
                 }
-                if ($order['order']['status'] < 4) {
-                    $orderInput['id'] = $order['order']['id'];
+                if ($order['status'] < 4) {
+                    $orderInput['id'] = $order['id'];
                     $orderInput['status'] = 4;
                 }
             }
@@ -143,25 +143,16 @@ class PackageController extends CommonController
                 if (!empty($input['gia_can'])) {
                     $gia_can_nang = $input['gia_can'];
                 } else {
-                    if (!empty($order['order']['user']['weight_price'])) {
-                        $gia_can_nang = $order['order']['user']['weight_price'];
+                    if (!empty($order['user']['weight_price'])) {
+                        $gia_can_nang = $order['user']['weight_price'];
                     } else {
                         $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
                         $gia_can_nang = (int)$setting['setting']['value'];
-                        /*if ($weight_qd < 10) {
-                            $gia_can_nang = 27000;
-                        }
-                        if (($weight_qd >= 10) && ($weight_qd <= 30)) {
-                            $gia_can_nang = 23000;
-                        }
-                        if ($weight_qd > 30) {
-                            $gia_can_nang = 19000;
-                        }*/
                     }
                 }
                 $input['gia_can'] = $gia_can_nang;
 
-                $vip = $order['order']['vip'];
+                $vip = $order['vip'];
                 $vipCn = self::arrVipData[$vip];
                 $tiencan = $gia_can_nang * $weight_qd;
                 $chietkhau = round($tiencan * $vipCn / 100, 2);
@@ -170,28 +161,23 @@ class PackageController extends CommonController
             }
 
             // Tien thanh ly
-
-            $arrPk = $order['order']['package'];
+            $arrPk = $order['package'];
             $tienthanhly = 0;
             if ($arrPk[0]['id'] == $input['id']) {
-                $tongTien = $order['order']['tong'];
-                if (!empty($order['order']['phi_kiem_dem']) && $order['order']['phi_kiem_dem'] > 0) {
-                    $tongTien = $tongTien + $order['order']['phi_kiem_dem'];
+                $tongTien = $order['tong'];
+                if (!empty($order['phi_kiem_dem']) && $order['phi_kiem_dem'] > 0) {
+                    $tongTien = $tongTien + $order['phi_kiem_dem'];
                 }
 
-                $tigia = $order['order']['rate'];
+                $tigia = $order['rate'];
                 foreach ($arrPk as $pk) {
                     if ($pk['ship_khach'] && $pk['ship_khach'] > 0) {
                         $ndt = $pk['ship_khach'];
                         $vnd = $ndt * $tigia;
                         $tongTien = $tongTien + $vnd;
                     }
-
-                    /*if ($pk['phi_van_phat_sinh'] && $pk['phi_van_phat_sinh'] > 0) {
-                        $tongTien = $tongTien + $pk['phi_van_phat_sinh'];
-                    }*/
                 }
-                $thanh_toan = empty($order['order']['thanh_toan']) ? 0 : $order['order']['thanh_toan'];
+                $thanh_toan = empty($order['thanh_toan']) ? 0 : $order['thanh_toan'];
                 $tienthanhly = $tongTien - $thanh_toan;
             }
             $input['tien_thanh_ly'] = $tienthanhly;
@@ -200,11 +186,11 @@ class PackageController extends CommonController
             if (!empty($update)) {
                 if ($input['status'] == 8) {
                     // Check huy
-                    $check = OrderServiceFactory::mOrderService()->checkCancel($order['order']['id']);
+                    $check = OrderServiceFactory::mOrderService()->checkCancel($order['id']);
                     if ($check) {
-                        $orderInput['id'] = $order['order']['id'];
+                        $orderInput['id'] = $order['id'];
                         $orderInput['status'] = 6;
-                        $tiencoc = $order['order']['thanh_toan'];
+                        $tiencoc = $order['thanh_toan'];
                         if (!empty($tiencoc) && $tiencoc > 0) {
                             // Hoan tien
                             $orderInput['datcoc_content'] = "Hủy mã, hoàn tiền cọc.";
@@ -214,14 +200,14 @@ class PackageController extends CommonController
                             $orderInput['phi_tam_tinh'] = 0;
                             $orderInput['tong'] = 0;
 
-                            $userId = $order['order']['user_id'];
+                            $userId = $order['user_id'];
                             $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $userId]);
 
                             // Transaction
                             $transaction = [
                                 'user_id' => $userId,
                                 'type' => 5,
-                                'code' => $order['order']['id'] . '.P' . $update['id'],
+                                'code' => $order['id'] . '.P' . $update['id'],
                                 'value' => $tiencoc,
                                 'debt' => $debt + $tiencoc,
                                 'content' => "Hủy mã, hoàn tiền cọc."
@@ -229,12 +215,12 @@ class PackageController extends CommonController
                             CommonServiceFactory::mTransactionService()->create($transaction);
 
                             // update card
-                            CartServiceFactory::mCartService()->cancelOrder($order['order']['id']);
+                            CartServiceFactory::mCartService()->cancelOrder($order['id']);
                         }
 
                         $history = [
                             'user_id' => $user['id'],
-                            'order_id' => $order['order']['id'],
+                            'order_id' => $order['id'],
                             'type' => 6,
                             'content' => "Hủy mã, hoàn tiền cọc."
                         ];
