@@ -608,13 +608,21 @@ class OrderController extends CommonController
             return $this->sendError('Error', $validator->errors()->all());
         }
 
+        $user = $request->user();
         $order = OrderServiceFactory::mOrderService()->findById($input['id']);
-        if (!empty($order) && ($order['order']['status'] > 2)) {
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn không tồn tại!']);
+        }
+
+        if ($order['user_id'] != $user['id']) {
+            return $this->sendError('Error', ['Không có quyền!'], 403);
+        }
+
+        if ($order['status'] > 2) {
             return $this->sendError('Error', ['Đơn đã đặt cọc!']);
         }
 
         try {
-            $user = $request->user();
             // Transaction
             $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $user['id']]);
             if ($debt < $input['dc_value']) {
@@ -623,7 +631,7 @@ class OrderController extends CommonController
 
             $input['status'] = 3;
             $input['datcoc_content'] = $input['content'];
-            $input['thanh_toan'] = $input['dc_value'];
+            $input['dat_coc'] = $input['dc_value'];
             $update = OrderServiceFactory::mOrderService()->update($input);
             if (!empty($update)) {
                 // History
