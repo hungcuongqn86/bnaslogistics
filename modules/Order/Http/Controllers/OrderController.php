@@ -635,14 +635,20 @@ class OrderController extends CommonController
         DB::beginTransaction();
         try {
             // Transaction
+            $datcoc = $order['tien_hang'] + $order['phi_kiem_dem_tt'] + $order['phi_dat_hang_tt'];
+            $datcoc = ceil($datcoc * $vip['deposit'] /100);
+            if ($datcoc != $input['dc_value']) {
+                return $this->sendError('Error', ['Lỗi dữ liệu, hãy thực hiện lại!']);
+            }
+
             $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $user['id']]);
-            if ($debt < $input['dc_value']) {
+            if ($debt < $datcoc) {
                 return $this->sendError('Dư nợ không đủ để thực hiện đặt cọc!');
             }
 
             $input['status'] = 3;
             $input['datcoc_content'] = $input['content'];
-            $input['dat_coc'] = $input['dc_value'];
+            $input['dat_coc'] = $datcoc;
             $update = OrderServiceFactory::mOrderService()->update($input);
             if (!empty($update)) {
                 // History
