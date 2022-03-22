@@ -614,6 +614,16 @@ class OrderController extends CommonController
             return $this->sendError('Error', ['Đơn không tồn tại!']);
         }
 
+        // Lay vip
+        $vip = CommonServiceFactory::mVipService()->findById($user['vip']);
+        if (empty($vip)) {
+            return $this->sendError('Error', ['Lỗi dữ liệu, hãy thực hiện lại!']);
+        }
+
+        if ($vip['deposit'] != $input['dc_percent_value']) {
+            return $this->sendError('Error', ['Lỗi dữ liệu, hãy thực hiện lại!']);
+        }
+
         if ($order['user_id'] != $user['id']) {
             return $this->sendError('Error', ['Không có quyền!'], 403);
         }
@@ -622,6 +632,7 @@ class OrderController extends CommonController
             return $this->sendError('Error', ['Đơn đã đặt cọc!']);
         }
 
+        DB::beginTransaction();
         try {
             // Transaction
             $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $user['id']]);
@@ -654,8 +665,10 @@ class OrderController extends CommonController
                 ];
                 CommonServiceFactory::mTransactionService()->create($transaction);
             }
+            DB::commit();
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
