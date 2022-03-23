@@ -25,6 +25,7 @@ class OrderItem extends BaseEntity
         'method',
         'name',
         'note',
+        'nv_note',
         'price',
         'price_arr',
         'pro_link',

@@ -425,18 +425,19 @@ class OrderController extends CommonController
             return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
         }
 
-        if ($order['status'] > 3) {
+        $dirty = $input['dirty'];
+        $value = $input['value'];
+
+        if (($order['status'] > 3) && ($dirty != "nv_note")) {
             return $this->sendError('Error', ['Đơn đã mua, không thể thay đổi!']);
+        }
+
+        if ($orderItem[$dirty] == $value) {
+            return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
         }
 
         DB::beginTransaction();
         try {
-            $dirty = $input['dirty'];
-            $value = $input['value'];
-            if ($orderItem[$dirty] == $value) {
-                return $this->sendError('Error', ['Thông tin đơn hàng không thay đổi!']);
-            }
-
             $content = 'Mã ' . $id . ', Thay đổi ';
             $colName = '';
             switch ($dirty) {
@@ -445,6 +446,9 @@ class OrderController extends CommonController
                     break;
                 case 'price':
                     $colName = 'giá';
+                    break;
+                case 'nv_note':
+                    $colName = 'Ghi chú';
                     break;
             }
 
