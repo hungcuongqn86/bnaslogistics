@@ -2,11 +2,12 @@
 
 namespace Modules\Common\Entities;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class Package extends BaseEntity
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $table = 'package';
     protected $primaryKey = 'id';
@@ -29,7 +30,6 @@ class Package extends BaseEntity
         'phi_van_phat_sinh',
         'vip_cn',
         'bill_id',
-        'is_deleted',
         'created_at',
         'updated_at'
     ];
