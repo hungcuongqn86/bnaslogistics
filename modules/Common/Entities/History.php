@@ -17,6 +17,7 @@ class History extends BaseEntity
         'order_id',
         'type',
         'content',
+        'hide',
         'is_deleted',
         'created_at',
         'updated_at'
