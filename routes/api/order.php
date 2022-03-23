@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/detail/{id}', 'PackageController@detail');
                 Route::get('/status', 'PackageController@status');
                 Route::post('/create', 'PackageController@create');
-                Route::post('/update', 'PackageController@update');
+                Route::post('/update/{id}', 'PackageController@update');
             });
             Route::group(['prefix' => 'warehouse'], function () {
                 Route::get('/wait', 'WarehouseController@wait');

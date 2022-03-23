@@ -3,6 +3,7 @@
 namespace Modules\Order\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Modules\Order\Services\OrderServiceFactory;
 use Modules\Cart\Services\CartServiceFactory;
@@ -78,87 +79,131 @@ class PackageController extends CommonController
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $input = $request->all();
         try {
-            $arrRules = [
-                'order_id' => 'required',
-                'package_code' => 'nullable|unique:package,package_code,' . $input['id']
-            ];
-            $arrMessages = [
-                'order_id.required' => 'order_id.required',
-                'package_code.unique' => 'Mã vận đơn ' . $input['package_code'] . ' đã tồn tại!'
-            ];
-
-            $validator = Validator::make($input, $arrRules, $arrMessages);
-            if ($validator->fails()) {
-                return $this->sendError('Error', $validator->errors()->all());
-            }
-
-            $package = OrderServiceFactory::mPackageService()->findById($input['id']);
+            $package = OrderServiceFactory::mPackageService()->findById($id);
             if (empty($package)) {
                 return $this->sendError('Error', ['Kiện hàng không tồn tại!']);
             }
 
-            $order = OrderServiceFactory::mOrderService()->findById($input['order_id']);
+            $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
             if (empty($order)) {
                 return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
             }
-            $user = $request->user();
 
-            $history = array();
+            $user = $request->user();
             $orderInput = array();
 
-            if (!empty($input['contract_code'])) {
-                if ($package['status'] < 2) {
-                    $input['status'] = 2;
+            DB::beginTransaction();
+            try {
+                $dirty = $input['dirty'];
+                $value = $input['value'];
+
+                $content = 'Đơn ' . $package['order_id'] . ', kiện ' . $id . ', Thay đổi ';
+                $colName = '';
+                switch ($dirty) {
+                    case 'ship_khach':
+                        $colName = 'Ship nội địa';
+                        $value = floatval($value);
+                        break;
+                    case 'ship_tt':
+                        $colName = 'Ship thực tế';
+                        $value = floatval($value);
+                        break;
+                    case 'thanh_toan':
+                        $colName = 'Thanh toán shop';
+                        $value = floatval($value);
+                        break;
+                    case 'contract_code':
+                        $colName = 'Mã hợp đồng';
+                        if ($package['status'] < 2) {
+                            $package['status'] = 2;
+                        }
+                        if ($order['status'] < 4) {
+                            $orderInput['id'] = $order['id'];
+                            $orderInput['status'] = 4;
+                        }
+                        break;
+                    case 'package_code':
+                        $colName = 'Mã vận đơn';
+                        if ($package['status'] < 3) {
+                            $package['status'] = 3;
+                        }
+                        if ($order['status'] < 4) {
+                            $orderInput['id'] = $order['id'];
+                            $orderInput['status'] = 4;
+                        }
+                        break;
+                    case 'status':
+                        $colName = 'Trạng thái';
+                        $value = (int)$value;
+                        break;
+                    case 'phi_van_phat_sinh':
+                        $colName = 'Phí vận phát sinh';
+                        $value = (int)$value;
+                        break;
+                    case 'note_tl':
+                        $colName = 'Ghi chú thanh lý';
+                        break;
+                    case 'weight_qd':
+                        $colName = 'Cân nặng qui đổi';
+                        $value = floatval($value);
+                        $weight_qd = $value;
+                        $gia_can_nang = 0;
+
+                        if (!empty($input['gia_can'])) {
+                            $gia_can_nang = $input['gia_can'];
+                        } else {
+                            if (!empty($order['user']['weight_price'])) {
+                                $gia_can_nang = $order['user']['weight_price'];
+                            } else {
+                                $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
+                                $gia_can_nang = (int)$setting['setting']['value'];
+                            }
+                        }
+                        $input['gia_can'] = $gia_can_nang;
+
+                        $vip = $order['vip'];
+                        $vipCn = self::arrVipData[$vip];
+                        $tiencan = $gia_can_nang * $weight_qd;
+                        $chietkhau = round($tiencan * $vipCn / 100, 2);
+                        $input['tien_can'] = $tiencan - $chietkhau;
+                        $input['vip_cn'] = $vipCn;
+                        break;
                 }
-                if ($order['status'] < 4) {
-                    $orderInput['id'] = $order['id'];
-                    $orderInput['status'] = 4;
+
+                if ($package[$dirty] == $value) {
+                    return $this->sendError('Error', ['Thông tin kiện hàng không thay đổi!']);
+                }
+
+                $content .= $colName . ': ' . $package[$dirty] . ' -> ' . $value;
+
+                $package[$dirty] = $value;
+                $update = OrderServiceFactory::mPackageService()->update($package);
+                if (!empty($update)) {
+                    if (!empty($orderInput['id'])) {
+                        OrderServiceFactory::mOrderService()->update($orderInput);
+                    }
+
+                    // Add history
                     $history = [
                         'user_id' => $user['id'],
                         'order_id' => $order['id'],
-                        'type' => 4,
-                        'content' => 'Mã hợp đồng ' . $input['contract_code']
+                        'type' => 11,
+                        'content' => $content
                     ];
+                    OrderServiceFactory::mHistoryService()->create($history);
                 }
+                DB::commit();
+                return $this->sendResponse($update, 'Successfully.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->sendError('Error', $e->getMessage());
             }
 
-            if (!empty($input['package_code'])) {
-                if ($package['status'] < 3) {
-                    $input['status'] = 3;
-                }
-                if ($order['status'] < 4) {
-                    $orderInput['id'] = $order['id'];
-                    $orderInput['status'] = 4;
-                }
-            }
 
-            // Tien can nang
-            if (!empty($input['weight_qd'])) {
-                $weight_qd = $input['weight_qd'];
-                $gia_can_nang = 0;
-                if (!empty($input['gia_can'])) {
-                    $gia_can_nang = $input['gia_can'];
-                } else {
-                    if (!empty($order['user']['weight_price'])) {
-                        $gia_can_nang = $order['user']['weight_price'];
-                    } else {
-                        $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
-                        $gia_can_nang = (int)$setting['setting']['value'];
-                    }
-                }
-                $input['gia_can'] = $gia_can_nang;
-
-                $vip = $order['vip'];
-                $vipCn = self::arrVipData[$vip];
-                $tiencan = $gia_can_nang * $weight_qd;
-                $chietkhau = round($tiencan * $vipCn / 100, 2);
-                $input['tien_can'] = $tiencan - $chietkhau;
-                $input['vip_cn'] = $vipCn;
-            }
 
             // Tien thanh ly
             $arrPk = $order['package'];
@@ -182,59 +227,7 @@ class PackageController extends CommonController
             }
             $input['tien_thanh_ly'] = $tienthanhly;
 
-            $update = OrderServiceFactory::mPackageService()->update($input);
-            if (!empty($update)) {
-                if ($input['status'] == 8) {
-                    // Check huy
-                    $check = OrderServiceFactory::mOrderService()->checkCancel($order['id']);
-                    if ($check) {
-                        $orderInput['id'] = $order['id'];
-                        $orderInput['status'] = 6;
-                        $tiencoc = $order['thanh_toan'];
-                        if (!empty($tiencoc) && $tiencoc > 0) {
-                            // Hoan tien
-                            $orderInput['datcoc_content'] = "Hủy mã, hoàn tiền cọc.";
-                            $orderInput['thanh_toan'] = 0;
-                            $orderInput['count_product'] = 0;
-                            $orderInput['tien_hang'] = 0;
-                            $orderInput['phi_tam_tinh'] = 0;
-                            $orderInput['tong'] = 0;
 
-                            $userId = $order['user_id'];
-                            $debt = CommonServiceFactory::mTransactionService()->debt(['user_id' => $userId]);
-
-                            // Transaction
-                            $transaction = [
-                                'user_id' => $userId,
-                                'type' => 5,
-                                'code' => $order['id'] . '.P' . $update['id'],
-                                'value' => $tiencoc,
-                                'debt' => $debt + $tiencoc,
-                                'content' => "Hủy mã, hoàn tiền cọc."
-                            ];
-                            CommonServiceFactory::mTransactionService()->create($transaction);
-
-                            // update card
-                            CartServiceFactory::mCartService()->cancelOrder($order['id']);
-                        }
-
-                        $history = [
-                            'user_id' => $user['id'],
-                            'order_id' => $order['id'],
-                            'type' => 6,
-                            'content' => "Hủy mã, hoàn tiền cọc."
-                        ];
-                    }
-                }
-
-                if (!empty($orderInput['id'])) {
-                    OrderServiceFactory::mOrderService()->update($orderInput);
-                }
-
-                if (!empty($history['user_id'])) {
-                    OrderServiceFactory::mHistoryService()->create($history);
-                }
-            }
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
