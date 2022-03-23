@@ -31,6 +31,12 @@ class Package extends BaseEntity
         'ck_vc_tt',
         'tien_can_tt',
         'phi_van_phat_sinh',
+        'dg_1_price',
+        'dg_2_price',
+        'tien_dong_go',
+        'chong_soc_1_price',
+        'chong_soc_2_price',
+        'tien_chong_soc',
         'bill_id',
         'created_at',
         'updated_at'
