@@ -190,6 +190,43 @@ class PackageController extends CommonController
                         }
                     }
                     break;
+                case 'size':
+                    $colName = 'Kích thước';
+                    $value = floatval($value);
+                    if ($package['cal_option'] == 1) {
+                        if ($value > 0) {
+                            // Lay vip
+                            $ck_vc = $order['ck_vc'];
+                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(2);
+                            $gia_can = 0;
+                            foreach ($transportFees as $feeItem) {
+                                if ($feeItem->min_r <= $value) {
+                                    $gia_can = $feeItem->val;
+                                    break;
+                                }
+                            }
+
+                            $tiencan = $gia_can * $value;
+                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
+                            $tiencan_tt = $tiencan - $chietkhau;
+
+                            if ($package['status'] < 4) {
+                                $package['status'] = 4;
+                            }
+
+                            $package['gia_can'] = $gia_can;
+                            $package['tien_can'] = $tiencan;
+                            $package['ck_vc_tt'] = $chietkhau;
+                            $package['tien_can_tt'] = $tiencan_tt;
+                        } else {
+                            $package['weight_qd'] = 0;
+                            $package['gia_can'] = 0;
+                            $package['tien_can'] = 0;
+                            $package['ck_vc_tt'] = 0;
+                            $package['tien_can_tt'] = 0;
+                        }
+                    }
+                    break;
                 case 'cal_option':
                     $colName = 'Áp giá theo';
                     if ($value == 0) {
