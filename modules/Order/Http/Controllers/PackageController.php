@@ -151,58 +151,40 @@ class PackageController extends CommonController
                 case 'weight':
                     $colName = 'Cân nặng';
                     $value = floatval($value);
-                    $weight_qd = $value;
-                    if ($weight_qd < 0.5) {
-                        $weight_qd = 0.5;
-                    }
-
-                    // Lay vip
-                    $ck_dv = $order['ck_dv'];
-
-                    $gia_can_nang = 0;
-                    if (!empty($input['gia_can'])) {
-                        $gia_can_nang = $input['gia_can'];
-                    } else {
-                        if (!empty($order['user']['weight_price'])) {
-                            $gia_can_nang = $order['user']['weight_price'];
-                        } else {
-                            $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
-                            $gia_can_nang = (int)$setting['setting']['value'];
+                    if ($value > 0) {
+                        $weight_qd = $value;
+                        if ($weight_qd < 0.5) {
+                            $weight_qd = 0.5;
                         }
-                    }
-                    $input['gia_can'] = $gia_can_nang;
 
-                    $vip = $order['vip'];
-                    $vipCn = self::arrVipData[$vip];
-                    $tiencan = $gia_can_nang * $weight_qd;
-                    $chietkhau = round($tiencan * $vipCn / 100, 2);
-                    $input['tien_can'] = $tiencan - $chietkhau;
-                    $input['vip_cn'] = $vipCn;
-                    break;
-                case 'weight_qd':
-                    $colName = 'Cân nặng qui đổi';
-                    $value = floatval($value);
-                    $weight_qd = $value;
-                    $gia_can_nang = 0;
-
-                    if (!empty($input['gia_can'])) {
-                        $gia_can_nang = $input['gia_can'];
-                    } else {
-                        if (!empty($order['user']['weight_price'])) {
-                            $gia_can_nang = $order['user']['weight_price'];
+                        // Lay vip
+                        $ck_vc = $order['ck_vc'];
+                        $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
+                        $gia_can = 0;
+                        if ($package['gia_can'] == 0) {
+                            foreach ($transportFees as $feeItem) {
+                                if ($feeItem->min_r <= $weight_qd) {
+                                    $gia_can = $feeItem->val;
+                                    break;
+                                }
+                            }
                         } else {
-                            $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
-                            $gia_can_nang = (int)$setting['setting']['value'];
+                            $gia_can = $package['gia_can'];
                         }
-                    }
-                    $input['gia_can'] = $gia_can_nang;
 
-                    $vip = $order['vip'];
-                    $vipCn = self::arrVipData[$vip];
-                    $tiencan = $gia_can_nang * $weight_qd;
-                    $chietkhau = round($tiencan * $vipCn / 100, 2);
-                    $input['tien_can'] = $tiencan - $chietkhau;
-                    $input['vip_cn'] = $vipCn;
+                        $tiencan = $gia_can * $weight_qd;
+                        $chietkhau = round($tiencan * $ck_vc / 100, 2);
+                        $tiencan_tt = $tiencan - $chietkhau;
+
+                        if ($package['status'] < 4) {
+                            $package['status'] = 4;
+                        }
+                        $package['weight_qd'] = $weight_qd;
+                        $package['gia_can'] = $gia_can;
+                        $package['tien_can'] = $tiencan;
+                        $package['ck_vc_tt'] = $chietkhau;
+                        $package['tien_can_tt'] = $tiencan_tt;
+                    }
                     break;
             }
 

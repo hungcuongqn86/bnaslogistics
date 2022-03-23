@@ -24,12 +24,13 @@ class Package extends BaseEntity
         'note_tl',
         'weight',
         'weight_qd',
+        'size',
+        'cal_option',
         'gia_can',
         'tien_can',
-        'cal_option',
-        'tien_thanh_ly',
+        'ck_vc_tt',
+        'tien_can_tt',
         'phi_van_phat_sinh',
-        'vip_cn',
         'bill_id',
         'created_at',
         'updated_at'
@@ -43,11 +44,11 @@ class Package extends BaseEntity
     public function status()
     {
         $res = [];
-        $res[] = ['id' => 1, 'name' => 'Chờ mua hàng'];
-        $res[] = ['id' => 2, 'name' => 'Đã mua hàng'];
-        $res[] = ['id' => 3, 'name' => 'Shop đang giao hàng'];
-        $res[] = ['id' => 4, 'name' => 'Kho Trung Quốc nhận hàng'];
-        $res[] = ['id' => 5, 'name' => 'Đang trên đường về VN'];
+        $res[] = ['id' => 1, 'name' => 'Chờ mua'];
+        $res[] = ['id' => 2, 'name' => 'Đã mua'];
+        $res[] = ['id' => 3, 'name' => 'Shop đang giao'];
+        $res[] = ['id' => 4, 'name' => 'Kho TQ nhận'];
+        $res[] = ['id' => 5, 'name' => 'Đang về VN'];
         $res[] = ['id' => 6, 'name' => 'Trong kho VN'];
         $res[] = ['id' => 7, 'name' => 'Thanh lý'];
         return $res;

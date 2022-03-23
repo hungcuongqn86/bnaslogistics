@@ -48,6 +48,11 @@ class TransportFeeService extends CommonService implements ITransportFeeService
         return $rResult;
     }
 
+    public function getByType($type)
+    {
+        return TransportFee::where('type', '=', $type)->orderBy('min_r', 'DESC')->get();
+    }
+
     public function findById($id)
     {
         $rResult = TransportFee::where('id', '=', $id)->first();
