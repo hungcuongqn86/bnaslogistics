@@ -151,39 +151,117 @@ class PackageController extends CommonController
                 case 'weight':
                     $colName = 'Cân nặng';
                     $value = floatval($value);
-                    if ($value > 0) {
-                        $weight_qd = $value;
-                        if ($weight_qd < 0.5) {
-                            $weight_qd = 0.5;
-                        }
+                    if ($package['cal_option'] == 0) {
+                        if ($value > 0) {
+                            $weight_qd = $value;
+                            if ($weight_qd < 0.5) {
+                                $weight_qd = 0.5;
+                            }
 
-                        // Lay vip
-                        $ck_vc = $order['ck_vc'];
-                        $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
-                        $gia_can = 0;
-                        if ($package['gia_can'] == 0) {
+                            // Lay vip
+                            $ck_vc = $order['ck_vc'];
+                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
+                            $gia_can = 0;
                             foreach ($transportFees as $feeItem) {
                                 if ($feeItem->min_r <= $weight_qd) {
                                     $gia_can = $feeItem->val;
                                     break;
                                 }
                             }
+
+                            $tiencan = $gia_can * $weight_qd;
+                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
+                            $tiencan_tt = $tiencan - $chietkhau;
+
+                            if ($package['status'] < 4) {
+                                $package['status'] = 4;
+                            }
+                            $package['weight_qd'] = $weight_qd;
+                            $package['gia_can'] = $gia_can;
+                            $package['tien_can'] = $tiencan;
+                            $package['ck_vc_tt'] = $chietkhau;
+                            $package['tien_can_tt'] = $tiencan_tt;
                         } else {
-                            $gia_can = $package['gia_can'];
+                            $package['weight_qd'] = 0;
+                            $package['gia_can'] = 0;
+                            $package['tien_can'] = 0;
+                            $package['ck_vc_tt'] = 0;
+                            $package['tien_can_tt'] = 0;
                         }
+                    }
+                    break;
+                case 'cal_option':
+                    $colName = 'Áp giá theo';
+                    if ($value == 0) {
+                        $weight = $package['weight'];
+                        if ($weight > 0) {
+                            $weight_qd = $weight;
+                            if ($weight_qd < 0.5) {
+                                $weight_qd = 0.5;
+                            }
 
-                        $tiencan = $gia_can * $weight_qd;
-                        $chietkhau = round($tiencan * $ck_vc / 100, 2);
-                        $tiencan_tt = $tiencan - $chietkhau;
+                            // Lay vip
+                            $ck_vc = $order['ck_vc'];
+                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
+                            $gia_can = 0;
+                            foreach ($transportFees as $feeItem) {
+                                if ($feeItem->min_r <= $weight_qd) {
+                                    $gia_can = $feeItem->val;
+                                    break;
+                                }
+                            }
 
-                        if ($package['status'] < 4) {
-                            $package['status'] = 4;
+                            $tiencan = $gia_can * $weight_qd;
+                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
+                            $tiencan_tt = $tiencan - $chietkhau;
+
+                            if ($package['status'] < 4) {
+                                $package['status'] = 4;
+                            }
+                            $package['weight_qd'] = $weight_qd;
+                            $package['gia_can'] = $gia_can;
+                            $package['tien_can'] = $tiencan;
+                            $package['ck_vc_tt'] = $chietkhau;
+                            $package['tien_can_tt'] = $tiencan_tt;
+                        } else {
+                            $package['weight_qd'] = 0;
+                            $package['gia_can'] = 0;
+                            $package['tien_can'] = 0;
+                            $package['ck_vc_tt'] = 0;
+                            $package['tien_can_tt'] = 0;
                         }
-                        $package['weight_qd'] = $weight_qd;
-                        $package['gia_can'] = $gia_can;
-                        $package['tien_can'] = $tiencan;
-                        $package['ck_vc_tt'] = $chietkhau;
-                        $package['tien_can_tt'] = $tiencan_tt;
+                    } else {
+                        $size = $package['size'];
+                        if ($size > 0) {
+                            // Lay vip
+                            $ck_vc = $order['ck_vc'];
+                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(2);
+                            $gia_can = 0;
+                            foreach ($transportFees as $feeItem) {
+                                if ($feeItem->min_r <= $size) {
+                                    $gia_can = $feeItem->val;
+                                    break;
+                                }
+                            }
+
+                            $tiencan = $gia_can * $size;
+                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
+                            $tiencan_tt = $tiencan - $chietkhau;
+
+                            if ($package['status'] < 4) {
+                                $package['status'] = 4;
+                            }
+                            $package['gia_can'] = $gia_can;
+                            $package['tien_can'] = $tiencan;
+                            $package['ck_vc_tt'] = $chietkhau;
+                            $package['tien_can_tt'] = $tiencan_tt;
+                        } else {
+                            $package['weight_qd'] = 0;
+                            $package['gia_can'] = 0;
+                            $package['tien_can'] = 0;
+                            $package['ck_vc_tt'] = 0;
+                            $package['tien_can_tt'] = 0;
+                        }
                     }
                     break;
             }
