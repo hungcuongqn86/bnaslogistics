@@ -206,4 +206,23 @@ class PackageController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
+
+    public function delete(Request $request, $id)
+    {
+        $input = $request->all();
+        $package = OrderServiceFactory::mPackageService()->findById($id);
+        if (empty($package)) {
+            return $this->sendError('Error', ['Kiện hàng không tồn tại!']);
+        }
+
+        if ($package['status'] > 2) {
+            return $this->sendError('Error', ['Không thể xóa kiện hàng!']);
+        }
+        try {
+            OrderServiceFactory::mPackageService()->delete($id);
+            return $this->sendResponse(true, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 }

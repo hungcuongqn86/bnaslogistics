@@ -28,6 +28,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/status', 'PackageController@status');
                 Route::post('/create', 'PackageController@create');
                 Route::post('/update/{id}', 'PackageController@update');
+                Route::post('/delete/{id}', 'PackageController@delete');
             });
             Route::group(['prefix' => 'warehouse'], function () {
                 Route::get('/wait', 'WarehouseController@wait');
