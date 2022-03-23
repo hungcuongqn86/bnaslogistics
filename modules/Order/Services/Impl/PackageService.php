@@ -25,7 +25,7 @@ class PackageService extends CommonService implements IPackageService
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         $query = Package::with(array('Order' => function ($query) {
             $query->with(['User', 'OrderItems'])->orderBy('id');
-        }))->where('is_deleted', '=', 0);
+        }));
 
         $sOrderCode = isset($filter['code']) ? $filter['code'] : '';
         $iuserId = isset($filter['user_id']) ? $filter['user_id'] : 0;
@@ -50,7 +50,6 @@ class PackageService extends CommonService implements IPackageService
                     $q->orWhere('phone_number', 'LIKE', '%' . $sKeySearch . '%');
                 });
             }
-            $q->where('is_deleted', '=', 0);
         });
 
         $sPackageCode = isset($filter['package_code']) ? $filter['package_code'] : '';
@@ -71,9 +70,8 @@ class PackageService extends CommonService implements IPackageService
 
     public function myOrderCountByStatus($userId)
     {
-        $rResult = Package::where('is_deleted', '=', 0)->whereHas('Order', function ($q) use ($userId) {
+        $rResult = Package::whereHas('Order', function ($q) use ($userId) {
             $q->where('user_id', '=', $userId);
-            $q->where('is_deleted', '=', 0);
         })->groupBy('status')->selectRaw('status, count(*) as total')->get();
         if (!empty($rResult)) {
             return $rResult;
@@ -87,14 +85,13 @@ class PackageService extends CommonService implements IPackageService
         $query = User::with(array('Order' => function ($query) {
             $query->whereHas('Package', function ($q) {
                 $q->where('status', '=', 6);
-                $q->where('is_deleted', '=', 0);
             });
-            $query->where('is_deleted', '=', 0)->orderBy('id');
+            $query->orderBy('id');
             $query->with(array('Package' => function ($query) {
                 $query->where('status', '=', 6);
                 $query->whereNull('bill_id');
                 $query->whereNotNull('weight_qd');
-                $query->where('is_deleted', '=', 0)->orderBy('id');
+                $query->orderBy('id');
             }));
         }))->where('is_deleted', '=', 0);
 
@@ -104,12 +101,10 @@ class PackageService extends CommonService implements IPackageService
             if (!empty($sOrderCode)) {
                 $q->where('id', '=', $sOrderCode);
             }
-            $q->where('is_deleted', '=', 0);
             $q->whereHas('Package', function ($q) use ($sPackageCode) {
                 if (!empty($sPackageCode)) {
                     $q->where('package_code', '=', $sPackageCode);
                 }
-                $q->where('is_deleted', '=', 0);
                 $q->whereNull('bill_id');
                 $q->whereNotNull('weight_qd');
                 $q->where('status', '=', 6);
