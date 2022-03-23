@@ -24,7 +24,7 @@ class OrderService extends CommonService implements IOrderService
     public function search($filter)
     {
         $query = Order::with(['User', 'OrderItems', 'Handle'])->with(array('Package' => function ($query) {
-            $query->where('is_deleted', '=', 0)->orderBy('id');
+            $query->orderBy('id');
         }));
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         if (!empty($sKeySearch)) {
@@ -214,7 +214,7 @@ class OrderService extends CommonService implements IOrderService
     public function findById($id)
     {
         $rResult = Order::with(['User', 'OrderItems', 'History', 'Handle'])->with(array('Package' => function ($query) {
-            $query->where('is_deleted', '=', 0)->orderBy('id');
+            $query->orderBy('id');
         }))->where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return $rResult->toArray();
@@ -236,7 +236,7 @@ class OrderService extends CommonService implements IOrderService
     public function findByIds($ids)
     {
         $rResult = Order::with(array('Package' => function ($query) {
-            $query->where('is_deleted', '=', 0)->orderBy('id');
+            $query->orderBy('id');
         }))->wherein('id', $ids)->get();
         if (!empty($rResult)) {
             return $rResult->toArray();
