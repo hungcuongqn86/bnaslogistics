@@ -5,10 +5,9 @@ namespace Modules\Order\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Modules\Order\Services\OrderServiceFactory;
-use Modules\Cart\Services\CartServiceFactory;
-use Modules\Common\Services\CommonServiceFactory;
 use Modules\Common\Http\Controllers\CommonController;
+use Modules\Common\Services\CommonServiceFactory;
+use Modules\Order\Services\OrderServiceFactory;
 
 class PackageController extends CommonController
 {
@@ -149,6 +148,37 @@ class PackageController extends CommonController
                 case 'note_tl':
                     $colName = 'Ghi chú thanh lý';
                     break;
+                case 'weight':
+                    $colName = 'Cân nặng';
+                    $value = floatval($value);
+                    $weight_qd = $value;
+                    if ($weight_qd < 0.5) {
+                        $weight_qd = 0.5;
+                    }
+
+                    // Lay vip
+                    $ck_dv = $order['ck_dv'];
+
+                    $gia_can_nang = 0;
+                    if (!empty($input['gia_can'])) {
+                        $gia_can_nang = $input['gia_can'];
+                    } else {
+                        if (!empty($order['user']['weight_price'])) {
+                            $gia_can_nang = $order['user']['weight_price'];
+                        } else {
+                            $setting = CommonServiceFactory::mSettingService()->findByKey('weight_price');
+                            $gia_can_nang = (int)$setting['setting']['value'];
+                        }
+                    }
+                    $input['gia_can'] = $gia_can_nang;
+
+                    $vip = $order['vip'];
+                    $vipCn = self::arrVipData[$vip];
+                    $tiencan = $gia_can_nang * $weight_qd;
+                    $chietkhau = round($tiencan * $vipCn / 100, 2);
+                    $input['tien_can'] = $tiencan - $chietkhau;
+                    $input['vip_cn'] = $vipCn;
+                    break;
                 case 'weight_qd':
                     $colName = 'Cân nặng qui đổi';
                     $value = floatval($value);
@@ -209,7 +239,6 @@ class PackageController extends CommonController
 
     public function delete(Request $request, $id)
     {
-        $input = $request->all();
         $package = OrderServiceFactory::mPackageService()->findById($id);
         if (empty($package)) {
             return $this->sendError('Error', ['Kiện hàng không tồn tại!']);

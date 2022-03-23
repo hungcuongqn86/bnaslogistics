@@ -29,6 +29,8 @@ class Order extends BaseEntity
         'vip_id',
         'ck_dv',
         'ck_dv_tt',
+        'ck_vc',
+        'deposit',
         'phi_dat_hang_cs',
         'phi_dat_hang',
         'phi_dat_hang_tt',

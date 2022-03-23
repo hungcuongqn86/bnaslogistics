@@ -318,6 +318,45 @@ class OrderController extends CommonController
                 return $this->sendError('Error', ['Không có quyền sửa giỏ hàng!']);
             }
 
+            // Lay vip
+            $ck_dv = 0;
+            $ck_vc = 0;
+            $deposit = 0;
+            $vip = CommonServiceFactory::mVipService()->findById($user->id);
+            if (!empty($vip)) {
+                $ck_dv = $vip['ck_dv'];
+                $ck_vc = $vip['ck_vc'];
+                $deposit = $vip['deposit'];
+            }
+
+            // Lay bang gia dv
+            $serviceFee = CommonServiceFactory::mServiceFeeService()->getAll();
+
+            // Lay bang gia kiem dem
+            $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
+
+            // Tinh phi dich vu
+            $tien_hang = $cart['tien_hang'];
+            $phi_dat_hang_cs = 0;
+            foreach ($serviceFee as $feeItem) {
+                if ($feeItem->min_tot_tran * 1000000 <= $tien_hang) {
+                    $phi_dat_hang_cs = $feeItem->val;
+                    break;
+                }
+            }
+
+            // Kiem dem
+            $count_product = $cart['count_product'];
+            $phi_kiem_dem_cs = 0;
+            if ($cart['kiem_hang'] == 1) {
+                foreach ($inspectionFee as $feeItem) {
+                    if ($feeItem->min_count <= $count_product) {
+                        $phi_kiem_dem_cs = $feeItem->val;
+                        break;
+                    }
+                }
+            }
+
             // Add Order
             $orderInput = array(
                 'user_id' => (int)$user['id'],
@@ -325,21 +364,17 @@ class OrderController extends CommonController
                 'code' => self::genOrderCode($user->id, $user->code),
                 'shipping' => 0,
                 'ti_gia' => $cart['ti_gia'],
-                'count_product' => $cart['count_product'],
+                'count_product' => $count_product,
                 'kiem_hang' => $cart['kiem_hang'],
                 'dong_go' => $cart['dong_go'],
                 'bao_hiem' => $cart['bao_hiem'],
-                'tien_hang' => $cart['tien_hang'],
-                'vip_id' => $cart['vip_id'],
-                'ck_dv' => $cart['ck_dv'],
-                'ck_dv_tt' => $cart['ck_dv_tt'],
-                'phi_dat_hang_cs' => $cart['phi_dat_hang_cs'],
-                'phi_dat_hang' => $cart['phi_dat_hang'],
-                'phi_dat_hang_tt' => $cart['phi_dat_hang_tt'],
-                'phi_bao_hiem_cs' => $cart['phi_bao_hiem_cs'],
-                'phi_bao_hiem_tt' => $cart['phi_bao_hiem_tt'],
-                'phi_kiem_dem_cs' => $cart['phi_kiem_dem_cs'],
-                'phi_kiem_dem_tt' => $cart['phi_kiem_dem_tt'],
+                'tien_hang' => $tien_hang,
+                'vip_id' => $vip['id'],
+                'ck_dv' => $ck_dv,
+                'ck_vc' => $ck_vc,
+                'deposit' => $deposit,
+                'phi_dat_hang_cs' => $phi_dat_hang_cs,
+                'phi_kiem_dem_cs' => $phi_kiem_dem_cs,
                 'status' => 2,
             );
 
