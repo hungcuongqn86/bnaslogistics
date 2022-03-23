@@ -26,6 +26,7 @@ class Package extends BaseEntity
         'weight_qd',
         'gia_can',
         'tien_can',
+        'cal_option',
         'tien_thanh_ly',
         'phi_van_phat_sinh',
         'vip_cn',
