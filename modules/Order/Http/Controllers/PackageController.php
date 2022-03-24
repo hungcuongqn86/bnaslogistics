@@ -153,9 +153,8 @@ class PackageController extends CommonController
                     $value = floatval($value);
                     if ($package['cal_option'] == 0) {
                         if ($value > 0) {
-                            $weight_qd = $value;
-                            if ($weight_qd < 0.5) {
-                                $weight_qd = 0.5;
+                            if ($value < 0.5) {
+                                $value = 0.5;
                             }
 
                             // Lay vip
@@ -163,20 +162,20 @@ class PackageController extends CommonController
                             $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
                             $gia_can = 0;
                             foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $weight_qd) {
+                                if ($feeItem->min_r <= $value) {
                                     $gia_can = $feeItem->val;
                                     break;
                                 }
                             }
 
-                            $tiencan = $gia_can * $weight_qd;
+                            $tiencan = $gia_can * $value;
                             $chietkhau = round($tiencan * $ck_vc / 100, 2);
                             $tiencan_tt = $tiencan - $chietkhau;
 
                             if ($package['status'] < 4) {
                                 $package['status'] = 4;
                             }
-                            $package['weight_qd'] = $weight_qd;
+                            $package['weight_qd'] = $value;
                             $package['gia_can'] = $gia_can;
                             $package['tien_can'] = $tiencan;
                             $package['ck_vc_tt'] = $chietkhau;
@@ -191,11 +190,11 @@ class PackageController extends CommonController
                                 $dg_2_price = (int)$setting['setting']['value'];
                                 $kg1 = 0;
                                 $kg2 = 0;
-                                if ($weight_qd >= 1) {
+                                if ($value >= 1) {
                                     $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
+                                    $kg2 = $value - 1;
                                 } else {
-                                    $kg1 = $weight_qd;
+                                    $kg1 = $value;
                                     $kg2 = 0;
                                 }
 
@@ -213,11 +212,11 @@ class PackageController extends CommonController
                                 $chong_soc_2_price = (int)$setting['setting']['value'];
                                 $kg1 = 0;
                                 $kg2 = 0;
-                                if ($weight_qd >= 1) {
+                                if ($value >= 1) {
                                     $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
+                                    $kg2 = $value - 1;
                                 } else {
-                                    $kg1 = $weight_qd;
+                                    $kg1 = $value;
                                     $kg2 = 0;
                                 }
 
@@ -227,7 +226,6 @@ class PackageController extends CommonController
                                 $package['tien_chong_soc'] = $tien_chong_soc;
                             }
                         } else {
-                            $package['weight_qd'] = 0;
                             $package['gia_can'] = 0;
                             $package['tien_can'] = 0;
                             $package['ck_vc_tt'] = 0;
@@ -282,7 +280,6 @@ class PackageController extends CommonController
                             $package['ck_vc_tt'] = $chietkhau;
                             $package['tien_can_tt'] = $tiencan_tt;
                         } else {
-                            $package['weight_qd'] = 0;
                             $package['gia_can'] = 0;
                             $package['tien_can'] = 0;
                             $package['ck_vc_tt'] = 0;
@@ -295,9 +292,8 @@ class PackageController extends CommonController
                     if ($value == 0) {
                         $weight = $package['weight'];
                         if ($weight > 0) {
-                            $weight_qd = $weight;
-                            if ($weight_qd < 0.5) {
-                                $weight_qd = 0.5;
+                            if ($weight < 0.5) {
+                                $weight = 0.5;
                             }
 
                             // Lay vip
@@ -305,20 +301,19 @@ class PackageController extends CommonController
                             $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
                             $gia_can = 0;
                             foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $weight_qd) {
+                                if ($feeItem->min_r <= $weight) {
                                     $gia_can = $feeItem->val;
                                     break;
                                 }
                             }
 
-                            $tiencan = $gia_can * $weight_qd;
+                            $tiencan = $gia_can * $weight;
                             $chietkhau = round($tiencan * $ck_vc / 100, 2);
                             $tiencan_tt = $tiencan - $chietkhau;
 
                             if ($package['status'] < 4) {
                                 $package['status'] = 4;
                             }
-                            $package['weight_qd'] = $weight_qd;
                             $package['gia_can'] = $gia_can;
                             $package['tien_can'] = $tiencan;
                             $package['ck_vc_tt'] = $chietkhau;
@@ -333,11 +328,11 @@ class PackageController extends CommonController
                                 $dg_2_price = (int)$setting['setting']['value'];
                                 $kg1 = 0;
                                 $kg2 = 0;
-                                if ($weight_qd >= 1) {
+                                if ($weight >= 1) {
                                     $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
+                                    $kg2 = $weight - 1;
                                 } else {
-                                    $kg1 = $weight_qd;
+                                    $kg1 = $weight;
                                     $kg2 = 0;
                                 }
 
@@ -355,11 +350,11 @@ class PackageController extends CommonController
                                 $chong_soc_2_price = (int)$setting['setting']['value'];
                                 $kg1 = 0;
                                 $kg2 = 0;
-                                if ($weight_qd >= 1) {
+                                if ($weight >= 1) {
                                     $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
+                                    $kg2 = $weight - 1;
                                 } else {
-                                    $kg1 = $weight_qd;
+                                    $kg1 = $weight;
                                     $kg2 = 0;
                                 }
 
@@ -370,7 +365,6 @@ class PackageController extends CommonController
                             }
 
                         } else {
-                            $package['weight_qd'] = 0;
                             $package['gia_can'] = 0;
                             $package['tien_can'] = 0;
                             $package['ck_vc_tt'] = 0;
@@ -385,7 +379,7 @@ class PackageController extends CommonController
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
                         }
-                    } else {
+                    } elseif ($value == 1) {
                         // dong go, chong soc
                         $package['dg_1_price'] = 0;
                         $package['dg_2_price'] = 0;
@@ -420,12 +414,13 @@ class PackageController extends CommonController
                             $package['ck_vc_tt'] = $chietkhau;
                             $package['tien_can_tt'] = $tiencan_tt;
                         } else {
-                            $package['weight_qd'] = 0;
                             $package['gia_can'] = 0;
                             $package['tien_can'] = 0;
                             $package['ck_vc_tt'] = 0;
                             $package['tien_can_tt'] = 0;
                         }
+                    } else {
+
                     }
                     break;
             }
