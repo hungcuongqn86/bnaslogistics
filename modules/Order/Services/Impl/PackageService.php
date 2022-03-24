@@ -99,7 +99,7 @@ class PackageService extends CommonService implements IPackageService
         $sPackageCode = isset($filter['package_code']) ? $filter['package_code'] : '';
         $query->whereHas('Order', function ($q) use ($sOrderCode, $sPackageCode) {
             if (!empty($sOrderCode)) {
-                $q->where('id', '=', $sOrderCode);
+                $q->where('code', '=', $sOrderCode);
             }
             $q->whereHas('Package', function ($q) use ($sPackageCode) {
                 if (!empty($sPackageCode)) {
