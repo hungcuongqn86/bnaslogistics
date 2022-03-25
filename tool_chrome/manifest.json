@@ -8,21 +8,20 @@
         "/dist/all.min.js"
       ],
       "matches": [
-		"https://*.quangchau247online.com/*",
-        "http://*.quangchau247online.com/*",
+		"https://*.nguonhang.net/*",
+        "http://*.nguonhang.net/*",
         "http://*.taobao.com/*",
         "https://*.taobao.com/*",
         "http://*.tmall.com/*",
         "https://*.tmall.com/*",
         "https://*.tmall.hk/*",
         "http://detail.1688.com/*",
-        "https://detail.1688.com/*",
-        "http://api.quangchau247online.com/*"
+        "https://detail.1688.com/*"
       ]
     }
   ],
   "description": "Hỗ trợ người Việt tìm và đặt các sản phẩm trên các website thương mại điện tử Trung Quốc",
-  "homepage_url": "https://api.quangchau247online.com/public",
+  "homepage_url": "https://nguonhang.net/order/api/public",
   "icons": {
     "128": "images/128x128.png",
     "16": "images/16x16.png",
@@ -33,7 +32,7 @@
     "rate": 3470
   },
   "manifest_version": 2,
-  "name": "Quảng Châu Online 247",
+  "name": "nguonhang.net",
   "page_action": {
     "default_icon": "images/128x128.png",
     "default_popup": "popup.html"
@@ -42,12 +41,12 @@
     "activeTab",
     "storage",
     "tabs",
-	"https://api.quangchau247online.com/",
+	"https://nguonhang.net/",
     "https://item.taobao.com/"
   ],
-  "short_name": "qc247",
+  "short_name": "nguonhang.net",
   "update_url": "https://clients2.google.com/service/update2/crx",
-  "version": "1.2.5",
+  "version": "1.0.0",
   "web_accessible_resources": [
     "images/*"
   ]
