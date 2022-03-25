@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="06edc0c9-372e-490f-9efb-473328d6ef42" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/images/128x128.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/128x128.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/144x144.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/144x144.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/16x16.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/16x16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/32x32.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/32x32.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/64x64.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/64x64.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/favicon.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/favicon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/all.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/all.min.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +39,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1648196880874</updated>
-      <workItem from="1648196882212" duration="792000" />
+      <workItem from="1648196882212" duration="955000" />
     </task>
     <servers />
   </component>
