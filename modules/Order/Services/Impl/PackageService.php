@@ -101,6 +101,7 @@ class PackageService extends CommonService implements IPackageService
             if (!empty($sOrderCode)) {
                 $q->where('code', '=', $sOrderCode);
             }
+
             $q->whereHas('Package', function ($q) use ($sPackageCode) {
                 if (!empty($sPackageCode)) {
                     $q->where('package_code', '=', $sPackageCode);
