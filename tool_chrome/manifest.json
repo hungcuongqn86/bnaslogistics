@@ -8,7 +8,7 @@
         "/dist/all.min.js"
       ],
       "matches": [
-		"https://*.nguonhang.net/*",
+        "https://*.nguonhang.net/*",
         "http://*.nguonhang.net/*",
         "http://*.taobao.com/*",
         "https://*.taobao.com/*",
@@ -51,8 +51,24 @@
   "short_name": "nguonhang.net",
   "update_url": "https://clients2.google.com/service/update2/crx",
   "version": "1.0.0",
-  "web_accessible_resources": [{
-    "resources": ["images/*"],
-    "matches": []
-  }]
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*",
+        "/dist/all.min.js",
+        "/css/all.min.css"
+      ],
+      "matches": [
+        "https://*.nguonhang.net/*",
+        "http://*.nguonhang.net/*",
+        "http://*.taobao.com/*",
+        "https://*.taobao.com/*",
+        "http://*.tmall.com/*",
+        "https://*.tmall.com/*",
+        "https://*.tmall.hk/*",
+        "http://detail.1688.com/*",
+        "https://detail.1688.com/*"
+      ]
+    }
+  ]
 }

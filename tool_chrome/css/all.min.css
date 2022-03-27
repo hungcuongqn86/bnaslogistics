@@ -68,7 +68,6 @@ sub {
     -webkit-user-select: none;
     padding: 6px 12px;
     border: 1px solid transparent;
-    border-radius: 4px
 }
 
 .btn-tbex-danger, .btn-tbex-default, .btn-tbex-info, .btn-tbex-primary, .btn-tbex-success, .btn-tbex-warning {
@@ -319,6 +318,12 @@ sub {
     margin-top: 15px
 }
 
+#pro-thqc-note .thqcNote{
+    width: 100%;
+    border: 3px solid deepskyblue;
+    padding: 3px;
+}
+
 #cart-thqc-parent {
     text-align: left;
     padding: 10px 0
@@ -342,7 +347,7 @@ sub {
     display: inline-block;
     border: none;
     color: #fff !important;
-    background-image: linear-gradient(rgb(51, 232, 71) 0px, rgb(26, 121, 36) 100%) !important;
+    background-image: linear-gradient(rgb(0,191,255) 0px, rgb(0,127,255) 100%) !important;
 }
 
 .btn-thqc-add img {
@@ -372,7 +377,7 @@ sub {
 
 #tbe-info-shop, #thqc-info-shop {
     padding: 15px 0;
-    border: 3px solid #26ab34;
+    border: 3px solid deepskyblue;
     clear: both
 }
 
