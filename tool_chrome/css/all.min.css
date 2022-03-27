@@ -338,7 +338,8 @@ sub {
 }
 
 .btn-thqc-add {
-    width: 222px;
+    width: 345px;
+    font-weight: bold;
     padding: 0;
     height: 30px;
     line-height: 30px;
