@@ -890,6 +890,7 @@ class PackageController extends CommonController
 
     public function delete(Request $request, $id)
     {
+        $user = $request->user();
         $package = OrderServiceFactory::mPackageService()->findById($id);
         if (empty($package)) {
             return $this->sendError('Error', ['Kiện hàng không tồn tại!']);
@@ -903,10 +904,21 @@ class PackageController extends CommonController
             return $this->sendError('Error', ['Không thể xóa kiện hàng!']);
         }
 
+        DB::beginTransaction();
         try {
             OrderServiceFactory::mPackageService()->delete($id);
+            $history = [
+                'user_id' => $user['id'],
+                'order_id' => $package['order_id'],
+                'type' => 11,
+                'content' => "Xóa kiện hàng " . $id,
+                'hide' => 1
+            ];
+            OrderServiceFactory::mHistoryService()->create($history);
+            DB::commit();
             return $this->sendResponse(true, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
