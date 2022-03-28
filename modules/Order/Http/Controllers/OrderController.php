@@ -247,11 +247,13 @@ class OrderController extends CommonController
                     // Lay vip
                     $ck_dv = $order['ck_dv'];
 
+                    $tra_shop = 0;
                     $tien_hang = 0;
                     $count_product = 0;
                     foreach ($orderItems as $orderItem) {
                         $price = self::convertPrice($orderItem['price']);
                         $amount = $orderItem['amount'];
+                        $tra_shop = $tra_shop + ($price * $amount);
                         $tien_hang = $tien_hang + round($price * $rate * $amount, 0);
                         $count_product = $count_product + $orderItem['amount'];
                     }
@@ -285,6 +287,7 @@ class OrderController extends CommonController
                     }
 
                     $order['count_product'] = $count_product;
+                    $order['tra_shop'] = $tra_shop;
                     $order['tien_hang'] = $tien_hang;
                     $order['ck_dv_tt'] = $ck_dv_tt;
                     $order['phi_dat_hang_cs'] = $phi_dat_hang_cs;
