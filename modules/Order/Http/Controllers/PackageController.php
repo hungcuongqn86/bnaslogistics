@@ -71,6 +71,7 @@ class PackageController extends CommonController
         }
 
         try {
+            $input['is_main'] = 0;
             $create = OrderServiceFactory::mPackageService()->create($input);
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {

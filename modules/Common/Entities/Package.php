@@ -21,6 +21,7 @@ class Package extends BaseEntity
         'tra_shop',
         'thanh_toan',
         'status',
+        'is_main',
         'note_tl',
         'weight',
         'weight_qd',

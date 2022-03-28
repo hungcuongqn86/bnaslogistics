@@ -425,7 +425,8 @@ class OrderController extends CommonController
 
                 // Package
                 $package = [
-                    'order_id' => $create['id']
+                    'order_id' => $create['id'],
+                    'is_main' => 1
                 ];
                 OrderServiceFactory::mPackageService()->create($package);
 
