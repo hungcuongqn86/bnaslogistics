@@ -895,9 +895,14 @@ class PackageController extends CommonController
             return $this->sendError('Error', ['Kiện hàng không tồn tại!']);
         }
 
+        if ($package['is_main'] == 1) {
+            return $this->sendError('Error', ['Không thể xóa kiện hàng chính!']);
+        }
+
         if ($package['status'] > 2) {
             return $this->sendError('Error', ['Không thể xóa kiện hàng!']);
         }
+
         try {
             OrderServiceFactory::mPackageService()->delete($id);
             return $this->sendResponse(true, 'Successfully.');
