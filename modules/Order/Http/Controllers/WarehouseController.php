@@ -67,11 +67,16 @@ class WarehouseController extends CommonController
             return $this->sendError('Tạo phiếu xuất không thành công!', $validator->errors()->all());
         }
 
+        $customer = CommonServiceFactory::mUserService()->findById($input['user_id']);
+        if (empty($customer)) {
+            return $this->sendError('Tạo phiếu xuất không thành công!', ['Không có thông tin khách hàng!']);
+        }
+
         //Bill input
         $user = $request->user();
         $billinput = array();
         $billinput['user_id'] = $input['user_id'];
-        $billinput['code'] = self::genBillCode($user['id'], $user['code']);
+        $billinput['code'] = self::genBillCode($customer['user']['id'], $customer['user']['code']);
         $billinput['employee_id'] = $user['id'];
         $billinput['status'] = 1;
         $billinput['so_ma'] = 0;
