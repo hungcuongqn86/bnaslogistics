@@ -866,6 +866,10 @@ class PackageController extends CommonController
             $package[$dirty] = $value;
             $update = OrderServiceFactory::mPackageService()->update($package);
             if (!empty($update)) {
+                // Tien thanh ly
+                self::calThanhLy($package['order_id']);
+
+                // Order
                 if (!empty($orderInput['id'])) {
                     OrderServiceFactory::mOrderService()->update($orderInput);
                 }
@@ -885,6 +889,44 @@ class PackageController extends CommonController
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    private function calThanhLy($order_id)
+    {
+        try {
+            $mainpkId = 0;
+            $order = OrderServiceFactory::mOrderService()->findById($order_id);
+            $arrPk = $order['package'];
+            $tien_ship = 0;
+            $tigia = $order['ti_gia'];
+
+            foreach ($arrPk as $pk) {
+                if ($pk['is_main'] == 1) {
+                    $mainpkId = $pk['id'];
+                }
+                if (isset($pk['ship_khach']) && $pk['ship_khach'] > 0) {
+                    $ndt = $pk['ship_khach'];
+                    $vnd = $ndt * $tigia;
+                    $tien_ship = $tien_ship + $vnd;
+                }
+            }
+
+            if ($mainpkId > 0) {
+                $tienthanhly = $order['tien_hang'] + $order['phi_dat_hang_tt'] + $tien_ship;
+                if (isset($order['phi_kiem_dem_tt']) && $order['phi_kiem_dem_tt'] > 0) {
+                    $tienthanhly = $tienthanhly + $order['phi_kiem_dem_tt'];
+                }
+                if (isset($order['dat_coc']) && $order['dat_coc'] > 0) {
+                    $tienthanhly = $tienthanhly - $order['dat_coc'];
+                }
+
+                $package = OrderServiceFactory::mPackageService()->findById($mainpkId);
+                $package['tien_thanh_ly'] = $tienthanhly;
+                OrderServiceFactory::mPackageService()->update($package);
+            }
+        } catch (\Exception $e) {
+            throw $e;
         }
     }
 
