@@ -106,6 +106,22 @@ class WarehouseController extends CommonController
         }
     }
 
+    private function genBillCode($uId, $uCode)
+    {
+        try {
+            $code = '';
+            $topOrder = OrderServiceFactory::mOrderService()->findByTopCode($uId);
+            if (!empty($topOrder)) {
+                $code = (string)((int)$topOrder + 1);
+            } else {
+                $code = $uCode . '0001';
+            }
+            return $code;
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function billDelete(Request $request)
     {
         $input = $request->all();

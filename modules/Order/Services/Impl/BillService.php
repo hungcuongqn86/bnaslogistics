@@ -66,6 +66,16 @@ class BillService extends CommonService implements IBillService
         }
     }
 
+    public function findByTopCode($uId)
+    {
+        $rResult = Bill::where('user_id', '=', $uId)->orderBy('code', 'desc')->first();
+        if (!empty($rResult)) {
+            return $rResult['code'];
+        } else {
+            return '';
+        }
+    }
+
     public function status()
     {
         $bill = new Bill();

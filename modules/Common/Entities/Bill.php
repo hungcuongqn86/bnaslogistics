@@ -14,6 +14,7 @@ class Bill extends BaseEntity
     public $timestamps = false;
     protected $fillable = [
         'user_id',
+        'code',
         'bill_date',
         'tong_can',
         'gia_can_nang',
