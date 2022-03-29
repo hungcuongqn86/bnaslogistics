@@ -71,6 +71,7 @@ class WarehouseController extends CommonController
         $user = $request->user();
         $billinput = array();
         $billinput['user_id'] = $input['user_id'];
+        $billinput['code'] = self::genBillCode($user['id'], $user['code']);
         $billinput['employee_id'] = $user['id'];
         $billinput['status'] = 1;
         $billinput['so_ma'] = 0;
@@ -109,12 +110,11 @@ class WarehouseController extends CommonController
     private function genBillCode($uId, $uCode)
     {
         try {
-            $code = '';
-            $topOrder = OrderServiceFactory::mOrderService()->findByTopCode($uId);
+            $topOrder = OrderServiceFactory::mBillService()->findByTopCode($uId);
             if (!empty($topOrder)) {
                 $code = (string)((int)$topOrder + 1);
             } else {
-                $code = $uCode . '0001';
+                $code = 'B.' . $uCode . '0001';
             }
             return $code;
         } catch (\Exception $e) {
