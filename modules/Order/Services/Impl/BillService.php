@@ -2,11 +2,10 @@
 
 namespace Modules\Order\Services\Impl;
 
-use App\User;
+use Illuminate\Support\Facades\DB;
 use Modules\Common\Entities\Bill;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Order\Services\Intf\IBillService;
-use Illuminate\Support\Facades\DB;
 
 class BillService extends CommonService implements IBillService
 {
@@ -52,12 +51,12 @@ class BillService extends CommonService implements IBillService
     public function findById($id)
     {
         $rResult = Bill::with(['User', 'Employee'])->with(array('Package' => function ($query) {
-            $query->where('is_deleted', '=', 0)->orderBy('id');
+            $query->orderBy('id');
             $query->with(array('Order' => function ($query) {
                 $query->with(array('Cart' => function ($query) {
-                    $query->where('is_deleted', '=', 0)->orderBy('id');
+                    $query->orderBy('id');
                 }));
-                $query->where('is_deleted', '=', 0)->orderBy('id');
+                $query->orderBy('id');
             }));
         }))->where('id', '=', $id)->first();
         if (!empty($rResult)) {

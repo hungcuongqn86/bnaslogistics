@@ -3,10 +3,11 @@
 namespace Modules\Order\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Modules\Order\Services\OrderServiceFactory;
 use Modules\Common\Http\Controllers\CommonController;
 use Modules\Common\Services\CommonServiceFactory;
+use Modules\Order\Services\OrderServiceFactory;
 
 class WarehouseController extends CommonController
 {
@@ -73,6 +74,8 @@ class WarehouseController extends CommonController
         $billinput['employee_id'] = $user['id'];
         $billinput['status'] = 1;
         $billinput['so_ma'] = 0;
+
+        DB::beginTransaction();
         try {
             //Lay danh sach kien hang
             $packages = OrderServiceFactory::mPackageService()->findByPkCodes($input['pkcodelist']);
@@ -85,7 +88,6 @@ class WarehouseController extends CommonController
             }
             $billinput['so_ma'] = $soma;
 
-            // return $this->sendResponse($billinput, 'Successfully.');
             $create = OrderServiceFactory::mBillService()->create($billinput);
             if (!empty($create)) {
                 foreach ($packages as $package) {
@@ -96,8 +98,10 @@ class WarehouseController extends CommonController
                     OrderServiceFactory::mPackageService()->update($packageInput);
                 }
             }
+            DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
