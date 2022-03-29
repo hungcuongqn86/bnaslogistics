@@ -132,6 +132,7 @@ class WarehouseController extends CommonController
         if ($bill['bill']['status'] == 2) {
             return $this->sendError('Error', ['Không thể xóa phiếu xuất đã xuất kho!']);
         }
+        DB::beginTransaction();
         try {
             // Package
             $packages = $bill['bill']['package'];
@@ -147,8 +148,10 @@ class WarehouseController extends CommonController
                 'is_deleted' => 1
             );
             OrderServiceFactory::mBillService()->update($billInput);
+            DB::commit();
             return $this->sendResponse(true, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
