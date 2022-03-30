@@ -43,6 +43,7 @@ class Package extends BaseEntity
         'chong_soc_1_price',
         'chong_soc_2_price',
         'tien_chong_soc',
+        'tien_chong_soc_tt',
         'tien_thanh_ly',
         'bill_id',
         'created_at',

@@ -227,6 +227,7 @@ class PackageController extends CommonController
                                 $package['chong_soc_1_price'] = $chong_soc_1_price;
                                 $package['chong_soc_2_price'] = $chong_soc_2_price;
                                 $package['tien_chong_soc'] = $tien_chong_soc;
+                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
                             }
                         } else {
                             $package['gia_can'] = 0;
@@ -242,6 +243,7 @@ class PackageController extends CommonController
                             $package['chong_soc_1_price'] = 0;
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
+                            $package['tien_chong_soc_tt'] = 0;
                         }
                     }
                     break;
@@ -257,6 +259,7 @@ class PackageController extends CommonController
                         $package['chong_soc_1_price'] = 0;
                         $package['chong_soc_2_price'] = 0;
                         $package['tien_chong_soc'] = 0;
+                        $package['tien_chong_soc_tt'] = 0;
 
                         if ($value > 0) {
                             // Lay vip
@@ -379,6 +382,7 @@ class PackageController extends CommonController
                                 $package['chong_soc_1_price'] = $chong_soc_1_price;
                                 $package['chong_soc_2_price'] = $chong_soc_2_price;
                                 $package['tien_chong_soc'] = $tien_chong_soc;
+                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
                             }
                         } else {
                             $package['weight_qd'] = 0;
@@ -395,6 +399,7 @@ class PackageController extends CommonController
                             $package['chong_soc_1_price'] = 0;
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
+                            $package['tien_chong_soc_tt'] = 0;
                         }
                     }
                     break;
@@ -487,6 +492,7 @@ class PackageController extends CommonController
                                 $package['chong_soc_1_price'] = $chong_soc_1_price;
                                 $package['chong_soc_2_price'] = $chong_soc_2_price;
                                 $package['tien_chong_soc'] = $tien_chong_soc;
+                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
                             }
                         } else {
                             $package['weight_qd'] = 0;
@@ -503,6 +509,7 @@ class PackageController extends CommonController
                             $package['chong_soc_1_price'] = 0;
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
+                            $package['tien_chong_soc_tt'] = 0;
                         }
                     }
                     break;
@@ -595,6 +602,7 @@ class PackageController extends CommonController
                                 $package['chong_soc_1_price'] = $chong_soc_1_price;
                                 $package['chong_soc_2_price'] = $chong_soc_2_price;
                                 $package['tien_chong_soc'] = $tien_chong_soc;
+                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
                             }
                         } else {
                             $package['weight_qd'] = 0;
@@ -611,6 +619,7 @@ class PackageController extends CommonController
                             $package['chong_soc_1_price'] = 0;
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
+                            $package['tien_chong_soc_tt'] = 0;
                         }
                     }
                     break;
@@ -689,6 +698,7 @@ class PackageController extends CommonController
                                 $package['chong_soc_1_price'] = $chong_soc_1_price;
                                 $package['chong_soc_2_price'] = $chong_soc_2_price;
                                 $package['tien_chong_soc'] = $tien_chong_soc;
+                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
                             }
 
                         } else {
@@ -705,6 +715,7 @@ class PackageController extends CommonController
                             $package['chong_soc_1_price'] = 0;
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
+                            $package['tien_chong_soc_tt'] = 0;
                         }
                     } elseif ($value == 1) {
                         // dong go, chong soc
@@ -715,6 +726,7 @@ class PackageController extends CommonController
                         $package['chong_soc_1_price'] = 0;
                         $package['chong_soc_2_price'] = 0;
                         $package['tien_chong_soc'] = 0;
+                        $package['tien_chong_soc_tt'] = 0;
 
                         $size = $package['size'];
                         if ($size > 0) {
@@ -837,6 +849,7 @@ class PackageController extends CommonController
                                 $package['chong_soc_1_price'] = $chong_soc_1_price;
                                 $package['chong_soc_2_price'] = $chong_soc_2_price;
                                 $package['tien_chong_soc'] = $tien_chong_soc;
+                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
                             }
                         } else {
                             $package['weight_qd'] = 0;
@@ -854,6 +867,7 @@ class PackageController extends CommonController
                             $package['chong_soc_1_price'] = 0;
                             $package['chong_soc_2_price'] = 0;
                             $package['tien_chong_soc'] = 0;
+                            $package['tien_chong_soc_tt'] = 0;
                         }
                     }
                     break;
