@@ -901,16 +901,13 @@ class PackageController extends CommonController
             $order = OrderServiceFactory::mOrderService()->findById($order_id);
             $arrPk = $order['package'];
             $tien_ship = 0;
-            $tigia = $order['ti_gia'];
 
             foreach ($arrPk as $pk) {
                 if ($pk['is_main'] == 1) {
                     $mainpkId = $pk['id'];
                 }
-                if (isset($pk['ship_khach']) && $pk['ship_khach'] > 0) {
-                    $ndt = $pk['ship_khach'];
-                    $vnd = $ndt * $tigia;
-                    $tien_ship = $tien_ship + $vnd;
+                if (isset($pk['ship_khach_tt']) && $pk['ship_khach_tt'] > 0) {
+                    $tien_ship = $tien_ship + $pk['ship_khach_tt'];
                 }
             }
 
