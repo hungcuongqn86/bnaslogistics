@@ -107,10 +107,12 @@ class PackageController extends CommonController
                 case 'ship_khach':
                     $colName = 'Ship nội địa';
                     $value = floatval($value);
+                    $package['ship_khach_tt'] = $value * $order['ti_gia'];
                     break;
                 case 'ship_tt':
                     $colName = 'Ship thực tế';
                     $value = floatval($value);
+                    $package['ship_tt_tt'] = $value * $order['ti_gia'];
                     $hide = 1;
                     break;
                 case 'thanh_toan':
