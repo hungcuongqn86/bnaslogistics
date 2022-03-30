@@ -325,7 +325,7 @@ class OrderController extends CommonController
             $ck_dv = 0;
             $ck_vc = 0;
             $deposit = 0;
-            $vip = CommonServiceFactory::mVipService()->findById($user->id);
+            $vip = CommonServiceFactory::mVipService()->findById($user->vip);
             if (!empty($vip)) {
                 $ck_dv = $vip['ck_dv'];
                 $ck_vc = $vip['ck_vc'];

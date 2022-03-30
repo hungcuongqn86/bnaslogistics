@@ -41,8 +41,6 @@ class Order extends BaseEntity
         'phi_kiem_dem_tt',
         'dat_coc',
         'dat_coc_content',
-        'tong_tien',
-        'tong_thanh_toan',
         'hander',
         'content_pc',
         'status',

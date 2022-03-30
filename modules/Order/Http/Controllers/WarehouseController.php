@@ -225,35 +225,21 @@ class WarehouseController extends CommonController
                         'status' => 7
                     );
                     $pkupdate = OrderServiceFactory::mPackageService()->update($packageInput);
-                    if (!empty($pkupdate)) {
+                    if (!empty($pkupdate) && ($pkupdate['is_main'] == 1)) {
                         //Thanh ly order
-                        $order = OrderServiceFactory::mOrderService()->findById($pkupdate['order_id']);
-                        $arrPk = $order['order']['package'];
-                        if ((!empty($arrPk)) && ($arrPk[0]['id'] == $pkupdate['id'])) {
-                            $tongTien = $order['order']['tong'];
-                            $tigia = $order['order']['rate'];
-                            foreach ($arrPk as $pk) {
-                                if ($pk['ship_khach'] && $pk['ship_khach'] > 0) {
-                                    $ndt = $pk['ship_khach'];
-                                    $vnd = $ndt * $tigia;
-                                    $tongTien = $tongTien + $vnd;
-                                }
-                            }
+                        $orderInput = array();
+                        $orderInput['id'] = $pkupdate['order_id'];
+                        $orderInput['status'] = 5;
+                        OrderServiceFactory::mOrderService()->update($orderInput);
 
-                            $orderInput = array();
-                            $orderInput['id'] = $order['order']['id'];
-                            $orderInput['status'] = 5;
-                            $orderInput['thanh_toan'] = $tongTien;
-                            OrderServiceFactory::mOrderService()->update($orderInput);
-                            // add history
-                            $history = [
-                                'user_id' => $user['id'],
-                                'order_id' => $order['order']['id'],
-                                'type' => 9,
-                                'content' => 'Xuất kho thanh lý, mã phiếu ' . $update['id']
-                            ];
-                            OrderServiceFactory::mHistoryService()->create($history);
-                        }
+                        // add history
+                        $history = [
+                            'user_id' => $user['id'],
+                            'order_id' => $pkupdate['order_id'],
+                            'type' => 9,
+                            'content' => 'Xuất kho thanh lý, mã phiếu ' . $update['id']
+                        ];
+                        OrderServiceFactory::mHistoryService()->create($history);
                     }
                 }
 
