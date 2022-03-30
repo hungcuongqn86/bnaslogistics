@@ -186,15 +186,23 @@ class WarehouseController extends CommonController
             return $this->sendError('Xuất kho không thành công!', $validator->errors()->all());
         }
 
+        DB::beginTransaction();
         try {
             //Bill
+            $bill = OrderServiceFactory::mBillService()->findById($input['id']);
+            if (empty($bill)) {
+                return $this->sendError('Xuất kho không thành công!', ['Phiếu xuất không tồn tại!']);
+            }
+
             $billinput = array();
             $billinput['id'] = $input['id'];
             $billinput['status'] = 2;
-            $billinput['tong_can'] = 0;
             $billinput['tien_can'] = 0;
+            $billinput['tien_dong_go'] = 0;
+            $billinput['tien_chong_soc'] = 0;
+            $billinput['cuoc_van_phat_sinh'] = 0;
             $billinput['tien_thanh_ly'] = 0;
-            $bill = OrderServiceFactory::mBillService()->findById($input['id']);
+
             $packages = $bill['bill']['package'];
             foreach ($packages as $package) {
                 $billinput['tong_can'] = $billinput['tong_can'] + $package['weight_qd'];
@@ -257,10 +265,13 @@ class WarehouseController extends CommonController
                     'debt' => $bill['bill']['user']['debt'] - ($update['tien_can'] + $update['tien_thanh_ly']),
                     'content' => 'Xuất kho thanh lý, mã phiếu ' . $update['id']
                 ];
+
                 CommonServiceFactory::mTransactionService()->create($transaction);
             }
+            DB::commit();
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
