@@ -205,8 +205,10 @@ class WarehouseController extends CommonController
 
             $packages = $bill['bill']['package'];
             foreach ($packages as $package) {
-                $billinput['tong_can'] = $billinput['tong_can'] + $package['weight_qd'];
-                $billinput['tien_can'] = $billinput['tien_can'] + $package['tien_can'];
+                $billinput['tien_can'] = $billinput['tien_can'] + $package['tien_can_tt'];
+                $billinput['tien_dong_go'] = $billinput['tien_dong_go'] + $package['tien_dong_go'];
+                $billinput['tien_chong_soc'] = $billinput['tien_chong_soc'] + $package['tien_chong_soc_tt'];
+                $billinput['cuoc_van_phat_sinh'] = $billinput['cuoc_van_phat_sinh'] + $package['phi_van_phat_sinh'];
                 $billinput['tien_thanh_ly'] = $billinput['tien_thanh_ly'] + $package['tien_thanh_ly'];
             }
 
@@ -243,7 +245,6 @@ class WarehouseController extends CommonController
                             $orderInput['status'] = 5;
                             $orderInput['thanh_toan'] = $tongTien;
                             OrderServiceFactory::mOrderService()->update($orderInput);
-                            // dd($orderInput);
                             // add history
                             $history = [
                                 'user_id' => $user['id'],
