@@ -38,6 +38,11 @@ class VipService extends CommonService implements IVipService
         return $rResult;
     }
 
+    public function getAll()
+    {
+        return Vip::where('id', '>', 0)->orderBy('min_tot_tran', 'DESC')->get();
+    }
+
     public function findById($id)
     {
         $rResult = Vip::where('id', '=', $id)->first();

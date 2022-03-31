@@ -218,8 +218,12 @@ class WarehouseController extends CommonController
 
             $update = OrderServiceFactory::mBillService()->update($billinput);
             if (!empty($update)) {
+                // Total_transaction
+                $total_transaction = 0;
+
                 // Thanh ly package
                 foreach ($packages as $package) {
+                    $total_transaction += (int)$package['ship_khach_tt'] + (int)$package['tien_can_tt'] + (int)$package['tien_dong_go'] + (int)$package['tien_chong_soc_tt'] + (int)$package['phi_van_phat_sinh'];
                     $packageInput = array(
                         'id' => $package['id'],
                         'status' => 7
@@ -227,6 +231,9 @@ class WarehouseController extends CommonController
                     $pkupdate = OrderServiceFactory::mPackageService()->update($packageInput);
                     if (!empty($pkupdate) && ($pkupdate['is_main'] == 1)) {
                         //Thanh ly order
+                        $order = OrderServiceFactory::mOrderService()->findById($pkupdate['order_id']);
+                        $total_transaction += (int)$order['tien_hang'] + (int)$order['phi_dat_hang_tt'] + (int)$order['phi_kiem_dem_tt'];
+
                         $orderInput = array();
                         $orderInput['id'] = $pkupdate['order_id'];
                         $orderInput['status'] = 5;
@@ -254,6 +261,28 @@ class WarehouseController extends CommonController
                 ];
 
                 CommonServiceFactory::mTransactionService()->create($transaction);
+
+                // Check vip
+                if ($total_transaction > 0) {
+                    $old_total = $bill['bill']['user']['total_transaction'];
+                    $new_total = $old_total + ($total_transaction / 1000000);
+                    $vipId = $bill['bill']['user']['vip'];
+                    $vips = CommonServiceFactory::mVipService()->getAll();
+                    foreach ($vips as $vip) {
+                        if ($vip->min_tot_tran <= $new_total) {
+                            $vipId = $vip->id;
+                            break;
+                        }
+                    }
+
+                    $userInput = [
+                        'id' => $update['user_id'],
+                        'total_transaction' => $new_total,
+                        'vip' => $vipId
+                    ];
+
+                    CommonServiceFactory::mUserService()->update($userInput);
+                }
             }
             DB::commit();
             return $this->sendResponse($update, 'Successfully.');
