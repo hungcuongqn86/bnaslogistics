@@ -3,11 +3,10 @@
 namespace Modules\Order\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Modules\Order\Services\OrderServiceFactory;
-use Modules\Common\Services\CommonServiceFactory;
-use Modules\Common\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Modules\Common\Http\Controllers\CommonController;
+use Modules\Order\Services\OrderServiceFactory;
 
 class ShippingController extends CommonController
 {
@@ -25,20 +24,20 @@ class ShippingController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
-	
+
     public function myshipping(Request $request)
     {
         $input = $request->all();
         try {
-			$user = $request->user();
+            $user = $request->user();
             $input['user_id'] = $user->id;
             return $this->sendResponse(OrderServiceFactory::mShippingService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
     }
-	
-	public function status()
+
+    public function status()
     {
         try {
             return $this->sendResponse(OrderServiceFactory::mShippingService()->status(), 'Successfully.');
@@ -46,8 +45,8 @@ class ShippingController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
-	
-	public function countByStatus(Request $request)
+
+    public function countByStatus(Request $request)
     {
         try {
             return $this->sendResponse(OrderServiceFactory::mShippingService()->countByStatus(), 'Successfully.');
@@ -79,12 +78,12 @@ class ShippingController extends CommonController
     {
         $input = $request->all();
         $arrRules = [
-            'package_count' => 'required',
-            'content' => 'required'
+            'china_warehouses_id' => 'required',
+            'china_warehouses_address' => 'required'
         ];
         $arrMessages = [
-            'package_count.required' => 'package_count.required',
-            'content.required' => 'content.required'
+            'china_warehouses_id.required' => 'Phải chọn kho Trung Quốc nhận hàng',
+            'china_warehouses_address.required' => 'Phải chọn kho Trung Quốc nhận hàng'
         ];
 
         $validator = Validator::make($input, $arrRules, $arrMessages);
@@ -92,14 +91,28 @@ class ShippingController extends CommonController
             return $this->sendError('Error', $validator->errors()->all());
         }
 
+        if (!isset($input['carrier_package']) || empty($input['carrier_package'])) {
+            return $this->sendError('Error', ['Phải nhập vận đơn!']);
+        }
+
+        $carrier_package = $input['carrier_package'];
+        foreach ($carrier_package as $package) {
+            if (empty($package['package_code'])) {
+                return $this->sendError('Error', ['Dữ liệu vận đơn không đủ! Phải nhập mã vận đơn!']);
+            }
+        }
+
+        DB::beginTransaction();
         try {
             $user = $request->user();
             $input['user_id'] = $user['id'];
             $input['status'] = 1;
 
             $create = OrderServiceFactory::mShippingService()->create($input);
+            DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
@@ -128,7 +141,7 @@ class ShippingController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
-	
+
     public function approve(Request $request)
     {
         $input = $request->all();
@@ -146,60 +159,60 @@ class ShippingController extends CommonController
             return $this->sendError('Error', $validator->errors()->all());
         }
 
-		$user = $request->user();
-		if ($user['type'] == 1) {
-			return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
-		}
-		
-		$shipping = OrderServiceFactory::mShippingService()->findById($input['id']);
-		if(empty($shipping)){
-			return $this->sendError('Error', ['Không tồn tại yêu cầu ký gửi!']);
-		}
+        $user = $request->user();
+        if ($user['type'] == 1) {
+            return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
+        }
+
+        $shipping = OrderServiceFactory::mShippingService()->findById($input['id']);
+        if (empty($shipping)) {
+            return $this->sendError('Error', ['Không tồn tại yêu cầu ký gửi!']);
+        }
 
         try {
-			DB::beginTransaction();
-			$input['approve_id'] = $user['id'];
-			$input['approve_at'] = date('Y-m-d H:i:s');
+            DB::beginTransaction();
+            $input['approve_id'] = $user['id'];
+            $input['approve_at'] = date('Y-m-d H:i:s');
             $update = OrderServiceFactory::mShippingService()->update($input);
-			if((!empty($update)) && ($input['status'] == '2')){
-				// Tao don hang
-				$orderInput = Array(
-					'user_id' => $update->user_id,
-					'shop_id' => 1,
-					'status' => 4,
-					'rate' => 1,
-					'count_product' => 0,
-					'count_link' => 0,
-					'tien_hang' => 0,
-					'phi_tam_tinh' => 0,
-					'tong' => 0,
-					'thanh_toan' => 0,
-					'con_thieu' => 0,
-					'shipping' => 1,
-				);
-				$order = OrderServiceFactory::mOrderService()->create($orderInput);
-				if (!empty($order)) {
-					// History
-					$history = [
-						'user_id' => $user['id'],
-						'order_id' => $order['id'],
-						'type' => 10
-					];
-					OrderServiceFactory::mHistoryService()->create($history);
-					//Package
-					$package = [
-						'order_id' => $order['id']
-					];
-					OrderServiceFactory::mPackageService()->create($package);
-				}
-				
-				$update->order_id = $order['id'];
-				$update->save();
-			}
-			DB::commit();
+            if ((!empty($update)) && ($input['status'] == '2')) {
+                // Tao don hang
+                $orderInput = Array(
+                    'user_id' => $update->user_id,
+                    'shop_id' => 1,
+                    'status' => 4,
+                    'rate' => 1,
+                    'count_product' => 0,
+                    'count_link' => 0,
+                    'tien_hang' => 0,
+                    'phi_tam_tinh' => 0,
+                    'tong' => 0,
+                    'thanh_toan' => 0,
+                    'con_thieu' => 0,
+                    'shipping' => 1,
+                );
+                $order = OrderServiceFactory::mOrderService()->create($orderInput);
+                if (!empty($order)) {
+                    // History
+                    $history = [
+                        'user_id' => $user['id'],
+                        'order_id' => $order['id'],
+                        'type' => 10
+                    ];
+                    OrderServiceFactory::mHistoryService()->create($history);
+                    //Package
+                    $package = [
+                        'order_id' => $order['id']
+                    ];
+                    OrderServiceFactory::mPackageService()->create($package);
+                }
+
+                $update->order_id = $order['id'];
+                $update->save();
+            }
+            DB::commit();
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
-			DB::rollBack();
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
