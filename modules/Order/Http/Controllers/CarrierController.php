@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Modules\Common\Http\Controllers\CommonController;
+use Modules\Common\Services\CommonServiceFactory;
 use Modules\Order\Services\OrderServiceFactory;
 
 class CarrierController extends CommonController
@@ -74,6 +75,62 @@ class CarrierController extends CommonController
         }
     }
 
+    public function reUpdate($id)
+    {
+        try {
+            $carrier = OrderServiceFactory::mCarrierService()->findById($id);
+            if (!empty($carrier)) {
+                $carrierPk = $carrier['carrier_package'];
+                if (sizeof($carrierPk) > 0) {
+                    // Lay ti gia tu setting
+                    $settingRate = CommonServiceFactory::mSettingService()->findByKey('rate');
+                    $rate = (int)$settingRate['setting']['value'];
+
+                    // Lay vip
+                    $ck_vc = 0;
+                    $vip = CommonServiceFactory::mVipService()->findById($carrier['user']['vip']);
+                    if (!empty($vip)) {
+                        $ck_vc = $vip['ck_vc'];
+                    }
+
+                    // Lay bang gia kiem dem
+                    $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
+
+                    $count_product = 0;
+                    foreach ($carrierPk as $pkItem) {
+                        $count_product = $count_product + $pkItem['product_count'];
+                    }
+
+                    // Kiem dem
+                    $phi_kiem_dem_cs = 0;
+                    if ($carrier['kiem_hang'] == 1) {
+                        foreach ($inspectionFee as $feeItem) {
+                            if ($feeItem->min_count <= $count_product) {
+                                $phi_kiem_dem_cs = $feeItem->val;
+                                break;
+                            }
+                        }
+                    }
+
+                    $phi_kiem_dem_tt = 0;
+                    if ($phi_kiem_dem_cs != 0) {
+                        $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
+                    }
+
+                    $carrier['count_product'] = $count_product;
+                    $carrier['vip_id'] = $vip['id'];
+                    $carrier['ck_vc'] = $ck_vc;
+                    $carrier['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
+                    $carrier['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
+                    $carrier['ti_gia'] = $rate;
+                    OrderServiceFactory::mCarrierService()->update($carrier);
+                }
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     public function create(Request $request)
     {
         $input = $request->all();
@@ -110,12 +167,9 @@ class CarrierController extends CommonController
             $input['dong_go'] = (int)$input['dong_go'];
             $input['bao_hiem'] = (int)$input['bao_hiem'];
             $input['status'] = 1;
-
             // return $this->sendResponse($input, 'Successfully.');
             $create = OrderServiceFactory::mCarrierService()->create($input);
             if (!empty($create)) {
-                
-
                 self::reUpdate($create['id']);
             }
             DB::commit();

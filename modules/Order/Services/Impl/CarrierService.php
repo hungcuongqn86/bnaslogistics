@@ -4,6 +4,7 @@ namespace Modules\Order\Services\Impl;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Common\Entities\Carrier;
+use Modules\Common\Entities\CarrierPackage;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Order\Services\Intf\ICarrierService;
 
@@ -99,6 +100,14 @@ class CarrierService extends CommonService implements ICarrierService
         DB::beginTransaction();
         try {
             $shipping->save();
+            if (!empty($arrInput['carrier_package'])) {
+                $carrier_package = [];
+                foreach ($arrInput['carrier_package'] as $pk) {
+                    $carrier_package[] = new CarrierPackage($pk);
+                }
+                $shipping->CarrierPackage()->saveMany($carrier_package);
+            }
+
             DB::commit();
             return $shipping;
         } catch (QueryException $e) {
