@@ -21,7 +21,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function search($filter)
     {
-        $query = Carrier::with(['User', 'Order'])->where('is_deleted', '=', 0);
+        $query = Carrier::with(['User', 'Order']);
         $iUser = isset($filter['user_id']) ? $filter['user_id'] : '';
         if (!empty($iUser)) {
             $query->where('user_id', '=', $iUser);
@@ -63,7 +63,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function countByStatus()
     {
-        $rResult = Carrier::where('is_deleted', '=', 0)->groupBy('status')->selectRaw('status, count(*) as total')->get();
+        $rResult = Carrier::where('id', '>', 0)->groupBy('status')->selectRaw('status, count(*) as total')->get();
         if (!empty($rResult)) {
             return $rResult;
         } else {
@@ -73,7 +73,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function getByOrder($filter)
     {
-        $query = Carrier::with(['ComplainProducts'])->where('is_deleted', '=', 0);
+        $query = Carrier::with(['ComplainProducts']);
         $iorder = isset($filter['order_id']) ? $filter['order_id'] : 0;
         if ($iorder > 0) {
             $query->where('order_id', '=', $iorder);
@@ -87,7 +87,7 @@ class CarrierService extends CommonService implements ICarrierService
     {
         $rResult = Carrier::where('id', '=', $id)->first();
         if (!empty($rResult)) {
-            return array('shipping' => $rResult->toArray());
+            return $rResult->toArray();
         } else {
             return null;
         }
