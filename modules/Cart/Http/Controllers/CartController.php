@@ -268,9 +268,9 @@ class CartController extends CommonController
                         $inputCart['price_arr'] = json_encode($inputCart['price_arr']);
                         CartServiceFactory::mCartService()->itemCreate($inputCart);
                     }
-                }
 
-                self::reUpdate($cart['id']);
+                    self::reUpdate($cart['id']);
+                }
             }
 
             DB::commit();

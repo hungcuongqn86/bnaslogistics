@@ -106,9 +106,18 @@ class CarrierController extends CommonController
         try {
             $user = $request->user();
             $input['user_id'] = $user['id'];
+            $input['kiem_hang'] = (int)$input['kiem_hang'];
+            $input['dong_go'] = (int)$input['dong_go'];
+            $input['bao_hiem'] = (int)$input['bao_hiem'];
             $input['status'] = 1;
 
+            // return $this->sendResponse($input, 'Successfully.');
             $create = OrderServiceFactory::mCarrierService()->create($input);
+            if (!empty($create)) {
+                
+
+                self::reUpdate($create['id']);
+            }
             DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
