@@ -19,6 +19,7 @@ class Carrier extends BaseEntity
     public $timestamps = false;
     protected $fillable = [
         'user_id',
+        'ti_gia',
         'product_count',
         'kiem_hang',
         'dong_go',
