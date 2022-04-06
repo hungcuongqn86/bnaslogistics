@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Modules\Common\Http\Controllers\CommonController;
 use Modules\Order\Services\OrderServiceFactory;
 
-class ShippingController extends CommonController
+class CarrierController extends CommonController
 {
     public function index()
     {
@@ -19,7 +19,7 @@ class ShippingController extends CommonController
     {
         $input = $request->all();
         try {
-            return $this->sendResponse(OrderServiceFactory::mShippingService()->search($input), 'Successfully.');
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -31,7 +31,7 @@ class ShippingController extends CommonController
         try {
             $user = $request->user();
             $input['user_id'] = $user->id;
-            return $this->sendResponse(OrderServiceFactory::mShippingService()->search($input), 'Successfully.');
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -40,7 +40,7 @@ class ShippingController extends CommonController
     public function status()
     {
         try {
-            return $this->sendResponse(OrderServiceFactory::mShippingService()->status(), 'Successfully.');
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->status(), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -49,7 +49,7 @@ class ShippingController extends CommonController
     public function countByStatus(Request $request)
     {
         try {
-            return $this->sendResponse(OrderServiceFactory::mShippingService()->countByStatus(), 'Successfully.');
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->countByStatus(), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -59,7 +59,7 @@ class ShippingController extends CommonController
     {
         $input = $request->all();
         try {
-            return $this->sendResponse(OrderServiceFactory::mShippingService()->getByOrder($input), 'Successfully.');
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->getByOrder($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -68,7 +68,7 @@ class ShippingController extends CommonController
     public function detail($id)
     {
         try {
-            return $this->sendResponse(OrderServiceFactory::mShippingService()->findById($id), 'Successfully.');
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->findById($id), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -108,7 +108,7 @@ class ShippingController extends CommonController
             $input['user_id'] = $user['id'];
             $input['status'] = 1;
 
-            $create = OrderServiceFactory::mShippingService()->create($input);
+            $create = OrderServiceFactory::mCarrierService()->create($input);
             DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
@@ -135,7 +135,7 @@ class ShippingController extends CommonController
         }
 
         try {
-            $update = OrderServiceFactory::mShippingService()->update($input);
+            $update = OrderServiceFactory::mCarrierService()->update($input);
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
@@ -164,7 +164,7 @@ class ShippingController extends CommonController
             return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
         }
 
-        $shipping = OrderServiceFactory::mShippingService()->findById($input['id']);
+        $shipping = OrderServiceFactory::mCarrierService()->findById($input['id']);
         if (empty($shipping)) {
             return $this->sendError('Error', ['Không tồn tại yêu cầu ký gửi!']);
         }
@@ -173,7 +173,7 @@ class ShippingController extends CommonController
             DB::beginTransaction();
             $input['approve_id'] = $user['id'];
             $input['approve_at'] = date('Y-m-d H:i:s');
-            $update = OrderServiceFactory::mShippingService()->update($input);
+            $update = OrderServiceFactory::mCarrierService()->update($input);
             if ((!empty($update)) && ($input['status'] == '2')) {
                 // Tao don hang
                 $orderInput = Array(

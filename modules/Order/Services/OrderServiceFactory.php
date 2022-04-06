@@ -3,7 +3,7 @@
 namespace Modules\Order\Services;
 
 use Modules\Order\Services\Impl\OrderService;
-use Modules\Order\Services\Impl\ShippingService;
+use Modules\Order\Services\Impl\CarrierService;
 use Modules\Order\Services\Impl\HistoryService;
 use Modules\Order\Services\Impl\PackageService;
 use Modules\Order\Services\Impl\ComplainService;
@@ -22,7 +22,7 @@ class OrderServiceFactory
     protected static $mComplainService;
     protected static $mComplainProductService;
     protected static $mBillService;
-    protected static $mShippingService;
+    protected static $mCarrierService;
 
     public static function mOrderService()
     {
@@ -32,12 +32,12 @@ class OrderServiceFactory
         return self::$mOrderService;
     }
 	
-	public static function mShippingService()
+	public static function mCarrierService()
     {
-        if (self::$mShippingService == null) {
-            self::$mShippingService = new ShippingService();
+        if (self::$mCarrierService == null) {
+            self::$mCarrierService = new CarrierService();
         }
-        return self::$mShippingService;
+        return self::$mCarrierService;
     }
 
     public static function mHistoryService()

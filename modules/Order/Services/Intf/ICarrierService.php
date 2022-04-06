@@ -2,7 +2,7 @@
 
 namespace Modules\Order\Services\Intf;
 
-interface IShippingService
+interface ICarrierService
 {
     public function search($filter);
 }
