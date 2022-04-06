@@ -49,6 +49,11 @@ class Carrier extends BaseEntity
         return $statusname;
     }
 
+    public function Order()
+    {
+        return $this->hasMany(Order::class, 'carrier_id', 'id');
+    }
+
     public function CarrierPackage()
     {
         return $this->hasMany(CarrierPackage::class, 'carrier_id', 'id');
