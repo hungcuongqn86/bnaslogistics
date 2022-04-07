@@ -86,7 +86,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function findById($id)
     {
-        $rResult = Carrier::where('id', '=', $id)->first();
+        $rResult = Carrier::with(['ComplainProducts', 'User'])->where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return $rResult->toArray();
         } else {
