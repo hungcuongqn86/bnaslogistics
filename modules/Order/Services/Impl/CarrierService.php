@@ -74,7 +74,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function getByOrder($filter)
     {
-        $query = Carrier::with(['ComplainProducts']);
+        $query = Carrier::with(['CarrierPackage']);
         $iorder = isset($filter['order_id']) ? $filter['order_id'] : 0;
         if ($iorder > 0) {
             $query->where('order_id', '=', $iorder);
@@ -86,7 +86,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function findById($id)
     {
-        $rResult = Carrier::with(['ComplainProducts', 'User'])->where('id', '=', $id)->first();
+        $rResult = Carrier::with(['CarrierPackage', 'User'])->where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return $rResult->toArray();
         } else {
