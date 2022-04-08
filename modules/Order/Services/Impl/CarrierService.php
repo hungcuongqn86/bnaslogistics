@@ -152,4 +152,21 @@ class CarrierService extends CommonService implements ICarrierService
             throw $e;
         }
     }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            CarrierPackage::Where('carrier_id', '=', $id)->delete();
+            Carrier::find($id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

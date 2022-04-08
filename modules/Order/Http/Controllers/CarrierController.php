@@ -231,6 +231,24 @@ class CarrierController extends CommonController
         }
     }
 
+    public function delete($id)
+    {
+        $carrier = OrderServiceFactory::mCarrierService()->findById($id);
+        if (empty($carrier)) {
+            return $this->sendError('Error', ['Không tồn tại yêu cầu ký gửi!']);
+        }
+
+        if ($carrier['status'] > 1) {
+            return $this->sendError('Error', ['Không xóa được yêu cầu ký gửi đã duyệt!']);
+        }
+
+        try {
+            return $this->sendResponse(OrderServiceFactory::mCarrierService()->delete($id), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function approve(Request $request)
     {
         $input = $request->all();

@@ -8,6 +8,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/count', 'CarrierController@countByStatus');
             Route::post('/create', 'CarrierController@create');
             Route::post('/update/{id}', 'CarrierController@update');
+            Route::post('/delete/{id}', 'CarrierController@delete');
             Route::post('/approve', 'CarrierController@approve');
             Route::get('/detail/{id}', 'CarrierController@detail');
         });
