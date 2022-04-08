@@ -321,6 +321,8 @@ class CarrierController extends CommonController
                     'phi_kiem_dem_tt' => $update->phi_kiem_dem_tt,
                     'code' => self::genOrderCode($shipping['user']['id'], $shipping['user']['code']),
                     'hander' => 1,
+                    'china_warehouses_id' => $update->china_warehouses_id,
+                    'china_warehouses_address' => $update->china_warehouses_address,
                     'status' => 4,
                     'dat_coc' => 0
                 );
@@ -340,10 +342,22 @@ class CarrierController extends CommonController
                     OrderServiceFactory::mHistoryService()->create($history);
 
                     // Package
-                    $package = [
-                        'order_id' => $order['id']
-                    ];
-                    OrderServiceFactory::mPackageService()->create($package);
+                    if (!empty($shipping['carrier_package'])) {
+                        foreach ($shipping['carrier_package'] as $pk) {
+                            $package = [
+                                'order_id' => $order['id'],
+                                'package_code' => $pk['package_code'],
+                                'status' => 3,
+                                'is_main' => $pk['is_main'],
+                                'product_name' => $pk['product_name'],
+                                'product_count' => $pk['product_count'],
+                                'carrier_brand' => $pk['carrier_brand'],
+                                'description' => $pk['description'],
+                                'note' => $pk['note'],
+                            ];
+                            OrderServiceFactory::mPackageService()->create($package);
+                        }
+                    }
                 }
             }
             DB::commit();

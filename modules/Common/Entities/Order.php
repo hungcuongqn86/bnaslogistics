@@ -43,6 +43,8 @@ class Order extends BaseEntity
         'dat_coc',
         'dat_coc_content',
         'hander',
+        'china_warehouses_id',
+        'china_warehouses_address',
         'content_pc',
         'status',
         'created_at',
