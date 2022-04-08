@@ -180,16 +180,16 @@ class CarrierController extends CommonController
         }
     }
 
-    public function update(Request $request)
+    public function update($id, Request $request)
     {
         $input = $request->all();
         $arrRules = [
-            'package_count' => 'required',
-            'content' => 'required'
+            'china_warehouses_id' => 'required',
+            'china_warehouses_address' => 'required'
         ];
         $arrMessages = [
-            'package_count.required' => 'package_count.required',
-            'content.required' => 'content.required'
+            'china_warehouses_id.required' => 'Phải chọn kho Trung Quốc nhận hàng',
+            'china_warehouses_address.required' => 'Phải chọn kho Trung Quốc nhận hàng'
         ];
 
         $validator = Validator::make($input, $arrRules, $arrMessages);
@@ -197,10 +197,36 @@ class CarrierController extends CommonController
             return $this->sendError('Error', $validator->errors()->all());
         }
 
+        if (!isset($input['carrier_package']) || empty($input['carrier_package'])) {
+            return $this->sendError('Error', ['Phải nhập vận đơn!']);
+        }
+
+        $carrier_package = $input['carrier_package'];
+        foreach ($carrier_package as $package) {
+            if (empty($package['package_code'])) {
+                return $this->sendError('Error', ['Dữ liệu vận đơn không đủ! Phải nhập mã vận đơn!']);
+            }
+        }
+
+        $carrier = OrderServiceFactory::mCarrierService()->findById($id);
+        if (empty($carrier)) {
+            return $this->sendError('Error', ['Không tồn tại yêu cầu ký gửi!']);
+        }
+
+        DB::beginTransaction();
         try {
+            $input['kiem_hang'] = (int)$input['kiem_hang'];
+            $input['dong_go'] = (int)$input['dong_go'];
+            $input['bao_hiem'] = (int)$input['bao_hiem'];
             $update = OrderServiceFactory::mCarrierService()->update($input);
+            if (!empty($update)) {
+
+                self::reUpdate($update['id']);
+            }
+            DB::commit();
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
