@@ -249,6 +249,23 @@ class CarrierController extends CommonController
         }
     }
 
+    private function genOrderCode($uId, $uCode)
+    {
+        try {
+            // 7.	Mã đơn hàng, mã số khách hàng+ số đơn đã mua, như: mã KH 224655+0001, 224655+0002…..
+            $code = 'KG';
+            $topOrder = OrderServiceFactory::mOrderService()->findByTopCode($uId);
+            if (!empty($topOrder)) {
+                $code = (string)((int)$topOrder + 1);
+            } else {
+                $code = $uCode . '0001';
+            }
+            return $code;
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function approve(Request $request)
     {
         $input = $request->all();
@@ -278,25 +295,40 @@ class CarrierController extends CommonController
 
         try {
             DB::beginTransaction();
-            $input['approve_id'] = $user['id'];
-            $input['approve_at'] = date('Y-m-d H:i:s');
-            $update = OrderServiceFactory::mCarrierService()->update($input);
+            $carrierInput['approve_id'] = $user['id'];
+            $carrierInput['approve_at'] = date('Y-m-d H:i:s');
+            $carrierInput['id'] = $input['id'];
+            $carrierInput['status'] = $input['status'];
+            $update = OrderServiceFactory::mCarrierService()->update($carrierInput);
             if ((!empty($update)) && ($input['status'] == '2')) {
                 // Tao don hang
                 $orderInput = Array(
                     'user_id' => $update->user_id,
-                    'shop_id' => 1,
-                    'status' => 4,
-                    'rate' => 1,
-                    'count_product' => 0,
-                    'count_link' => 0,
-                    'tien_hang' => 0,
-                    'phi_tam_tinh' => 0,
-                    'tong' => 0,
-                    'thanh_toan' => 0,
-                    'con_thieu' => 0,
+                    'carrier_id' => $update->id,
                     'shipping' => 1,
+                    'ti_gia' => $update->ti_gia,
+                    'count_product' => $update->product_count,
+                    'kiem_hang' => $update->kiem_hang,
+                    'dong_go' => $update->dong_go,
+                    'bao_hiem' => $update->bao_hiem,
+                    'chinh_ngach' => $update->chinh_ngach,
+                    'vat' => $update->vat,
+                    'tien_hang' => 0,
+                    'tra_shop' => 0,
+                    'vip_id' => $update->vip_id,
+                    'ck_vc' => $update->ck_vc,
+                    'phi_kiem_dem_cs' => $update->phi_kiem_dem_cs,
+                    'phi_kiem_dem_tt' => $update->phi_kiem_dem_tt,
+                    'code' => self::genOrderCode($shipping['user']['id'], $shipping['user']['code']),
+                    'hander' => 1,
+                    'status' => 4,
+                    'dat_coc' => 0
                 );
+
+                if (isset($shipping['user']['hander'])) {
+                    $orderInput['hander'] = $shipping['user']['hander'];
+                }
+
                 $order = OrderServiceFactory::mOrderService()->create($orderInput);
                 if (!empty($order)) {
                     // History
@@ -306,15 +338,13 @@ class CarrierController extends CommonController
                         'type' => 10
                     ];
                     OrderServiceFactory::mHistoryService()->create($history);
-                    //Package
+
+                    // Package
                     $package = [
                         'order_id' => $order['id']
                     ];
                     OrderServiceFactory::mPackageService()->create($package);
                 }
-
-                $update->order_id = $order['id'];
-                $update->save();
             }
             DB::commit();
             return $this->sendResponse($update, 'Successfully.');

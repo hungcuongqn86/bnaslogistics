@@ -126,22 +126,25 @@ class CarrierService extends CommonService implements ICarrierService
         try {
             $shipping = Carrier::find($id);
             $shipping->update($arrInput);
-            $previousCarrierPackageIds = CarrierPackage::Where('carrier_id', '=', $id)->pluck('id');
-            foreach ($arrInput['carrier_package'] as $row) {
-                if (!isset($row['id']) || $row['id'] == 0) {
-                    $pkItem = new CarrierPackage(array_merge([
-                        'carrier_id' => $id
-                    ], $row));
-                    $pkItem->save();
-                } else {
-                    if (is_numeric($index = $previousCarrierPackageIds->search($row['id']))) {
-                        $previousCarrierPackageIds->forget($index);
+            if (isset($arrInput['carrier_package']) && !empty($arrInput['carrier_package'])) {
+                $previousCarrierPackageIds = CarrierPackage::Where('carrier_id', '=', $id)->pluck('id');
+                foreach ($arrInput['carrier_package'] as $row) {
+                    if (!isset($row['id']) || $row['id'] == 0) {
+                        $pkItem = new CarrierPackage(array_merge([
+                            'carrier_id' => $id
+                        ], $row));
+                        $pkItem->save();
+                    } else {
+                        if (is_numeric($index = $previousCarrierPackageIds->search($row['id']))) {
+                            $previousCarrierPackageIds->forget($index);
+                        }
+                        $pkItem = CarrierPackage::find($row['id']);
+                        $pkItem->update($row);
                     }
-                    $pkItem = CarrierPackage::find($row['id']);
-                    $pkItem->update($row);
                 }
+                CarrierPackage::whereIn('id', $previousCarrierPackageIds)->delete();
             }
-            CarrierPackage::whereIn('id', $previousCarrierPackageIds)->delete();
+
             DB::commit();
             return $shipping;
         } catch (QueryException $e) {
