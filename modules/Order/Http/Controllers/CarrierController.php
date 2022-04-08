@@ -117,7 +117,7 @@ class CarrierController extends CommonController
                         $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
                     }
 
-                    $carrier['count_product'] = $count_product;
+                    $carrier['product_count'] = $count_product;
                     $carrier['vip_id'] = $vip['id'];
                     $carrier['ck_vc'] = $ck_vc;
                     $carrier['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
