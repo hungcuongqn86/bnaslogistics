@@ -5,6 +5,7 @@ namespace Modules\Order\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Modules\Common\Entities\CarrierPackage;
 use Modules\Common\Http\Controllers\CommonController;
 use Modules\Common\Services\CommonServiceFactory;
 use Modules\Order\Services\OrderServiceFactory;
@@ -220,7 +221,6 @@ class CarrierController extends CommonController
             $input['bao_hiem'] = (int)$input['bao_hiem'];
             $update = OrderServiceFactory::mCarrierService()->update($input);
             if (!empty($update)) {
-
                 self::reUpdate($update['id']);
             }
             DB::commit();
