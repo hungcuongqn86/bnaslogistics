@@ -22,7 +22,7 @@ class CarrierService extends CommonService implements ICarrierService
 
     public function search($filter)
     {
-        $query = Carrier::with(['User', 'Order']);
+        $query = Carrier::with(['User', 'Order', 'CarrierPackage']);
         $iUser = isset($filter['user_id']) ? $filter['user_id'] : '';
         if (!empty($iUser)) {
             $query->where('user_id', '=', $iUser);
