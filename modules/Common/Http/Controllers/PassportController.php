@@ -2,16 +2,15 @@
 
 namespace Modules\Common\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\User;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use App\Notifications\SignupActivate;
-use Modules\Common\Services\CommonServiceFactory;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Modules\Common\Services\CommonServiceFactory;
+use Spatie\Permission\Models\Role;
 
 class PassportController extends CommonController
 {
@@ -70,12 +69,20 @@ class PassportController extends CommonController
         if ($request->remember_me)
             $token->expires_at = Carbon::now()->addWeeks(1);
         $token->save();
+        $request->session()->invalidate();
+        $request->session()->put('login', $user);
         return response()->json([
             'status' => true,
             'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString()
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->session()->flush();
+        return response()->json([true]);
     }
 
     /**
@@ -142,7 +149,7 @@ class PassportController extends CommonController
         $input['type'] = 1;
         // Set Vip
         $firstVip = CommonServiceFactory::mVipService()->getFirstVip();
-        if(!empty($firstVip)){
+        if (!empty($firstVip)) {
             $input['vip'] = $firstVip['id'];
         }
         $input['code'] = self::genCode();
@@ -192,10 +199,13 @@ class PassportController extends CommonController
      *
      * @return \Illumiante\Http\Response
      */
-    public function getDetails()
+    public function getDetails(Request $request)
     {
         $user = Auth::user();
         $rResult = User::with(['Partner', 'roles'])->where('id', '=', $user['id'])->first();
+        if (!empty($rResult) && !$request->session()->has('login')) {
+            $request->session()->put('login', $user);
+        }
         return response()->json(['success' => $rResult], $this->sucessStatus);
     }
 
@@ -363,7 +373,8 @@ class PassportController extends CommonController
         /*$user = User::where('id', 11)->first();
         $user->assignRole('custumer');*/
 
-        echo 1;exit;
+        echo 1;
+        exit;
         // Permissions
         /*Permission::create(['name' => 'dashboard']);
         Permission::create(['name' => 'mcustumer']);

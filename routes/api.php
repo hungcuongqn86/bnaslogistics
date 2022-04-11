@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 Route::group(['prefix' => 'v1'], function () {
     Route::group(['namespace' => 'Modules\Common\Http\Controllers'], function () {
         Route::post('login', 'PassportController@login');
+        Route::post('logout', 'PassportController@logout');
         Route::post('register', 'PassportController@register');
 
         Route::post('activate/{token}', 'PassportController@signupActivate');
