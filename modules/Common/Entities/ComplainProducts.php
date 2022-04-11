@@ -19,9 +19,9 @@ class ComplainProducts extends BaseEntity
         'updated_at'
     ];
 
-    public function Cart()
+    public function OrderItem()
     {
-        return $this->belongsTo(Cart::class, 'cart_id', 'id');
+        return $this->belongsTo(OrderItem::class, 'cart_id', 'id');
     }
 
     public function Media()

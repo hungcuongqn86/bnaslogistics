@@ -3,6 +3,7 @@
 namespace Modules\Order\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Modules\Order\Services\OrderServiceFactory;
 use Modules\Common\Services\CommonServiceFactory;
@@ -71,7 +72,7 @@ class ComplainController extends CommonController
         if ($validator->fails()) {
             return $this->sendError('Error', $validator->errors()->all());
         }
-
+        DB::beginTransaction();
         try {
             $user = $request->user();
             $input['user_id'] = $user['id'];
@@ -82,7 +83,7 @@ class ComplainController extends CommonController
                 foreach ($arrCart as $product) {
                     $complainProduct = array(
                         'complain_id' => $create['id'],
-                        'cart_id' => $product['cart']['id'],
+                        'cart_id' => $product['orderItem']['id'],
                         'is_deleted' => 0
                     );
                     $complainProductCreate = OrderServiceFactory::mComplainProductService()->create($complainProduct);
@@ -100,8 +101,10 @@ class ComplainController extends CommonController
                     }
                 }
             }
+            DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
