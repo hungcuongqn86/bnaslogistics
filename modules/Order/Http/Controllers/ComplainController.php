@@ -83,7 +83,7 @@ class ComplainController extends CommonController
                 foreach ($arrCart as $product) {
                     $complainProduct = array(
                         'complain_id' => $create['id'],
-                        'cart_id' => $product['orderItem']['id'],
+                        'cart_id' => $product['order_item']['id'],
                         'is_deleted' => 0
                     );
                     $complainProductCreate = OrderServiceFactory::mComplainProductService()->create($complainProduct);
