@@ -135,4 +135,18 @@ class ComplainController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
+
+    public function delete($id)
+    {
+        $complain = OrderServiceFactory::mComplainService()->findById($id);
+        if (empty($complain)) {
+            return $this->sendError('Error', ['Không tồn tại khiếu nại!']);
+        }
+
+        try {
+            return $this->sendResponse(OrderServiceFactory::mComplainService()->delete($id), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 }

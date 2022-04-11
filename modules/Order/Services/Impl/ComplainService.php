@@ -3,6 +3,7 @@
 namespace Modules\Order\Services\Impl;
 
 use Modules\Common\Entities\Complain;
+use Modules\Common\Entities\ComplainProducts;
 use Modules\Common\Services\Impl\CommonService;
 use Modules\Order\Services\Intf\IComplainService;
 use Illuminate\Support\Facades\DB;
@@ -90,6 +91,23 @@ class ComplainService extends CommonService implements IComplainService
             $complain->update($arrInput);
             DB::commit();
             return $complain;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            ComplainProducts::Where('complain_id', '=', $id)->delete();
+            Complain::find($id)->delete();
+            DB::commit();
+            return true;
         } catch (QueryException $e) {
             DB::rollBack();
             throw $e;

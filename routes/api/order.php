@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/types', 'ComplainController@types');
                 Route::post('/create', 'ComplainController@create');
                 Route::post('/update', 'ComplainController@update');
+                Route::post('/delete/{id}', 'ComplainController@delete');
             });
         });
     });
