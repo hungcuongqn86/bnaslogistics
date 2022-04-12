@@ -226,6 +226,14 @@ class PassportController extends CommonController
             $nav[] = $newobj;
         }
 
+        if ($user->hasPermissionTo('myshipping')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Bảng tổng hợp';
+            $newobj->url = '/home';
+            $newobj->icon = 'iconsax isax-house';
+            $nav[] = $newobj;
+        }
+
         if ($user->hasPermissionTo('cart')) {
             $newobj = new \stdClass();
             $newobj->name = 'Giỏ hàng';
