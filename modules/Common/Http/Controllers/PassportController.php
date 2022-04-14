@@ -190,7 +190,7 @@ class PassportController extends CommonController
         $user->activation_token = '';
         $user->save();
         echo 'Kích hoạt tài khoản thành công!';
-        header("Location: https://order.bnaslogistics.com/");
+        header("Location: https://nguonhang.net/order/");
         exit();
     }
 
