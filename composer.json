@@ -19,7 +19,8 @@
         "peterpetrus/passport-token": "^0.0.9",
         "spatie/laravel-permission": "^2.36",
       "ext-pdo": "*",
-      "ext-json": "*"
+      "ext-json": "*",
+      "ext-curl": "*"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

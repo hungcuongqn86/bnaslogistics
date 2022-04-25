@@ -2,6 +2,7 @@
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => 'v1'], function () {
         Route::group(['prefix' => 'dashboard', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/translation', 'DashboardController@translation');
             Route::get('/newlinks', 'DashboardController@newlinks');
             Route::get('/neworders', 'DashboardController@neworders');
             Route::get('/newusers', 'DashboardController@newusers');

@@ -12,6 +12,38 @@ use Modules\Common\Entities\Order;
 
 class DashboardController extends CommonController
 {
+    public function translation(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyAuZIpp9yLCKRuKhp4oJF4EFj-3cpzrytg";
+            $fields = [
+                'q' => $input['key'],
+                'target' => 'zh-CN'
+            ];
+
+            $fields_string = http_build_query($fields);
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $fields_string);
+            $data = curl_exec($curl);
+            curl_close($curl);
+            $response = json_decode($data, true);
+            $keyRes = '';
+            if (!empty($response) && !empty($response['data']) && !empty($response['data']['translations'])) {
+                $keyRes = $response['data']['translations'][0]['translatedText'];
+                $keyRes = mb_convert_encoding ($keyRes, "GBK", "auto");
+                $keyRes = urlencode($keyRes);
+            }
+            return $this->sendResponse(['key' => $keyRes], 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function newlinks(Request $request)
     {
         $input = $request->all();
