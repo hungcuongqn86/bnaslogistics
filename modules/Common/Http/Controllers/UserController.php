@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Http\Controllers;
 
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Modules\Common\Services\CommonServiceFactory;
 use Illuminate\Support\Facades\Validator;
@@ -57,6 +58,8 @@ class UserController extends CommonController
     public function detail($id)
     {
         try {
+            // $login = session()->all();
+            // dd($login);
             return $this->sendResponse(CommonServiceFactory::mUserService()->findById($id), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

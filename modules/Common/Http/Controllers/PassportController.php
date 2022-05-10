@@ -70,7 +70,7 @@ class PassportController extends CommonController
             $token->expires_at = Carbon::now()->addWeeks(1);
         $token->save();
         $request->session()->invalidate();
-        $request->session()->put('login', $user);
+        $request->session()->put('login', $user->toArray());
         return response()->json([
             'status' => true,
             'access_token' => $tokenResult->accessToken,
@@ -204,7 +204,7 @@ class PassportController extends CommonController
         $user = Auth::user();
         $rResult = User::with(['Partner', 'roles'])->where('id', '=', $user['id'])->first();
         if (!empty($rResult) && !$request->session()->has('login')) {
-            $request->session()->put('login', $user);
+            $request->session()->put('login', $user->toArray());
         }
         return response()->json(['success' => $rResult], $this->sucessStatus);
     }
