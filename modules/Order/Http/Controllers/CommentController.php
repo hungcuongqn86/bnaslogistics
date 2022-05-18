@@ -157,6 +157,7 @@ class CommentController extends CommonController
 
             if (!empty($create)) {
                 $data = [
+                    "user_name" => $create->user_name,
                     "order_id" => $create->order_id,
                     "content" => $create->content,
                     "created_at" => $create->created_at
@@ -167,7 +168,7 @@ class CommentController extends CommonController
                     $users = CommonServiceFactory::mUserService()->usersGetAll([]);
                     foreach ($users as $userItem) {
                         if (($userItem->id != $create->user_id) && ($userItem->id != 1)) {
-                            if (($userItem->id == $order['order']['user_id']) || ($userItem->hasRole('admin'))) {
+                            if (($userItem->id == $order['user_id']) || ($userItem->hasRole('admin'))) {
                                 $refer = config('app.name') . '/comment/' . $userItem->id . '/' . $create->id;
                                 $update[$refer] = $data;
                             }
@@ -177,7 +178,7 @@ class CommentController extends CommonController
                     $users = CommonServiceFactory::mUserService()->usersGetAll(["type" => 0]);
                     foreach ($users as $userItem) {
                         if ($userItem->id != 1) {
-                            if (($userItem->id == $order['order']['hander']) || ($userItem->hasRole('admin'))) {
+                            if (($userItem->id == $order['hander']) || ($userItem->hasRole('admin'))) {
                                 $refer = config('app.name') . '/comment/' . $userItem->id . '/' . $create->id;
                                 $update[$refer] = $data;
                             }
