@@ -159,7 +159,7 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+            $query = Cart::with(['CartItems'])->whereDate('created_at', '>=', $date->toDateString());
             $query->whereHas('CartItems', function ($q) {
                 $q->where('domain', '=', 'taobao');
             });
@@ -172,7 +172,7 @@ class DashboardController extends CommonController
             $carts = $query->get();
             $linkCount = 0;
             foreach ($carts as $cart) {
-                $linkCount = $linkCount + sizeof($cart['cart_items']);
+                $linkCount = $linkCount + sizeof($cart->CartItems);
             }
 
             $query = Order::whereDate('created_at', '>=', $date->toDateString());
@@ -205,7 +205,7 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+            $query = Cart::with(['CartItems'])->whereDate('created_at', '>=', $date->toDateString());
             $query->whereHas('CartItems', function ($q) {
                 $q->where('domain', '=', 'tmall');
             });
@@ -218,7 +218,7 @@ class DashboardController extends CommonController
             $carts = $query->get();
             $linkCount = 0;
             foreach ($carts as $cart) {
-                $linkCount = $linkCount + sizeof($cart['cart_items']);
+                $linkCount = $linkCount + sizeof($cart->CartItems);
             }
 
             $query = Order::whereDate('created_at', '>=', $date->toDateString());
@@ -251,7 +251,7 @@ class DashboardController extends CommonController
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::whereDate('created_at', '>=', $date->toDateString());
+            $query = Cart::with(['CartItems'])->whereDate('created_at', '>=', $date->toDateString());
             $query->whereHas('CartItems', function ($q) {
                 $q->where('domain', '=', '1688');
             });
@@ -263,8 +263,9 @@ class DashboardController extends CommonController
 
             $carts = $query->get();
             $linkCount = 0;
+
             foreach ($carts as $cart) {
-                $linkCount = $linkCount + sizeof($cart['cart_items']);
+                $linkCount = $linkCount + sizeof($cart->CartItems);
             }
 
             $query = Order::whereDate('created_at', '>=', $date->toDateString());
