@@ -174,39 +174,19 @@ class DashboardController extends CommonController
         }
     }
 
-    public function statisticbytaobao(Request $request)
+
+    public function statisticbydomain($dn, $domain)
     {
-        $input = $request->all();
-        $dn = 7;
-        if (isset($input['dn'])) {
-            $dn = $input['dn'];
-        }
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
             $user = Auth::user();
             $userId = $user['id'];
 
-            $query = Cart::with(['CartItems'])->whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('CartItems', function ($q) {
-                $q->where('domain', '=', 'taobao');
-            });
-            if (!$user->hasRole('admin')) {
-                $query->whereHas('User', function ($q) use ($userId) {
-                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
-                });
-            }
-
-            $carts = $query->get();
-            $linkCount = 0;
-            foreach ($carts as $cart) {
-                $linkCount = $linkCount + sizeof($cart->CartItems);
-            }
-
             $query = Order::whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('Cart', function ($q) {
-                $q->whereHas('CartItems', function ($q) {
-                    $q->where('domain', '=', 'taobao');
+            $query->whereHas('Cart', function ($q)  use ($domain){
+                $q->whereHas('CartItems', function ($q) use ($domain){
+                    $q->where('domain', '=', $domain);
                 });
             });
             if (!$user->hasRole('admin')) {
@@ -214,7 +194,35 @@ class DashboardController extends CommonController
             }
             $orderCount = $query->count();
 
-            return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
+            $query = Order::whereHas('History', function ($q) use ($date) {
+                $q->where('type', '=', 9);
+                $q->whereDate('created_at', '>=', $date->toDateString());
+            });
+            $query->whereHas('Cart', function ($q)  use ($domain){
+                $q->whereHas('CartItems', function ($q)  use ($domain){
+                    $q->where('domain', '=', $domain);
+                });
+            });
+            if (!$user->hasRole('admin')) {
+                $query->where('hander', '=', $userId);
+            }
+            $complete = $query->count();
+
+            return ['new' => $orderCount, 'complete' => $complete];
+        } catch (\Exception $e) {
+            return ['new' => 0, 'complete' => 0];
+        }
+    }
+
+    public function statisticbytaobao(Request $request)
+    {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        try {
+            return $this->sendResponse(self::statisticbydomain($dn, 'taobao'), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -227,40 +235,9 @@ class DashboardController extends CommonController
         if (isset($input['dn'])) {
             $dn = $input['dn'];
         }
-        $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $user = Auth::user();
-            $userId = $user['id'];
-
-            $query = Cart::with(['CartItems'])->whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('CartItems', function ($q) {
-                $q->where('domain', '=', 'tmall');
-            });
-            if (!$user->hasRole('admin')) {
-                $query->whereHas('User', function ($q) use ($userId) {
-                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
-                });
-            }
-
-            $carts = $query->get();
-            $linkCount = 0;
-            foreach ($carts as $cart) {
-                $linkCount = $linkCount + sizeof($cart->CartItems);
-            }
-
-            $query = Order::whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('Cart', function ($q) {
-                $q->whereHas('CartItems', function ($q) {
-                    $q->where('domain', '=', 'tmall');
-                });
-            });
-            if (!$user->hasRole('admin')) {
-                $query->where('hander', '=', $userId);
-            }
-            $orderCount = $query->count();
-
-            return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
+            return $this->sendResponse(self::statisticbydomain($dn, 'tmall'), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
@@ -273,41 +250,9 @@ class DashboardController extends CommonController
         if (isset($input['dn'])) {
             $dn = $input['dn'];
         }
-        $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $user = Auth::user();
-            $userId = $user['id'];
-
-            $query = Cart::with(['CartItems'])->whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('CartItems', function ($q) {
-                $q->where('domain', '=', '1688');
-            });
-            if (!$user->hasRole('admin')) {
-                $query->whereHas('User', function ($q) use ($userId) {
-                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
-                });
-            }
-
-            $carts = $query->get();
-            $linkCount = 0;
-
-            foreach ($carts as $cart) {
-                $linkCount = $linkCount + sizeof($cart->CartItems);
-            }
-
-            $query = Order::whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('Cart', function ($q) {
-                $q->whereHas('CartItems', function ($q) {
-                    $q->where('domain', '=', '1688');
-                });
-            });
-            if (!$user->hasRole('admin')) {
-                $query->where('hander', '=', $userId);
-            }
-            $orderCount = $query->count();
-
-            return $this->sendResponse(['link' => $linkCount, 'order' => $orderCount], 'Successfully.');
+            return $this->sendResponse(self::statisticbydomain($dn, '1688'), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
