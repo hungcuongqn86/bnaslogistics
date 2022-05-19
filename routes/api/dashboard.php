@@ -4,6 +4,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => 'dashboard', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
             Route::get('/newlinks', 'DashboardController@newlinks');
             Route::get('/neworders', 'DashboardController@neworders');
+            Route::get('/completeOrders', 'DashboardController@completeOrders');
             Route::get('/newusers', 'DashboardController@newusers');
             Route::get('/newcomplains', 'DashboardController@newcomplains');
 

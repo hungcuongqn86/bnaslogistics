@@ -96,6 +96,34 @@ class DashboardController extends CommonController
         }
     }
 
+    public function completeOrders(Request $request)
+    {
+        $input = $request->all();
+        $dn = 7;
+        if (isset($input['dn'])) {
+            $dn = $input['dn'];
+        }
+        $date = Carbon::now()->subDays($dn - 1);
+
+        try {
+            $query = Order::whereHas('History', function ($q) use ($date) {
+                $q->where('type', '=', 9);
+                $q->whereDate('created_at', '>=', $date->toDateString());
+            });
+
+            $user = Auth::user();
+            if (!$user->hasRole('admin')) {
+                $userId = $user['id'];
+                $query->where('hander', '=', $userId);
+            }
+
+            $count = $query->count();
+            return $this->sendResponse(['completeOrders' => $count], 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function newusers(Request $request)
     {
         $input = $request->all();
