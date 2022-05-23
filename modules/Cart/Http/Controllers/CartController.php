@@ -318,8 +318,13 @@ class CartController extends CommonController
             if (!empty($cart)) {
                 // cart_items
                 foreach ($input['cart_items'] as $item) {
-                    if (!empty($item)
-                        && (!empty($item['amount'] || !empty($item['price']) || !empty($item['image']))) || !empty($item['pro_link'])) {
+                    if (!empty($item)) {
+                        if (empty($item['amount'])) {
+                            $item['amount'] = 0;
+                        }
+                        if (empty($item['price'])) {
+                            $item['price'] = 0;
+                        }
                         $item['cart_id'] = $cart['id'];
                         CartServiceFactory::mCartService()->itemCreate($item);
                     }
