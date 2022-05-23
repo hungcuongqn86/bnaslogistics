@@ -318,30 +318,12 @@ class CartController extends CommonController
             if (!empty($cart)) {
                 // cart_items
                 foreach ($input['cart_items'] as $item) {
-                    $inputCart = (array)$item;
-                    $arrRules = [
-                        'amount' => 'required',
-                        'price' => 'required',
-                        'image' => 'required',
-                        'pro_link' => 'required'
-                    ];
-                    $arrMessages = [
-                        'amount.required' => 'amount.required',
-                        'price.required' => 'price.required',
-                        'image.required' => 'image.required',
-                        'pro_link.required' => 'pro_link.required'
-                    ];
-
-                    $validator = Validator::make($inputCart, $arrRules, $arrMessages);
-                    if ($validator->fails()) {
-                        DB::rollBack();
-                        return $this->sendError('Error', $validator->errors()->all());
+                    if (!empty($item)
+                        && (!empty($item['amount'] || !empty($item['price']) || !empty($item['image']))) || !empty($item['pro_link'])) {
+                        $item['cart_id'] = $cart['id'];
+                        CartServiceFactory::mCartService()->itemCreate($item);
                     }
-
-                    $inputCart['cart_id'] = $cart['id'];
-                    CartServiceFactory::mCartService()->itemCreate($inputCart);
                 }
-
                 self::reUpdate($cart['id']);
             }
 
