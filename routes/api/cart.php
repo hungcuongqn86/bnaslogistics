@@ -2,6 +2,7 @@
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => 'cart', 'namespace' => 'Modules\Cart\Http\Controllers'], function () {
         Route::get('/search', 'CartController@search');
+        Route::post('/store', 'CartController@store');
         Route::post('/update/{id}', 'CartController@update');
         Route::post('/delete/{id}', 'CartController@delete');
         Route::group(['prefix' => 'cart_item'], function () {
