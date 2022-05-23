@@ -228,9 +228,9 @@ class CartController extends CommonController
 
                 // Add Cart
                 $cartInput = array(
-                    'user_id'  => (int)$decoded_token['user_id'],
-                    'shop_id'  => $shop['id'],
-                    'status'  => 1,
+                    'user_id' => (int)$decoded_token['user_id'],
+                    'shop_id' => $shop['id'],
+                    'status' => 1,
                 );
 
                 $cart = CartServiceFactory::mCartService()->create($cartInput);
@@ -271,6 +271,78 @@ class CartController extends CommonController
 
                     self::reUpdate($cart['id']);
                 }
+            }
+
+            DB::commit();
+            return $this->sendResponse($cart, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $input = $request->all();
+        DB::beginTransaction();
+        try {
+            $user = $request->user();
+
+            // Shop
+            if (empty($input['shop'])) {
+                DB::rollBack();
+                return $this->sendError('Error', 'Shop empty!');
+            }
+
+            $shop = $input['shop'];
+            $shopNick = $shop['name'];
+            $shopLink = $shop['url'];
+            $shop = ShopServiceFactory::mShopService()->findByUrl($shopLink, $user->id);
+            if (!$shop) {
+                $inputShop = [
+                    'name' => $shopNick,
+                    'url' => $shopLink,
+                    'user_id' => $user->id
+                ];
+                $shop = ShopServiceFactory::mShopService()->create($inputShop);
+            }
+
+            // Add Cart
+            $cartInput = array(
+                'user_id' => $user->id,
+                'shop_id' => $shop['id'],
+                'status' => 1,
+            );
+
+            $cart = CartServiceFactory::mCartService()->create($cartInput);
+            if (!empty($cart)) {
+                // cart_items
+                foreach ($input['cart_items'] as $item) {
+                    $inputCart = (array)$item;
+                    $arrRules = [
+                        'amount' => 'required',
+                        'price' => 'required',
+                        'image' => 'required',
+                        'pro_link' => 'required'
+                    ];
+                    $arrMessages = [
+                        'amount.required' => 'amount.required',
+                        'price.required' => 'price.required',
+                        'image.required' => 'image.required',
+                        'pro_link.required' => 'pro_link.required'
+                    ];
+
+                    $validator = Validator::make($inputCart, $arrRules, $arrMessages);
+                    if ($validator->fails()) {
+                        DB::rollBack();
+                        return $this->sendError('Error', $validator->errors()->all());
+                    }
+
+                    $inputCart['cart_id'] = $cart['id'];
+                    CartServiceFactory::mCartService()->itemCreate($inputCart);
+                }
+
+                self::reUpdate($cart['id']);
             }
 
             DB::commit();
