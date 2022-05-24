@@ -16,6 +16,7 @@ class Order extends BaseEntity
     protected $fillable = [
         'user_id',
         'cart_id',
+        'shop_id',
         'carrier_id',
         'code',
         'shipping',
@@ -70,6 +71,11 @@ class Order extends BaseEntity
     public function Handle()
     {
         return $this->belongsTo(User::class, 'hander', 'id');
+    }
+
+    public function Shop()
+    {
+        return $this->belongsTo(Shop::class, 'shop_id', 'id');
     }
 
     public function Cart()
