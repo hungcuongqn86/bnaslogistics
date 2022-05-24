@@ -28,6 +28,22 @@ class ShopService extends CommonService implements IShopService
         return [1];
     }
 
+    public function myShops($filter)
+    {
+        $query = Shop::with(['Orders'])->where('user_id', '=', $filter['user_id']);
+        $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
+        if (!empty($sKeySearch)) {
+            $query->where(function ($q) use ($sKeySearch) {
+                $q->where('name', 'LIKE', '%' . $sKeySearch . '%');
+                $q->orWhere('url', 'LIKE', '%' . $sKeySearch . '%');
+                $q->orWhere('features', 'LIKE', '%' . $sKeySearch . '%');
+            });
+        }
+        $query->orderBy('id', 'desc');
+        $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
+        return $query->paginate($limit)->toArray();
+    }
+
     public function getByIds($userid)
     {
         $query = Shop::with(array('CartItems' => function ($query) {

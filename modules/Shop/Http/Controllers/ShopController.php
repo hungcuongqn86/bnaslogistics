@@ -3,6 +3,7 @@
 namespace Modules\Shop\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Modules\Common\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 use Modules\Shop\Services\ShopServiceFactory;
@@ -15,6 +16,18 @@ class ShopController extends CommonController
         $input = $request->all();
         try {
             return $this->sendResponse(ShopServiceFactory::mShopService()->search($input), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function myshop(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $currentUser = Auth::user();
+            $input['user_id'] = $currentUser['id'];
+            return $this->sendResponse(ShopServiceFactory::mShopService()->myShops($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }

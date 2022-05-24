@@ -226,7 +226,7 @@ class PassportController extends CommonController
             $nav[] = $newobj;
         }
 
-        if ($user->hasPermissionTo('myshipping')) {
+        if ($user->hasPermissionTo('cart')) {
             $newobj = new \stdClass();
             $newobj->name = 'Bảng tổng hợp';
             $newobj->url = '/home';
@@ -255,6 +255,14 @@ class PassportController extends CommonController
             $newobj->name = 'Đơn hàng';
             $newobj->url = '/order/myorder';
             $newobj->icon = 'iconsax isax-receipt-edit';
+            $nav[] = $newobj;
+        }
+
+        if ($user->hasPermissionTo('myorder')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Nhà cung cấp';
+            $newobj->url = '/mshop/myshop';
+            $newobj->icon = 'iconsax isax-driver';
             $nav[] = $newobj;
         }
 
