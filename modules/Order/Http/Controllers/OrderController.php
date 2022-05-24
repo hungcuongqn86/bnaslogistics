@@ -363,6 +363,7 @@ class OrderController extends CommonController
             // Add Order
             $orderInput = array(
                 'user_id' => (int)$user['id'],
+                'shop_id' => $cart['shop_id'],
                 'cart_id' => $cartId,
                 'code' => self::genOrderCode($user->id, $user->code),
                 'shipping' => 0,
