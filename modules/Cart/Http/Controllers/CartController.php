@@ -217,7 +217,7 @@ class CartController extends CommonController
                 // Shop
                 $shopNick = $inputData[0]->shop_nick;
                 $shopLink = $inputData[0]->shop_link;
-                $shop = ShopServiceFactory::mShopService()->findByUrl($shopLink);
+                $shop = ShopServiceFactory::mShopService()->findByUrl($shopLink, $decoded_token['user_id']);
                 if (!$shop) {
                     $inputShop = [
                         'name' => $shopNick,
