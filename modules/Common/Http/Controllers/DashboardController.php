@@ -35,7 +35,7 @@ class DashboardController extends CommonController
             $keyRes = '';
             if (!empty($response) && !empty($response['data']) && !empty($response['data']['translations'])) {
                 $keyRes = $response['data']['translations'][0]['translatedText'];
-                $keyRes = mb_convert_encoding ($keyRes, "GBK", "auto");
+                $keyRes = mb_convert_encoding($keyRes, "GBK", "auto");
                 $keyRes = urlencode($keyRes);
             }
             return $this->sendResponse(['key' => $keyRes], 'Successfully.');
@@ -184,13 +184,17 @@ class DashboardController extends CommonController
             $userId = $user['id'];
 
             $query = Order::whereDate('created_at', '>=', $date->toDateString());
-            $query->whereHas('Cart', function ($q)  use ($domain){
-                $q->whereHas('CartItems', function ($q) use ($domain){
+            $query->whereHas('Cart', function ($q) use ($domain) {
+                $q->whereHas('CartItems', function ($q) use ($domain) {
                     $q->where('domain', '=', $domain);
                 });
             });
-            if (!$user->hasRole('admin')) {
-                $query->where('hander', '=', $userId);
+            if ($user['type'] == 1) {
+                $query->where('user_id', '=', $userId);
+            } else {
+                if (!$user->hasRole('admin')) {
+                    $query->where('hander', '=', $userId);
+                }
             }
             $orderCount = $query->count();
 
@@ -198,8 +202,8 @@ class DashboardController extends CommonController
                 $q->where('type', '=', 9);
                 $q->whereDate('created_at', '>=', $date->toDateString());
             });
-            $query->whereHas('Cart', function ($q)  use ($domain){
-                $q->whereHas('CartItems', function ($q)  use ($domain){
+            $query->whereHas('Cart', function ($q) use ($domain) {
+                $q->whereHas('CartItems', function ($q) use ($domain) {
                     $q->where('domain', '=', $domain);
                 });
             });
@@ -272,8 +276,12 @@ class DashboardController extends CommonController
             $userId = $user['id'];
 
             $query = Order::whereDate('created_at', '>=', $date->toDateString());
-            if (!$user->hasRole('admin')) {
-                $query->where('hander', '=', $userId);
+            if ($user['type'] == 1) {
+                $query->where('user_id', '=', $userId);
+            } else {
+                if (!$user->hasRole('admin')) {
+                    $query->where('hander', '=', $userId);
+                }
             }
             $total = $query->count();
 
@@ -281,8 +289,12 @@ class DashboardController extends CommonController
             if ($total > 0) {
                 $query = Order::selectRaw("status, count(*) value")
                     ->whereDate('created_at', '>=', $date->toDateString());
-                if (!$user->hasRole('admin')) {
-                    $query->where('hander', '=', $userId);
+                if ($user['type'] == 1) {
+                    $query->where('user_id', '=', $userId);
+                } else {
+                    if (!$user->hasRole('admin')) {
+                        $query->where('hander', '=', $userId);
+                    }
                 }
                 $query->groupBy('status')->orderBy('status');
                 $result = $query->get();
@@ -327,9 +339,14 @@ class DashboardController extends CommonController
             $userId = $user['id'];
             $query = Order::selectRaw("DATE_FORMAT(created_at, '%d/%m/%Y') date, count(*) value")
                 ->whereDate('created_at', '>=', $date->toDateString());
-            if (!$user->hasRole('admin')) {
-                $query->where('hander', '=', $userId);
+            if ($user['type'] == 1) {
+                $query->where('user_id', '=', $userId);
+            } else {
+                if (!$user->hasRole('admin')) {
+                    $query->where('hander', '=', $userId);
+                }
             }
+
             $query->groupBy('date')->orderBy('date');
 
             $result = $query->get();
