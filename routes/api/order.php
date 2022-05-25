@@ -12,6 +12,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('/status', 'OrderController@status');
             Route::post('/create', 'OrderController@create');
             Route::post('/update/{id}', 'OrderController@update');
+            Route::post('/reorder/{id}', 'OrderController@reorder');
             Route::post('/phancong', 'OrderController@phancong');
             Route::post('/datcoc', 'OrderController@datcoc');
             Route::get('/detail/{id}', 'OrderController@detail');

@@ -599,6 +599,146 @@ class OrderController extends CommonController
         }
     }
 
+    public function reorder(Request $request, $id)
+    {
+        $user = $request->user();
+        $order = OrderServiceFactory::mOrderService()->findById($id);
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn không tồn tại!']);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Lay ti gia tu setting
+            $settingRate = CommonServiceFactory::mSettingService()->findByKey('rate');
+            $rate = (int)$settingRate['setting']['value'];
+
+            // Lay vip
+            $ck_dv = 0;
+            $ck_vc = 0;
+            $deposit = 0;
+            $vip = CommonServiceFactory::mVipService()->findById($user->vip);
+            if (!empty($vip)) {
+                $ck_dv = $vip['ck_dv'];
+                $ck_vc = $vip['ck_vc'];
+                $deposit = $vip['deposit'];
+            }
+
+            // Lay bang gia dv
+            $serviceFee = CommonServiceFactory::mServiceFeeService()->getAll();
+
+            // Lay bang gia kiem dem
+            $inspectionFee = CommonServiceFactory::mInspectionFeeService()->getAll();
+
+            $tien_hang = 0;
+            $count_product = 0;
+            $orderItems = $order['order_items'];
+            foreach ($orderItems as $orderItem) {
+                $price = $orderItem['price'];
+                $amount = $orderItem['amount'];
+                $tien_hang = $tien_hang + round($price * $rate * $amount, 0);
+                $count_product = $count_product + $orderItem['amount'];
+            }
+
+            // Tinh phi dich vu
+            $phi_dat_hang_cs = 0;
+            foreach ($serviceFee as $feeItem) {
+                if ($feeItem->min_tot_tran * 1000000 <= $tien_hang) {
+                    $phi_dat_hang_cs = $feeItem->val;
+                    break;
+                }
+            }
+
+            // Kiem dem
+            $phi_kiem_dem_cs = 0;
+            if ($order['kiem_hang'] == 1) {
+                foreach ($inspectionFee as $feeItem) {
+                    if ($feeItem->min_count <= $count_product) {
+                        $phi_kiem_dem_cs = $feeItem->val;
+                        break;
+                    }
+                }
+            }
+
+            // Add Order
+            $orderInput = array(
+                'user_id' => (int)$user['id'],
+                'shop_id' => $order['shop_id'],
+                'cart_id' => $order['cart_id'],
+                'code' => self::genOrderCode($user->id, $user->code),
+                'shipping' => 0,
+                'ti_gia' => $rate,
+                'count_product' => $count_product,
+                'kiem_hang' => $order['kiem_hang'],
+                'dong_go' => $order['dong_go'],
+                'bao_hiem' => $order['bao_hiem'],
+                'tien_hang' => $tien_hang,
+                'vip_id' => $vip['id'],
+                'ck_dv' => $ck_dv,
+                'ck_vc' => $ck_vc,
+                'deposit' => $deposit,
+                'phi_dat_hang_cs' => $phi_dat_hang_cs,
+                'phi_kiem_dem_cs' => $phi_kiem_dem_cs,
+                'status' => 2,
+            );
+
+            if (isset($user['hander'])) {
+                $orderInput['hander'] = $user['hander'];
+            }
+
+            $create = OrderServiceFactory::mOrderService()->create($orderInput);
+            if (!empty($create)) {
+                // Add Order Items
+                foreach ($orderItems as $orderItem) {
+                    $orderItemInput = [];
+                    $orderItemInput['order_id'] = $create['id'];
+                    $orderItemInput['amount'] = $orderItem['amount'];
+                    $orderItemInput['begin_amount'] = $orderItem['begin_amount'];
+                    $orderItemInput['color'] = $orderItem['color'];
+                    $orderItemInput['colortxt'] = $orderItem['colortxt'];
+                    $orderItemInput['count'] = $orderItem['count'];
+                    $orderItemInput['domain'] = $orderItem['domain'];
+                    $orderItemInput['image'] = $orderItem['image'];
+                    $orderItemInput['method'] = $orderItem['method'];
+                    $orderItemInput['name'] = $orderItem['name'];
+                    $orderItemInput['note'] = $orderItem['note'];
+                    $orderItemInput['price'] = $orderItem['price'];
+                    $orderItemInput['price_arr'] = $orderItem['price_arr'];
+                    $orderItemInput['pro_link'] = $orderItem['pro_link'];
+                    $orderItemInput['pro_properties'] = $orderItem['pro_properties'];
+                    $orderItemInput['rate'] = $rate;
+                    $orderItemInput['site'] = $orderItem['site'];
+                    $orderItemInput['size'] = $orderItem['size'];
+                    $orderItemInput['sizetxt'] = $orderItem['sizetxt'];
+                    OrderServiceFactory::mOrderService()->itemCreate($orderItemInput);
+                }
+
+                // History
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $create['id'],
+                    'type' => 1
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
+
+                // Package
+                $package = [
+                    'order_id' => $create['id'],
+                    'is_main' => 1
+                ];
+                OrderServiceFactory::mPackageService()->create($package);
+                // Re update
+                self::reUpdate($create['id']);
+            }
+
+            DB::commit();
+            return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function phancong(Request $request)
     {
         $input = $request->all();
@@ -680,7 +820,7 @@ class OrderController extends CommonController
         try {
             // Transaction
             $datcoc = $order['tien_hang'] + $order['phi_kiem_dem_tt'] + $order['phi_dat_hang_tt'];
-            $datcoc = ceil($datcoc * $vip['deposit'] /100);
+            $datcoc = ceil($datcoc * $vip['deposit'] / 100);
             if ($datcoc != $input['dc_value']) {
                 return $this->sendError('Error', ['Lỗi dữ liệu, hãy thực hiện lại!']);
             }
