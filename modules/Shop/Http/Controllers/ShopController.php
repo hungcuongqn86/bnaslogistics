@@ -91,4 +91,37 @@ class ShopController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
+
+    public function update($id, Request $request)
+    {
+        $input = $request->all();
+        try {
+            $shop = ShopServiceFactory::mShopService()->findById($id);
+            if (empty($shop)) {
+                return $this->sendError('Error', ['Không tồn tại Nhà cung cấp!']);
+            }
+
+            $update = ShopServiceFactory::mShopService()->update($input);
+            return $this->sendResponse($update, 'Successfully.');
+        } catch (\PDOException $e) {
+            return $this->sendError('PDOError', $e->getMessage());
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $shop = ShopServiceFactory::mShopService()->findById($id);
+            if (empty($shop)) {
+                return $this->sendError('Error', ['Không tồn tại Nhà cung cấp!']);
+            }
+            return $this->sendResponse(ShopServiceFactory::mShopService()->delete($id), 'Successfully.');
+        } catch (\PDOException $e) {
+            return $this->sendError('PDOError', $e->getMessage());
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 }

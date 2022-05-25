@@ -9,6 +9,8 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::group(['prefix' => 'myshop'], function () {
                 Route::get('/search', 'ShopController@myshop');
                 Route::get('/detail/{id}', 'ShopController@detail');
+                Route::post('/update/{id}', 'ShopController@update');
+                Route::post('/delete/{id}', 'ShopController@delete');
             });
         });
     });

@@ -44,19 +44,15 @@ class ShopService extends CommonService implements IShopService
         return $query->paginate($limit)->toArray();
     }
 
-    public function getByIds($userid)
-    {
-        $query = Shop::with(array('CartItems' => function ($query) {
-            $query->where('status', '=', 1)->where('is_deleted', '=', 0)->orderBy('id', 'desc');
-        }))->where('user_id', '=', $userid);
-        $rResult = $query->get()->toArray();
-        return $rResult;
-    }
-
     public function findById($id)
     {
-        $rResult = Shop::where('id', '=', $id)->first();
-        return array('shop' => $rResult);
+        $rResult = Shop::with(array('Orders' => function ($query) {
+            $query->with(['OrderItems']);
+        }))->where('id', '=', $id)->first();
+        if ($rResult) {
+            return $rResult->toArray();
+        }
+        return null;
     }
 
     public function findByUrl($url, $user_id)
@@ -94,6 +90,22 @@ class ShopService extends CommonService implements IShopService
             $owner->update($arrInput);
             DB::commit();
             return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            Shop::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
         } catch (QueryException $e) {
             DB::rollBack();
             throw $e;
