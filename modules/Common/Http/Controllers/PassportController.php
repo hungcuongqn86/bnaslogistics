@@ -362,6 +362,11 @@ class PassportController extends CommonController
             $newchildren->url = '/warehouse/bill';
             $children[] = $newchildren;
 
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Nhập kho';
+            $newchildren->url = '/warehouse/in';
+            $children[] = $newchildren;
+
             $newobj->children = $children;
             $nav[] = $newobj;
         }
