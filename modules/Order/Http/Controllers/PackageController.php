@@ -46,6 +46,15 @@ class PackageController extends CommonController
         }
     }
 
+    public function bycode($code)
+    {
+        try {
+            return $this->sendResponse(OrderServiceFactory::mPackageService()->findByPkCode($code), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function status()
     {
         try {
