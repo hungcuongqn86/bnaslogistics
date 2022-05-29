@@ -368,6 +368,11 @@ class PassportController extends CommonController
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
+            $newchildren->name = 'Bao hàng';
+            $newchildren->url = '/warehouse/bag';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
             $newchildren->name = 'Phiếu nhập';
             $newchildren->url = '/warehouse/storebill';
             $children[] = $newchildren;
@@ -375,6 +380,42 @@ class PassportController extends CommonController
             $newchildren = new \stdClass();
             $newchildren->name = 'Nhập kho';
             $newchildren->url = '/warehouse/store';
+            $children[] = $newchildren;
+
+            $newobj->children = $children;
+            $nav[] = $newobj;
+        }
+
+        if ($user->hasPermissionTo('warehouse')) {
+            $newobj = new \stdClass();
+            $newobj->name = 'Kho Trung';
+            $newobj->url = '/warehousetq';
+            $newobj->icon = 'iconsax isax-box';
+            $children = [];
+
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Tồn kho';
+            $newchildren->url = '/warehousetq/inventory';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Phiếu nhập';
+            $newchildren->url = '/warehousetq/storebill';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Nhập kho';
+            $newchildren->url = '/warehousetq/store';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Bao hàng';
+            $newchildren->url = '/warehousetq/bag';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Tạo bao hàng';
+            $newchildren->url = '/warehousetq/createbag';
             $children[] = $newchildren;
 
             $newobj->children = $children;
