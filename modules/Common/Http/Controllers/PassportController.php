@@ -353,6 +353,11 @@ class PassportController extends CommonController
             $children = [];
 
             $newchildren = new \stdClass();
+            $newchildren->name = 'Tồn kho';
+            $newchildren->url = '/warehouse/inventory';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
             $newchildren->name = 'Chờ xuất';
             $newchildren->url = '/warehouse/wait';
             $children[] = $newchildren;
@@ -360,6 +365,11 @@ class PassportController extends CommonController
             $newchildren = new \stdClass();
             $newchildren->name = 'Phiếu xuất';
             $newchildren->url = '/warehouse/bill';
+            $children[] = $newchildren;
+
+            $newchildren = new \stdClass();
+            $newchildren->name = 'Phiếu nhập';
+            $newchildren->url = '/warehouse/storebill';
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
