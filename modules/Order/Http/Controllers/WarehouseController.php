@@ -21,6 +21,16 @@ class WarehouseController extends CommonController
         return $this->sendResponse([], 'Successfully.');
     }
 
+    public function receipts(Request $request)
+    {
+        $input = $request->all();
+        try {
+            return $this->sendResponse(OrderServiceFactory::mReceiptService()->search($input), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function wait(Request $request)
     {
         $input = $request->all();

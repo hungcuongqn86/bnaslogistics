@@ -23,7 +23,29 @@ class ReceiptService extends CommonService implements IReceiptService
     public function search($filter)
     {
 
-        return [];
+        $query = Receipt::with(['Package', 'User']);
+
+        $sReceiptCode = isset($filter['code']) ? $filter['code'] : '';
+        if (!empty($sReceiptCode)) {
+            $query->where('code', '=', $sReceiptCode);
+        }
+
+        $sPackageCode = isset($filter['package_code']) ? $filter['package_code'] : '';
+        if (!empty($sPackageCode)) {
+            $query->whereHas('Package', function ($q) use ($sPackageCode) {
+                $q->where('package_code', '=', $sPackageCode);
+            });
+        }
+
+        $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
+        if (!empty($sKeySearch)) {
+            $query->where('note', 'LIKE', '%' . $sKeySearch . '%');
+        }
+
+        $query->orderBy('id', 'desc');
+        $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
+        $rResult = $query->paginate($limit)->toArray();
+        return $rResult;
     }
 
     public function findById($id)
