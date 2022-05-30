@@ -160,6 +160,22 @@ class PackageController extends CommonController
                 case 'note_tl':
                     $colName = 'Ghi chú thanh lý';
                     break;
+                case 'vi_tri_kho_viet':
+                    $colName = 'Vị trí trong kho Việt';
+                    $hide = 1;
+                    break;
+                case 'ghi_chu_kho_viet':
+                    $colName = 'Ghi chú kho Việt';
+                    $hide = 1;
+                    break;
+                case 'vi_tri_kho_trung':
+                    $colName = 'Vị trí trong kho Trung';
+                    $hide = 1;
+                    break;
+                case 'ghi_chu_kho_trung':
+                    $colName = 'Ghi chú kho Trung';
+                    $hide = 1;
+                    break;
                 case 'weight':
                     $colName = 'Cân nặng';
                     $value = floatval($value);
