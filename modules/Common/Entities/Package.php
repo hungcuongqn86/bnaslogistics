@@ -61,6 +61,11 @@ class Package extends BaseEntity
         return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
+    public function Receipt()
+    {
+        return $this->belongsTo(Receipt::class, 'receipt_id', 'id');
+    }
+
     public function status()
     {
         $res = [];
