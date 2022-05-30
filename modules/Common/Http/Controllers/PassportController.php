@@ -374,7 +374,7 @@ class PassportController extends CommonController
 
             $newchildren = new \stdClass();
             $newchildren->name = 'Phiếu nhập';
-            $newchildren->url = '/warehouse/storebill';
+            $newchildren->url = '/warehouse/receipt';
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
@@ -400,7 +400,7 @@ class PassportController extends CommonController
 
             $newchildren = new \stdClass();
             $newchildren->name = 'Phiếu nhập';
-            $newchildren->url = '/warehousetq/storebill';
+            $newchildren->url = '/warehousetq/receipt';
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
