@@ -26,4 +26,9 @@ class Receipt extends BaseEntity
     {
         return $this->hasMany(Package::class, 'receipt_id', 'id');
     }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'employee_id', 'id');
+    }
 }
