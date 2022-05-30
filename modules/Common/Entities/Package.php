@@ -50,6 +50,7 @@ class Package extends BaseEntity
         'tien_chong_soc',
         'tien_chong_soc_tt',
         'tien_thanh_ly',
+        'receipt_id',
         'bill_id',
         'created_at',
         'updated_at'

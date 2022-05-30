@@ -138,7 +138,7 @@ class WarehouseController extends CommonController
         DB::beginTransaction();
         try {
             //Lay danh sach kien hang
-            $packages = OrderServiceFactory::mPackageService()->findByPkCodes($input['pkcodelist']);
+            $packages = OrderServiceFactory::mPackageService()->findByIds($input['pkcodelist']);
             foreach ($packages as $package) {
                 if (!empty($package['receipt_id'])) {
                     $mes = 'Mã vận đơn ' . $package['package_code'] . ' đã được tạo ở phiếu nhập khác!';
