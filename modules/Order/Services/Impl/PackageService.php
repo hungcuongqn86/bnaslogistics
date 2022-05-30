@@ -25,7 +25,9 @@ class PackageService extends CommonService implements IPackageService
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         $query = Package::with(array('Order' => function ($query) {
             $query->with(['User', 'OrderItems'])->orderBy('id');
-        }))->with(['Receipt']);
+        }))->with(array('Receipt' => function ($query) {
+            $query->with(['User'])->orderBy('id');
+        }));
 
         $sOrderCode = isset($filter['code']) ? $filter['code'] : '';
         $iuserId = isset($filter['user_id']) ? $filter['user_id'] : 0;
