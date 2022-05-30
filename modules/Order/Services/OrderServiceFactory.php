@@ -11,6 +11,7 @@ use Modules\Order\Services\Impl\ComplainProductService;
 use Modules\Order\Services\Impl\CommentService;
 use Modules\Order\Services\Impl\CommentUsersService;
 use Modules\Order\Services\Impl\BillService;
+use Modules\Order\Services\Impl\ReceiptService;
 
 class OrderServiceFactory
 {
@@ -23,6 +24,7 @@ class OrderServiceFactory
     protected static $mComplainProductService;
     protected static $mBillService;
     protected static $mCarrierService;
+    protected static $mReceiptService;
 
     public static function mOrderService()
     {
@@ -30,6 +32,14 @@ class OrderServiceFactory
             self::$mOrderService = new OrderService();
         }
         return self::$mOrderService;
+    }
+
+    public static function mReceiptService()
+    {
+        if (self::$mReceiptService == null) {
+            self::$mReceiptService = new ReceiptService();
+        }
+        return self::$mReceiptService;
     }
 	
 	public static function mCarrierService()

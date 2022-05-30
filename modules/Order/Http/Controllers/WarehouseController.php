@@ -112,12 +112,87 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function storebillCreate(Request $request)
+    {
+        $input = $request->all();
+        $arrRules = [
+            'pkcodelist' => 'required'
+        ];
+        $arrMessages = [
+            'pkcodelist.required' => 'Thiếu thông tin kiện hàng!'
+        ];
+
+        $validator = Validator::make($input, $arrRules, $arrMessages);
+        if ($validator->fails()) {
+            return $this->sendError('Tạo phiếu nhập không thành công!', $validator->errors()->all());
+        }
+
+        //input
+        $user = $request->user();
+        $billinput = array();
+        $billinput['receipt_date'] = date('Y-m-d H:i:s');
+        $billinput['code'] = self::genStoreBillCode(date("Y"), date("m"));
+        $billinput['employee_id'] = $user['id'];
+        $billinput['note'] = $input['note'];
+
+        DB::beginTransaction();
+        try {
+            //Lay danh sach kien hang
+            $packages = OrderServiceFactory::mPackageService()->findByPkCodes($input['pkcodelist']);
+            foreach ($packages as $package) {
+                if (!empty($package['receipt_id'])) {
+                    $mes = 'Mã vận đơn ' . $package['package_code'] . ' đã được tạo ở phiếu nhập khác!';
+                    return $this->sendError('Error', [$mes]);
+                }
+            }
+
+            $create = OrderServiceFactory::mReceiptService()->create($billinput);
+            if (!empty($create)) {
+                foreach ($packages as $package) {
+                    $status = 6;
+                    if ($package['status'] > $status) {
+                        $status = $package['status'];
+                    }
+
+                    $packageInput = array(
+                        'id' => $package['id'],
+                        'receipt_id' => $create['id'],
+                        'status' => $status
+                    );
+                    OrderServiceFactory::mPackageService()->update($packageInput);
+                }
+            }
+            DB::commit();
+            return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    private function genStoreBillCode($y, $m)
+    {
+        try {
+            $top = OrderServiceFactory::mReceiptService()->findByTopCode($y, $m);
+            if (!empty($top)) {
+                $topOrderExp = explode('.', $top);
+                $code = 'R.' . (string)((int)end($topOrderExp) + 1);
+            } else {
+                $code = 'R.' . $y . $m . '0001';
+            }
+            return $code;
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     private function genBillCode($uId, $uCode)
     {
         try {
             $topOrder = OrderServiceFactory::mBillService()->findByTopCode($uId);
             if (!empty($topOrder)) {
-                $code = (string)((int)$topOrder + 1);
+                $topOrderExp = explode('.', $topOrder);
+                $code = 'B.' . (string)((int)end($topOrderExp) + 1);
             } else {
                 $code = 'B.' . $uCode . '0001';
             }

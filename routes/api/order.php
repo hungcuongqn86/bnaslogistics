@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::post('/bill/delete', 'WarehouseController@billDelete');
                 Route::post('/bill/confirm', 'WarehouseController@billConfirm');
                 Route::get('/bill/detail/{id}', 'WarehouseController@billDetail');
+                Route::post('/storebill/create', 'WarehouseController@storebillCreate');
             });
             Route::group(['prefix' => 'comment'], function () {
                 Route::get('/getall', 'CommentController@getall');

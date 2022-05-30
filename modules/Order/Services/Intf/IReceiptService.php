@@ -2,7 +2,7 @@
 
 namespace Modules\Order\Services\Intf;
 
-interface IBillService
+interface IReceiptService
 {
     public function search($filter);
 }
