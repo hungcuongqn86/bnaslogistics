@@ -160,6 +160,29 @@ class WarehouseController extends CommonController
                         'status' => $status
                     );
                     OrderServiceFactory::mPackageService()->update($packageInput);
+
+                    // Update order
+                    $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
+                    if (empty($order)) {
+                        return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+                    }
+                    $orderInput = array();
+                    $orderInput['id'] = $order['id'];
+                    $status = 4;
+                    if ($order['status'] > $status) {
+                        $status = $order['status'];
+                    }
+                    $orderInput['status'] = $status;
+                    OrderServiceFactory::mOrderService()->update($orderInput);
+
+                    // Add history
+                    $history = [
+                        'user_id' => $user['id'],
+                        'order_id' => $order['id'],
+                        'type' => 11,
+                        'content' => 'Kiện hàng ' . $package['package_code'] . ' nhập kho Việt, mã phiếu ' . $create['code']
+                    ];
+                    OrderServiceFactory::mHistoryService()->create($history);
                 }
             }
             DB::commit();
