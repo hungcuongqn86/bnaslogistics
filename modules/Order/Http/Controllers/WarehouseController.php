@@ -180,7 +180,7 @@ class WarehouseController extends CommonController
                         'user_id' => $user['id'],
                         'order_id' => $order['id'],
                         'type' => 11,
-                        'content' => 'Kiện hàng ' . $package['package_code'] . ' nhập kho Việt, mã phiếu ' . $create['code']
+                        'content' => 'Kiện hàng ' . $package['id'] . ' nhập kho Việt, mã phiếu ' . $create['code']
                     ];
                     OrderServiceFactory::mHistoryService()->create($history);
                 }
