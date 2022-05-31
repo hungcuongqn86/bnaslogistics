@@ -24,7 +24,7 @@ class TqReceipt extends BaseEntity
 
     public function Package()
     {
-        return $this->hasMany(Package::class, 'receipt_id', 'id');
+        return $this->hasMany(Package::class, 'tq_receipt_id', 'id');
     }
 
     public function User()
