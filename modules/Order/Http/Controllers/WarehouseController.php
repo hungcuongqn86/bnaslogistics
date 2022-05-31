@@ -290,9 +290,9 @@ class WarehouseController extends CommonController
             $top = OrderServiceFactory::mTqReceiptService()->findByTopCode($y, $m);
             if (!empty($top)) {
                 $topOrderExp = explode('.', $top);
-                $code = 'R.' . (string)((int)end($topOrderExp) + 1);
+                $code = 'TQR.' . (string)((int)end($topOrderExp) + 1);
             } else {
-                $code = 'R.' . $y . $m . '0001';
+                $code = 'TQR.' . $y . $m . '0001';
             }
             return $code;
         } catch (\Exception $e) {
