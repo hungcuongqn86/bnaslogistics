@@ -27,6 +27,8 @@ class PackageService extends CommonService implements IPackageService
             $query->with(['User', 'OrderItems'])->orderBy('id');
         }))->with(array('Receipt' => function ($query) {
             $query->with(['User'])->orderBy('id');
+        }))->with(array('TqReceipt' => function ($query) {
+            $query->with(['User'])->orderBy('id');
         }));
 
         $sOrderCode = isset($filter['code']) ? $filter['code'] : '';
