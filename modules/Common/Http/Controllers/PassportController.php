@@ -389,33 +389,28 @@ class PassportController extends CommonController
         if ($user->hasPermissionTo('warehouse')) {
             $newobj = new \stdClass();
             $newobj->name = 'Kho Trung';
-            $newobj->url = '/warehousetq';
+            $newobj->url = '/warehouse-tq';
             $newobj->icon = 'iconsax isax-box';
             $children = [];
 
             $newchildren = new \stdClass();
             $newchildren->name = 'Tồn kho';
-            $newchildren->url = '/warehousetq/inventory';
+            $newchildren->url = '/warehouse-tq/inventory';
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
             $newchildren->name = 'Phiếu nhập';
-            $newchildren->url = '/warehousetq/receipt';
+            $newchildren->url = '/warehouse-tq/receipt';
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
             $newchildren->name = 'Nhập kho';
-            $newchildren->url = '/warehousetq/store';
+            $newchildren->url = '/warehouse-tq/store';
             $children[] = $newchildren;
 
             $newchildren = new \stdClass();
             $newchildren->name = 'Bao hàng';
-            $newchildren->url = '/warehousetq/bag';
-            $children[] = $newchildren;
-
-            $newchildren = new \stdClass();
-            $newchildren->name = 'Tạo bao hàng';
-            $newchildren->url = '/warehousetq/createbag';
+            $newchildren->url = '/warehouse-tq/bag';
             $children[] = $newchildren;
 
             $newobj->children = $children;
