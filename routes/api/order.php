@@ -43,6 +43,10 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/bill/detail/{id}', 'WarehouseController@billDetail');
                 Route::post('/storebill/create', 'WarehouseController@storebillCreate');
             });
+            Route::group(['prefix' => 'warehouse-tq'], function () {
+                Route::get('/receipts', 'WarehouseController@tqreceipts');
+                Route::post('/storebill/create', 'WarehouseController@tqstorebillCreate');
+            });
             Route::group(['prefix' => 'comment'], function () {
                 Route::get('/getall', 'CommentController@getall');
                 Route::post('/create', 'CommentController@create');

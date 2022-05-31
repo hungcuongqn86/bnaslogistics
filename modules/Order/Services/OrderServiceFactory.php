@@ -12,6 +12,7 @@ use Modules\Order\Services\Impl\CommentService;
 use Modules\Order\Services\Impl\CommentUsersService;
 use Modules\Order\Services\Impl\BillService;
 use Modules\Order\Services\Impl\ReceiptService;
+use Modules\Order\Services\Impl\TqReceiptService;
 
 class OrderServiceFactory
 {
@@ -25,6 +26,7 @@ class OrderServiceFactory
     protected static $mBillService;
     protected static $mCarrierService;
     protected static $mReceiptService;
+    protected static $mTqReceiptService;
 
     public static function mOrderService()
     {
@@ -41,7 +43,15 @@ class OrderServiceFactory
         }
         return self::$mReceiptService;
     }
-	
+
+    public static function mTqReceiptService()
+    {
+        if (self::$mTqReceiptService == null) {
+            self::$mTqReceiptService = new TqReceiptService();
+        }
+        return self::$mTqReceiptService;
+    }
+
 	public static function mCarrierService()
     {
         if (self::$mCarrierService == null) {

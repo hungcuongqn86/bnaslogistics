@@ -203,6 +203,103 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function tqstorebillCreate(Request $request)
+    {
+        $input = $request->all();
+        $arrRules = [
+            'pkcodelist' => 'required'
+        ];
+        $arrMessages = [
+            'pkcodelist.required' => 'Thiếu thông tin kiện hàng!'
+        ];
+
+        $validator = Validator::make($input, $arrRules, $arrMessages);
+        if ($validator->fails()) {
+            return $this->sendError('Tạo phiếu nhập không thành công!', $validator->errors()->all());
+        }
+
+        //input
+        $user = $request->user();
+        $billinput = array();
+        $billinput['receipt_date'] = date('Y-m-d H:i:s');
+        $billinput['code'] = self::genTqStoreBillCode(date("Y"), date("m"));
+        $billinput['employee_id'] = $user['id'];
+        $billinput['note'] = $input['note'];
+
+        DB::beginTransaction();
+        try {
+            //Lay danh sach kien hang
+            $packages = OrderServiceFactory::mPackageService()->findByIds($input['pkcodelist']);
+            foreach ($packages as $package) {
+                if (!empty($package['tq_receipt_id'])) {
+                    $mes = 'Mã vận đơn ' . $package['package_code'] . ' đã được tạo ở phiếu nhập khác!';
+                    return $this->sendError('Error', [$mes]);
+                }
+            }
+
+            $create = OrderServiceFactory::mTqReceiptService()->create($billinput);
+            if (!empty($create)) {
+                foreach ($packages as $package) {
+                    $status = 4;
+                    if ($package['status'] > $status) {
+                        $status = $package['status'];
+                    }
+
+                    $packageInput = array(
+                        'id' => $package['id'],
+                        'tq_receipt_id' => $create['id'],
+                        'status' => $status
+                    );
+                    OrderServiceFactory::mPackageService()->update($packageInput);
+
+                    // Update order
+                    $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
+                    if (empty($order)) {
+                        return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+                    }
+                    $orderInput = array();
+                    $orderInput['id'] = $order['id'];
+                    $status = 4;
+                    if ($order['status'] > $status) {
+                        $status = $order['status'];
+                    }
+                    $orderInput['status'] = $status;
+                    OrderServiceFactory::mOrderService()->update($orderInput);
+
+                    // Add history
+                    $history = [
+                        'user_id' => $user['id'],
+                        'order_id' => $order['id'],
+                        'type' => 11,
+                        'content' => 'Kiện hàng ' . $package['id'] . ' nhập kho Trung Quốc, mã phiếu ' . $create['code']
+                    ];
+                    OrderServiceFactory::mHistoryService()->create($history);
+                }
+            }
+            DB::commit();
+            return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    private function genTqStoreBillCode($y, $m)
+    {
+        try {
+            $top = OrderServiceFactory::mTqReceiptService()->findByTopCode($y, $m);
+            if (!empty($top)) {
+                $topOrderExp = explode('.', $top);
+                $code = 'R.' . (string)((int)end($topOrderExp) + 1);
+            } else {
+                $code = 'R.' . $y . $m . '0001';
+            }
+            return $code;
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     private function genStoreBillCode($y, $m)
     {
         try {

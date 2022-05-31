@@ -55,6 +55,7 @@ class Package extends BaseEntity
         'tien_chong_soc_tt',
         'tien_thanh_ly',
         'receipt_id',
+        'tq_receipt_id',
         'bill_id',
         'created_at',
         'updated_at'
@@ -68,6 +69,11 @@ class Package extends BaseEntity
     public function Receipt()
     {
         return $this->belongsTo(Receipt::class, 'receipt_id', 'id');
+    }
+
+    public function TqReceipt()
+    {
+        return $this->belongsTo(TqReceipt::class, 'tq_receipt_id', 'id');
     }
 
     public function status()
