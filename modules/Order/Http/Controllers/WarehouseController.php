@@ -151,6 +151,7 @@ class WarehouseController extends CommonController
         $user = $request->user();
         $baginput = array();
         $baginput['code'] = self::genBagCode(date("Y"), date("m"));
+        $baginput['status'] = 1;
         $baginput['employee_id'] = $user['id'];
         $baginput['note_tq'] = $input['note_tq'];
 
@@ -159,24 +160,18 @@ class WarehouseController extends CommonController
             //Lay danh sach kien hang
             $packages = OrderServiceFactory::mPackageService()->findByIds($input['pkcodelist']);
             foreach ($packages as $package) {
-                if (!empty($package['receipt_id'])) {
-                    $mes = 'Mã vận đơn ' . $package['package_code'] . ' đã được tạo ở phiếu nhập khác!';
+                if (!empty($package['bag_id'])) {
+                    $mes = 'Mã vận đơn ' . $package['package_code'] . ' đã được tạo ở bao hàng khác!';
                     return $this->sendError('Error', [$mes]);
                 }
             }
 
-            $create = OrderServiceFactory::mReceiptService()->create($billinput);
+            $create = OrderServiceFactory::mBagService()->create($baginput);
             if (!empty($create)) {
                 foreach ($packages as $package) {
-                    $status = 6;
-                    if ($package['status'] > $status) {
-                        $status = $package['status'];
-                    }
-
                     $packageInput = array(
                         'id' => $package['id'],
-                        'receipt_id' => $create['id'],
-                        'status' => $status
+                        'bag_id' => $create['id']
                     );
                     OrderServiceFactory::mPackageService()->update($packageInput);
 
@@ -199,7 +194,7 @@ class WarehouseController extends CommonController
                         'user_id' => $user['id'],
                         'order_id' => $order['id'],
                         'type' => 11,
-                        'content' => 'Kiện hàng ' . $package['id'] . ' nhập kho Việt, mã phiếu ' . $create['code']
+                        'content' => 'Kiện hàng ' . $package['id'] . ' tạo Bao hàng, mã ' . $create['code']
                     ];
                     OrderServiceFactory::mHistoryService()->create($history);
                 }
@@ -377,12 +372,12 @@ class WarehouseController extends CommonController
     private function genBagCode($y, $m)
     {
         try {
-            $top = OrderServiceFactory::mReceiptService()->findByTopCode($y, $m);
+            $top = OrderServiceFactory::mBagService()->findByTopCode($y, $m);
             if (!empty($top)) {
                 $topOrderExp = explode('.', $top);
-                $code = 'R.' . (string)((int)end($topOrderExp) + 1);
+                $code = 'BAG.' . (string)((int)end($topOrderExp) + 1);
             } else {
-                $code = 'R.' . $y . $m . '0001';
+                $code = 'BAG.' . $y . $m . '0001';
             }
             return $code;
         } catch (\Exception $e) {
