@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             });
             Route::group(['prefix' => 'warehouse'], function () {
                 Route::get('/receipts', 'WarehouseController@receipts');
+                Route::get('/bags', 'WarehouseController@bags');
                 Route::get('/wait', 'WarehouseController@wait');
                 Route::get('/bills', 'WarehouseController@bills');
                 Route::get('/bill/status', 'WarehouseController@billStatus');
