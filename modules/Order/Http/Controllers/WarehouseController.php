@@ -5,6 +5,7 @@ namespace Modules\Order\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Modules\Common\Entities\Package;
 use Modules\Common\Http\Controllers\CommonController;
 use Modules\Common\Services\CommonServiceFactory;
 use Modules\Order\Services\OrderServiceFactory;
@@ -243,10 +244,18 @@ class WarehouseController extends CommonController
                 if ($bag[$dirty] == $value) {
                     return $this->sendError('Error', ['Thông tin bao hàng không thay đổi!']);
                 }
-                $bag[$dirty] = $value;
-                $update = OrderServiceFactory::mPackageService()->update($bag);
+                $bagInput['id'] = $bag['id'];
+                $bagInput[$dirty] = $value;
+                $update = OrderServiceFactory::mBagService()->update($bagInput);
             } else {
-
+                Package::Where('bag_id', '=', $bag['id'])->update(['bag_id' => null]);
+                foreach ($value as $row) {
+                    if (!empty($row['bag_id'])) {
+                        $mes = 'Mã vận đơn ' . $row['package_code'] . ' đã được tạo ở bao hàng khác!';
+                        return $this->sendError('Error', [$mes]);
+                    }
+                    Package::Where('id', '=', $row['id'])->update(['bag_id' => $bag['id']]);
+                }
             }
 
             DB::commit();
