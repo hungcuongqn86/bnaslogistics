@@ -164,6 +164,7 @@ class WarehouseController extends CommonController
         $baginput['status'] = 1;
         $baginput['employee_id'] = $user['id'];
         $baginput['note_tq'] = $input['note_tq'];
+        $baginput['dvvc'] = $input['dvvc'];
 
         DB::beginTransaction();
         try {
