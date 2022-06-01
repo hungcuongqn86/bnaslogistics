@@ -161,7 +161,7 @@ class WarehouseController extends CommonController
         $user = $request->user();
         $baginput = array();
         $baginput['code'] = self::genBagCode(date("Y"), date("m"));
-        $baginput['status'] = 1;
+        $baginput['status'] = $input['status'];
         $baginput['employee_id'] = $user['id'];
         $baginput['note_tq'] = $input['note_tq'];
         $baginput['dvvc'] = $input['dvvc'];
@@ -184,6 +184,14 @@ class WarehouseController extends CommonController
                         'id' => $package['id'],
                         'bag_id' => $create['id']
                     );
+                    if($create['status'] > 1){
+                        $status = 5;
+                        if ($package['status'] > $status) {
+                            $status = $package['status'];
+                        }
+
+                        $packageInput['status'] = $status;
+                    }
                     OrderServiceFactory::mPackageService()->update($packageInput);
 
                     // Update order
