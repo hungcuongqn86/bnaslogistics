@@ -45,6 +45,9 @@ class BagService extends CommonService implements IBagService
     public function findById($id)
     {
         $rResult = Bag::with(array('Package' => function ($query) {
+            $query->with(array('Order' => function ($q) {
+                $q->with(['User', 'Shop']);
+            }));
             $query->orderBy('id');
         }))->where('id', '=', $id)->first();
         if (!empty($rResult)) {

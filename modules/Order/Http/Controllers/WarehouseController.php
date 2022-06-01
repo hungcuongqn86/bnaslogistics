@@ -487,6 +487,15 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function bagDetail($id)
+    {
+        try {
+            return $this->sendResponse(OrderServiceFactory::mBagService()->findById($id), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function billConfirm(Request $request)
     {
         $input = $request->all();
