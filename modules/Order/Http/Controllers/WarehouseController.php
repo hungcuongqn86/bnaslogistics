@@ -184,7 +184,7 @@ class WarehouseController extends CommonController
                         'id' => $package['id'],
                         'bag_id' => $create['id']
                     );
-                    if($create['status'] > 1){
+                    if ($create['status'] > 1) {
                         $status = 5;
                         if ($package['status'] > $status) {
                             $status = $package['status'];
@@ -220,6 +220,37 @@ class WarehouseController extends CommonController
             }
             DB::commit();
             return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function bagUpdate(Request $request, $id)
+    {
+        $input = $request->all();
+        $bag = OrderServiceFactory::mBagService()->findById($id);
+        if (empty($bag)) {
+            return $this->sendError('Error', ['Bao hàng không tồn tại!']);
+        }
+
+        DB::beginTransaction();
+        try {
+            $dirty = $input['dirty'];
+            $value = $input['value'];
+            $update = $bag;
+            if ($dirty != 'package') {
+                if ($bag[$dirty] == $value) {
+                    return $this->sendError('Error', ['Thông tin bao hàng không thay đổi!']);
+                }
+                $bag[$dirty] = $value;
+                $update = OrderServiceFactory::mPackageService()->update($bag);
+            } else {
+
+            }
+
+            DB::commit();
+            return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError('Error', $e->getMessage());

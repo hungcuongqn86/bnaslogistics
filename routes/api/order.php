@@ -36,6 +36,8 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/receipts', 'WarehouseController@receipts');
                 Route::get('/bags', 'WarehouseController@bags');
                 Route::get('/bag/detail/{id}', 'WarehouseController@bagDetail');
+                Route::post('/bag/update/{id}', 'WarehouseController@bagUpdate');
+                Route::post('/bag/delete/{id}', 'WarehouseController@bagDelete');
                 Route::get('/wait', 'WarehouseController@wait');
                 Route::get('/bills', 'WarehouseController@bills');
                 Route::get('/bill/status', 'WarehouseController@billStatus');
