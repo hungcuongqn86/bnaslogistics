@@ -42,6 +42,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::post('/bill/confirm', 'WarehouseController@billConfirm');
                 Route::get('/bill/detail/{id}', 'WarehouseController@billDetail');
                 Route::post('/storebill/create', 'WarehouseController@storebillCreate');
+                Route::post('/bag/create', 'WarehouseController@bagCreate');
             });
             Route::group(['prefix' => 'warehouse-tq'], function () {
                 Route::get('/receipts', 'WarehouseController@tqreceipts');

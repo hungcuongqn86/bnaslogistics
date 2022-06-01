@@ -56,6 +56,7 @@ class Package extends BaseEntity
         'tien_thanh_ly',
         'receipt_id',
         'tq_receipt_id',
+        'bag_id',
         'bill_id',
         'created_at',
         'updated_at'

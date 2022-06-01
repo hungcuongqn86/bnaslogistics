@@ -132,6 +132,86 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function bagCreate(Request $request)
+    {
+        $input = $request->all();
+        $arrRules = [
+            'pkcodelist' => 'required'
+        ];
+        $arrMessages = [
+            'pkcodelist.required' => 'Thiếu thông tin kiện hàng!'
+        ];
+
+        $validator = Validator::make($input, $arrRules, $arrMessages);
+        if ($validator->fails()) {
+            return $this->sendError('Tạo bao hàng không thành công!', $validator->errors()->all());
+        }
+
+        //input
+        $user = $request->user();
+        $baginput = array();
+        $baginput['code'] = self::genBagCode(date("Y"), date("m"));
+        $baginput['employee_id'] = $user['id'];
+        $baginput['note_tq'] = $input['note_tq'];
+
+        DB::beginTransaction();
+        try {
+            //Lay danh sach kien hang
+            $packages = OrderServiceFactory::mPackageService()->findByIds($input['pkcodelist']);
+            foreach ($packages as $package) {
+                if (!empty($package['receipt_id'])) {
+                    $mes = 'Mã vận đơn ' . $package['package_code'] . ' đã được tạo ở phiếu nhập khác!';
+                    return $this->sendError('Error', [$mes]);
+                }
+            }
+
+            $create = OrderServiceFactory::mReceiptService()->create($billinput);
+            if (!empty($create)) {
+                foreach ($packages as $package) {
+                    $status = 6;
+                    if ($package['status'] > $status) {
+                        $status = $package['status'];
+                    }
+
+                    $packageInput = array(
+                        'id' => $package['id'],
+                        'receipt_id' => $create['id'],
+                        'status' => $status
+                    );
+                    OrderServiceFactory::mPackageService()->update($packageInput);
+
+                    // Update order
+                    $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
+                    if (empty($order)) {
+                        return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+                    }
+                    $orderInput = array();
+                    $orderInput['id'] = $order['id'];
+                    $status = 4;
+                    if ($order['status'] > $status) {
+                        $status = $order['status'];
+                    }
+                    $orderInput['status'] = $status;
+                    OrderServiceFactory::mOrderService()->update($orderInput);
+
+                    // Add history
+                    $history = [
+                        'user_id' => $user['id'],
+                        'order_id' => $order['id'],
+                        'type' => 11,
+                        'content' => 'Kiện hàng ' . $package['id'] . ' nhập kho Việt, mã phiếu ' . $create['code']
+                    ];
+                    OrderServiceFactory::mHistoryService()->create($history);
+                }
+            }
+            DB::commit();
+            return $this->sendResponse($create, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function storebillCreate(Request $request)
     {
         $input = $request->all();
@@ -290,6 +370,22 @@ class WarehouseController extends CommonController
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    private function genBagCode($y, $m)
+    {
+        try {
+            $top = OrderServiceFactory::mReceiptService()->findByTopCode($y, $m);
+            if (!empty($top)) {
+                $topOrderExp = explode('.', $top);
+                $code = 'R.' . (string)((int)end($topOrderExp) + 1);
+            } else {
+                $code = 'R.' . $y . $m . '0001';
+            }
+            return $code;
+        } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
     }
