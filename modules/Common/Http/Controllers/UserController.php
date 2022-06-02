@@ -75,7 +75,6 @@ class UserController extends CommonController
                 'email' => 'required|email|unique:users',
                 'password' => 'required',
                 'c_password' => 'required|same:password',
-                'partner_id' => 'required',
                 'phone_number' => 'required'
             ];
             $arrMessages = [
@@ -86,7 +85,6 @@ class UserController extends CommonController
                 'password.required' => 'password.required',
                 'c_password.required' => 'c_password.required',
                 'c_password.same' => 'c_password.same',
-                'partner_id.required' => 'partner_id.required',
                 'phone_number.required' => 'phone_number.required'
             ];
 

@@ -220,19 +220,19 @@ class PassportController extends CommonController
         $nav = [];
         $user = Auth::user();
         if ($user->hasPermissionTo('dashboard')) {
-            $newobj = new \stdClass();
-            $newobj->name = 'Bảng tổng hợp';
-            $newobj->url = '/dashboard';
-            $newobj->icon = 'iconsax isax-house';
-            $nav[] = $newobj;
-        }
-
-        if ($user->hasPermissionTo('cart')) {
-            $newobj = new \stdClass();
-            $newobj->name = 'Bảng tổng hợp';
-            $newobj->url = '/home';
-            $newobj->icon = 'iconsax isax-house';
-            $nav[] = $newobj;
+            if ($user->hasPermissionTo('cart')) {
+                $newobj = new \stdClass();
+                $newobj->name = 'Bảng tổng hợp';
+                $newobj->url = '/home';
+                $newobj->icon = 'iconsax isax-house';
+                $nav[] = $newobj;
+            } else {
+                $newobj = new \stdClass();
+                $newobj->name = 'Bảng tổng hợp';
+                $newobj->url = '/dashboard';
+                $newobj->icon = 'iconsax isax-house';
+                $nav[] = $newobj;
+            }
         }
 
         if ($user->hasPermissionTo('cart')) {
@@ -259,20 +259,12 @@ class PassportController extends CommonController
             $nav[] = $newobj;
         }
 
-        if ($user->hasPermissionTo('myorder')) {
+        if ($user->hasPermissionTo('myshop')) {
             $newobj = new \stdClass();
             $newobj->name = 'Nhà cung cấp';
             $newobj->url = '/mshop/myshop';
             $newobj->icon = 'iconsax isax-driver';
             $nav[] = $newobj;
-        }
-
-        if ($user->hasPermissionTo('mypackage')) {
-            /*$newobj = new \stdClass();
-            $newobj->name = 'Kiện hàng';
-            $newobj->url = '/mypackage';
-            $newobj->icon = 'iconsax isax-d-cube-scan';
-            $nav[] = $newobj;*/
         }
 
         if ($user->hasPermissionTo('wallet')) {
@@ -387,7 +379,7 @@ class PassportController extends CommonController
             $nav[] = $newobj;
         }
 
-        if ($user->hasPermissionTo('warehouse')) {
+        if ($user->hasPermissionTo('warehousetq')) {
             $newobj = new \stdClass();
             $newobj->name = 'Kho Trung';
             $newobj->url = '/warehouse-tq';
