@@ -42,10 +42,10 @@ class SignupActivate extends Notification
     {
         $url = url('/api/v1/auth/signup/activate/'.$notifiable->activation_token);
         return (new MailMessage)
-                    ->subject('Xác nhận tài khoản Bnaslogistics')
+                    ->subject('Xác nhận tài khoản https://nguonhang.net')
                     ->line('Cảm ơn bạn đã đăng ký sử dụng dịch vụ của chúng tôi! Bạn hãy nhấn vào nút "Xác nhận" để kích hoạt tài khoản này!')
                     ->action('Xác nhận', url($url))
-                    ->line('Bnaslogistics cảm ơn bạn!');
+                    ->line('nguonhang.net cảm ơn bạn!');
     }
 
     /**
