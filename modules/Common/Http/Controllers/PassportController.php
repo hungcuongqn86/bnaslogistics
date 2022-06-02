@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Modules\Common\Services\CommonServiceFactory;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class PassportController extends CommonController
@@ -442,11 +443,11 @@ class PassportController extends CommonController
 
     public function setPermissions()
     {
+        echo 123;
+        exit;
         /*$user = User::where('id', 11)->first();
         $user->assignRole('custumer');*/
 
-        echo 1;
-        exit;
         // Permissions
         /*Permission::create(['name' => 'dashboard']);
         Permission::create(['name' => 'mcustumer']);
@@ -464,7 +465,11 @@ class PassportController extends CommonController
         Permission::create(['name' => 'muser']);
         Permission::create(['name' => 'account']);
         Permission::create(['name' => 'setting']);*/
-
+        Permission::create(['name' => 'myshop']);
+        Permission::create(['name' => 'warehousetq']);
+        $role = Role::create(['name' => 'stockertq']);
+        //echo 123;
+        //exit;
         // Role
         // administrator
         $role = Role::findByName('administrator');
@@ -474,6 +479,7 @@ class PassportController extends CommonController
         $role->givePermissionTo('package');
         $role->givePermissionTo('complain');
         $role->givePermissionTo('warehouse');
+        $role->givePermissionTo('warehousetq');
         $role->givePermissionTo('shipping');
         $role->givePermissionTo('muser');
         $role->givePermissionTo('account');
@@ -487,6 +493,7 @@ class PassportController extends CommonController
         $role->givePermissionTo('package');
         $role->givePermissionTo('complain');
         $role->givePermissionTo('warehouse');
+        $role->givePermissionTo('warehousetq');
         $role->givePermissionTo('shipping');
         $role->givePermissionTo('account');
         $role->givePermissionTo('setting');
@@ -507,16 +514,26 @@ class PassportController extends CommonController
         $role->givePermissionTo('warehouse');
         $role->givePermissionTo('account');
 
+        // kho
+        $role = Role::findByName('stockertq');
+        $role->givePermissionTo('dashboard');
+        $role->givePermissionTo('order');
+        $role->givePermissionTo('package');
+        $role->givePermissionTo('warehousetq');
+        $role->givePermissionTo('account');
+
         // owner
         $role = Role::findByName('custumer');
+        $role->givePermissionTo('dashboard');
         $role->givePermissionTo('cart');
+        $role->givePermissionTo('myshop');
         $role->givePermissionTo('myorder');
         $role->givePermissionTo('mypackage');
         $role->givePermissionTo('wallet');
         $role->givePermissionTo('mycomplain');
         $role->givePermissionTo('myshipping');
         $role->givePermissionTo('account');
-        echo 1;
+        echo 123;
         exit;
     }
 }
