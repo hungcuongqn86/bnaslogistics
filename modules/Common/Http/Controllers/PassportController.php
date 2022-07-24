@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Kreait\Firebase\Database;
+use Modules\Common\Entities\Order;
+use Modules\Common\Entities\Package;
 use Modules\Common\Services\CommonServiceFactory;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -16,6 +19,11 @@ use Spatie\Permission\Models\Role;
 class PassportController extends CommonController
 {
     public $sucessStatus = 200;
+    private $database;
+    public function __construct(Database $database)
+    {
+        $this->database = $database;
+    }
 
     /**
      * @SWG\POST(
@@ -219,6 +227,28 @@ class PassportController extends CommonController
     {
         $nav = [];
         $user = Auth::user();
+        $userid = $user->id;
+        // Update status
+        $rResult1 = Order::where('user_id', '=', $userid)->groupBy('status')->selectRaw('status, count(*) as total, "od" as type')->get();
+        $rResult2 = Package::whereHas('Order', function ($q) use ($userid) {
+            $q->where('user_id', '=', $userid);
+        })->groupBy('status')->selectRaw('status, count(*) as total, "pk" as type')->get();
+
+        $refer = config('app.name').'/mycount/'.$userid;
+
+        $data1 = [];
+        $data2 = [];
+        if (!empty($rResult1)) {
+            $data1 = $rResult1->toArray();
+        }
+
+        if (!empty($rResult2)) {
+            $data2 = $rResult2->toArray();
+        }
+
+        $data = array_merge($data1, $data2);
+        $this->database->getReference($refer)->set($data);
+
         if ($user->hasPermissionTo('dashboard')) {
             if ($user->hasPermissionTo('cart')) {
                 $newobj = new \stdClass();
