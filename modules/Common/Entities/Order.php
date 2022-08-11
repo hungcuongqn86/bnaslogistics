@@ -29,6 +29,8 @@ class Order extends BaseEntity
         'vat',
         'tien_hang',
         'tra_shop',
+        'ship_khach_tt',
+        'ship_tt_tt',
         'vip_id',
         'ck_dv',
         'ck_dv_tt',

@@ -935,11 +935,13 @@ class PackageController extends CommonController
 
     private function calThanhLy($order_id)
     {
+        DB::beginTransaction();
         try {
             $mainpkId = 0;
             $order = OrderServiceFactory::mOrderService()->findById($order_id);
             $arrPk = $order['package'];
             $tien_ship = 0;
+            $tien_ship_tt = 0;
 
             foreach ($arrPk as $pk) {
                 if ($pk['is_main'] == 1) {
@@ -947,6 +949,9 @@ class PackageController extends CommonController
                 }
                 if (isset($pk['ship_khach_tt']) && $pk['ship_khach_tt'] > 0) {
                     $tien_ship = $tien_ship + $pk['ship_khach_tt'];
+                }
+                if (isset($pk['ship_tt_tt']) && $pk['ship_tt_tt'] > 0) {
+                    $tien_ship_tt = $tien_ship_tt + $pk['ship_tt_tt'];
                 }
             }
 
@@ -963,7 +968,15 @@ class PackageController extends CommonController
                 $package['tien_thanh_ly'] = $tienthanhly;
                 OrderServiceFactory::mPackageService()->update($package);
             }
+
+            $orderInput = [];
+            $orderInput['id'] = $order['id'];
+            $orderInput['ship_khach_tt'] = $tien_ship;
+            $orderInput['ship_tt_tt'] = $tien_ship_tt;
+            OrderServiceFactory::mOrderService()->update($orderInput);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             throw $e;
         }
     }
