@@ -586,7 +586,8 @@ class WarehouseController extends CommonController
                 $billinput['tien_thanh_ly'] = $billinput['tien_thanh_ly'] + $package['tien_thanh_ly'];
             }
 
-            if ($billinput['tien_thanh_ly'] > $bill['bill']['user']['debt']) {
+            $tongThanhLy = $billinput['tien_can'] + $billinput['tien_dong_go'] + $billinput['tien_chong_soc'] + $billinput['cuoc_van_phat_sinh'] + $billinput['tien_thanh_ly'];
+            if ($tongThanhLy > $bill['bill']['user']['debt']) {
                 return $this->sendError('Xuất kho không thành công!', ['Dư nợ không đủ để thực hiện thanh lý!']);
             }
 
@@ -629,8 +630,8 @@ class WarehouseController extends CommonController
                     'user_id' => $update['user_id'],
                     'type' => 6,
                     'code' => 'XKTL.' . $update['id'],
-                    'value' => $update['tien_can'] + $update['tien_thanh_ly'],
-                    'debt' => $bill['bill']['user']['debt'] - ($update['tien_can'] + $update['tien_thanh_ly']),
+                    'value' => $tongThanhLy,
+                    'debt' => $bill['bill']['user']['debt'] - $tongThanhLy,
                     'content' => 'Xuất kho thanh lý, mã phiếu ' . $update['id']
                 ];
 
