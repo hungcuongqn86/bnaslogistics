@@ -45,6 +45,7 @@ class Order extends BaseEntity
         'phi_kiem_dem_tt',
         'dat_coc',
         'dat_coc_content',
+        'thanh_ly',
         'hander',
         'china_warehouses_id',
         'china_warehouses_address',
