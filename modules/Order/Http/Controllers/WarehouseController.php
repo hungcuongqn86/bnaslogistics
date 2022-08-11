@@ -612,9 +612,6 @@ class WarehouseController extends CommonController
                         $orderInput = array();
                         $orderInput['id'] = $pkupdate['order_id'];
                         $orderInput['status'] = 5;
-
-                        
-
                         OrderServiceFactory::mOrderService()->update($orderInput);
 
                         // add history
