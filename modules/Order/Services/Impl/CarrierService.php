@@ -103,7 +103,9 @@ class CarrierService extends CommonService implements ICarrierService
             if (!empty($arrInput['carrier_package'])) {
                 $carrier_package = [];
                 foreach ($arrInput['carrier_package'] as $pk) {
-                    $carrier_package[] = new CarrierPackage($pk);
+                    if (!empty($pk['package_code'])) {
+                        $carrier_package[] = new CarrierPackage($pk);
+                    }
                 }
                 $shipping->CarrierPackage()->saveMany($carrier_package);
             }

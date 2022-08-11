@@ -153,20 +153,27 @@ class CarrierController extends CommonController
             return $this->sendError('Error', ['Phải nhập vận đơn!']);
         }
 
-        $carrier_package = $input['carrier_package'];
+        /*$carrier_package = $input['carrier_package'];
         foreach ($carrier_package as $package) {
             if (empty($package['package_code'])) {
                 return $this->sendError('Error', ['Dữ liệu vận đơn không đủ! Phải nhập mã vận đơn!']);
             }
-        }
+        }*/
 
         DB::beginTransaction();
         try {
             $user = $request->user();
             $input['user_id'] = $user['id'];
-            $input['kiem_hang'] = (int)$input['kiem_hang'];
-            $input['dong_go'] = (int)$input['dong_go'];
-            $input['bao_hiem'] = (int)$input['bao_hiem'];
+            if(isset($input['kiem_hang'])){
+                $input['kiem_hang'] = (int)$input['kiem_hang'];
+            }
+            if(isset($input['dong_go'])){
+                $input['dong_go'] = (int)$input['dong_go'];
+            }
+            if(isset($input['bao_hiem'])){
+                $input['bao_hiem'] = (int)$input['bao_hiem'];
+            }
+
             $input['status'] = 1;
             // return $this->sendResponse($input, 'Successfully.');
             $create = OrderServiceFactory::mCarrierService()->create($input);
