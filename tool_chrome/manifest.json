@@ -15,8 +15,8 @@
         "http://*.tmall.com/*",
         "https://*.tmall.com/*",
         "https://*.tmall.hk/*",
-        "http://detail.1688.com/*",
-        "https://detail.1688.com/*"
+        "http://*.1688.com/*",
+        "https://*.1688.com/*"
       ]
     }
   ],
@@ -64,8 +64,8 @@
         "http://*.tmall.com/*",
         "https://*.tmall.com/*",
         "https://*.tmall.hk/*",
-        "http://detail.1688.com/*",
-        "https://detail.1688.com/*"
+        "http://*.1688.com/*",
+        "https://*.1688.com/*"
       ]
     }
   ]
