@@ -578,9 +578,93 @@ const niniex = (e, t, n) => {
                 var s = "";
                 e.data.in_cn && (s += 'Thời gian Shop phát hàng (ngày): <span class="kho-cn">' + e.data.in_cn + "</span>");
                 var a = "", l = i + r + s + a;
-                "undefined" !== e.data.od_success && e.data.od_success || (l = 'Độ tin cậy: <span class="tong-quan">Chưa có đánh giá</span>'), $("#cart-thqc-shop-info").append(l), showInfo()
+                "undefined" !== e.data.od_success && e.data.od_success || (l = 'Độ tin cậy: <span class="tong-quan">Chưa có đánh giá</span>'), $("#cart-thqc-shop-info").append(l), showInfo(), setTriger()
             })
         })
+    }
+
+    function setTriger() {
+        $('.next-input-group-auto-width>input').change(function() {
+            setTimeout(genPrice, 100);
+        });
+
+        $('.next-input-group-addon>button').click(function() {
+            setTimeout(genPrice, 100);
+        });
+    }
+
+    function genPrice() {
+        var e, t, n, i = [], o = [];
+        var a, l, u = $(".table-sku tr");
+        if (u.length) {
+            /*for (var h = 0; h < u.length; h++) {
+                l = u[h];
+                var p = "", d = $(l).find(".name .image").data("imgs");
+                "object" == typeof d && "undefined" != typeof d && (p = c(d.preview)), a = $(l).data("sku-config"), n = $(l).find(".amount-input").val(), n = parseInt(n), "undefined" != typeof n && n > 0 && (e = $(l).find(".price .value").text(), t = $(l).find(".name span").text(), a.qty = n, a.price = parseFloat(e), a.color = s, a.image = p, o.push(a))
+            }*/
+        } else {
+            u = $(".sku-item-wrapper");
+            if (u.length) {
+                for (var h = 0; h < u.length; h++) {
+                    l = u[h];
+                    a = {
+                        color: "",
+                        isMix: "false",
+                        max: "",
+                        min: "0",
+                        mixAmount: "0",
+                        mixBegin: "0",
+                        mixNumber: "0",
+                        price: t,
+                        qty: "0",
+                        size: "",
+                        skuName: "",
+                        wsRuleNum: "",
+                        wsRuleUnit: ""
+                    };
+
+                    n = $(l).find('.next-input-group-auto-width>input').val();
+                    n = parseInt(n);
+                    if ("undefined" != typeof n && n > 0) {
+                        e = $(l).find(".sku-item-left .discountPrice-price").text().replace(/[^0-9\.]/g, '');
+                        t = $(l).find(".sku-item-left .sku-item-name").text();
+                        a.qty = n;
+                        a.price = parseFloat(e);
+                        a.color = s;
+                        a.size = t;
+                        o.push(a)
+                    }
+                }
+            }
+
+            if(o.length > 0){
+                var table = $('<table></table>').addClass('tbl-select-info');
+                var hrow = $('<tr></tr>').addClass('tbl-select-info-hea');
+                hrow.append($('<td></td>').addClass('tbl-select-info-td').text('SP'));
+                hrow.append($('<td></td>').addClass('tbl-select-info-td').text('Giá'));
+                hrow.append($('<td></td>').addClass('tbl-select-info-td').text('VNĐ'));
+                hrow.append($('<td></td>').addClass('tbl-select-info-td').text('SL'));
+                hrow.append($('<td></td>').addClass('tbl-select-info-td').text('Thành tiền'));
+                table.append(hrow);
+
+                for(i=0; i<o.length; i++){
+                    var row = $('<tr></tr>').addClass('tbl-select-info-tr');
+                    const pri = Number(o[i].price);
+                    const sl = Number(o[i].qty);
+                    const vnd = Math.round(pri * ie.rate);
+                    const tt = Math.round(vnd * sl);
+
+                    row.append($('<td></td>').addClass('tbl-select-info-td').text(o[i].size));
+                    row.append($('<td></td>').addClass('tbl-select-info-td').text(o[i].price));
+                    row.append($('<td></td>').addClass('tbl-select-info-td').text(vnd.format()));
+                    row.append($('<td></td>').addClass('tbl-select-info-td').text(sl));
+                    row.append($('<td></td>').addClass('tbl-select-info-td').text(tt.format()));
+                    table.append(row);
+                }
+
+                $('#tbe-select-info').html(table);
+            }
+        }
     }
 
     function showInfo() {
@@ -631,6 +715,7 @@ const niniex = (e, t, n) => {
             "</ul>",
             e,
             '<div class="tbe-info-warning"><p>(!!) Vui lòng chọn đầy đủ thông tin sản phẩm ở bên dưới để xem giá chuẩn.</p><p>(!!) không dùng Google Translate khi thêm sản phẩm.</p></div>',
+            '<div id="tbe-select-info"></div>',
             "</div>"].join("");
         $("#J_Title, .tb-detail-hd, #mod-detail-price, .od-pc-offer-title-contain").append(r);
 

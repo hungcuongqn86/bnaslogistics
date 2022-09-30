@@ -428,3 +428,22 @@ a.disabled {
     pointer-events: none;
     cursor: default
 }
+
+#tbe-select-info {
+    padding: 5px;
+}
+
+.tbl-select-info {
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+.tbl-select-info .tbl-select-info-hea .tbl-select-info-td{
+    background: #ddd;
+    font-weight: bold;
+}
+
+.tbl-select-info-td {
+    padding: 3px;
+    border: 1px solid #ccc;
+}
