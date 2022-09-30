@@ -5,6 +5,7 @@
         "/css/all.min.css"
       ],
       "js": [
+        "/dist/nini.js",
         "/dist/all.min.js"
       ],
       "matches": [

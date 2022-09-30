@@ -318,7 +318,7 @@ sub {
 }
 
 #pro-thqc-note .thqcNote{
-    width: 98%;
+    width: 100%;
     border: 3px solid #034693;
     padding: 3px;
 }
