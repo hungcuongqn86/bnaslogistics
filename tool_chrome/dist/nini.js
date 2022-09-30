@@ -714,8 +714,8 @@ const niniex = (e, t, n) => {
             '<li>Tỷ giá: <span class="tbe-rate tbe-color-price">' + ie.rate.format() + "</span> đ/tệ</li>",
             "</ul>",
             e,
-            '<div class="tbe-info-warning"><p>(!!) Vui lòng chọn đầy đủ thông tin sản phẩm ở bên dưới để xem giá chuẩn.</p><p>(!!) không dùng Google Translate khi thêm sản phẩm.</p></div>',
             '<div id="tbe-select-info"></div>',
+            '<div class="tbe-info-warning"><p>(!!) Vui lòng chọn đầy đủ thông tin sản phẩm ở bên dưới để xem giá chuẩn.</p><p>(!!) không dùng Google Translate khi thêm sản phẩm.</p></div>',
             "</div>"].join("");
         $("#J_Title, .tb-detail-hd, #mod-detail-price, .od-pc-offer-title-contain").append(r);
 
