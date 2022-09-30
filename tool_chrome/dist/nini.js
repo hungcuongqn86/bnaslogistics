@@ -561,7 +561,7 @@ const niniex = (e, t, n) => {
             }
             var n = tk.tbex_thqc_token[0];
             var e = "", t = "";
-            "1688" == oe && (e = x(), t = C()), "taobao" == oe && (e = y(), t = _()), "tmall" == oe && (e = w(), t = E()), $.ajax({
+            "1688" === oe && (e = x(), t = C()), "taobao" === oe && (e = y(), t = _()), "tmall" === oe && (e = w(), t = E()), $.ajax({
                 method: "POST",
                 url: ie.apiShopUrl,
                 dataType: 'json',
@@ -584,26 +584,23 @@ const niniex = (e, t, n) => {
     }
 
     function setTriger() {
-        $('.next-input-group-auto-width>input').change(function() {
+        $('.next-input-group-auto-width>input').change(function () {
             setTimeout(genPrice, 100);
         });
 
-        $('.next-input-group-addon>button').click(function() {
+        $('.next-input-group-addon>button').click(function () {
+            setTimeout(genPrice, 100);
+        });
+
+        $('ul.J_TSaleProp>li').click(function () {
             setTimeout(genPrice, 100);
         });
     }
 
     function genPrice() {
-        var e, t, n, i = [], o = [];
-        var a, l, u = $(".table-sku tr");
-        if (u.length) {
-            /*for (var h = 0; h < u.length; h++) {
-                l = u[h];
-                var p = "", d = $(l).find(".name .image").data("imgs");
-                "object" == typeof d && "undefined" != typeof d && (p = c(d.preview)), a = $(l).data("sku-config"), n = $(l).find(".amount-input").val(), n = parseInt(n), "undefined" != typeof n && n > 0 && (e = $(l).find(".price .value").text(), t = $(l).find(".name span").text(), a.qty = n, a.price = parseFloat(e), a.color = s, a.image = p, o.push(a))
-            }*/
-        } else {
-            u = $(".sku-item-wrapper");
+        if (oe === "1688") {
+            var e, t, n, i = [], o = [];
+            var a, l, u = $(".sku-item-wrapper");
             if (u.length) {
                 for (var h = 0; h < u.length; h++) {
                     l = u[h];
@@ -637,7 +634,7 @@ const niniex = (e, t, n) => {
                 }
             }
 
-            if(o.length > 0){
+            if (o.length > 0) {
                 var table = $('<table></table>').addClass('tbl-select-info');
                 var hrow = $('<tr></tr>').addClass('tbl-select-info-hea');
                 hrow.append($('<td></td>').addClass('tbl-select-info-td').text('SP'));
@@ -647,7 +644,7 @@ const niniex = (e, t, n) => {
                 hrow.append($('<td></td>').addClass('tbl-select-info-td').text('Thành tiền'));
                 table.append(hrow);
 
-                for(i=0; i<o.length; i++){
+                for (i = 0; i < o.length; i++) {
                     var row = $('<tr></tr>').addClass('tbl-select-info-tr');
                     const pri = Number(o[i].price);
                     const sl = Number(o[i].qty);
@@ -664,6 +661,19 @@ const niniex = (e, t, n) => {
 
                 $('#tbe-select-info').html(table);
             }
+        }
+        if (oe === "tmall") {
+            var e = "", t = "", n = k(), i = "";
+            i = Math.round(n.orgPrice * ie.rate).format(), ((n.orgPrice > 0 && n.proPrice > 0 && n.orgPrice > n.proPrice) || ((0 == n.orgPrice || isNaN(n.orgPrice)) && n.proPrice > 0)) ? i = Math.round(n.proPrice * ie.rate).format() : (n.lowPrice > 0 && n.highPrice > 0 && (i = Math.round(n.lowPrice * ie.rate).format() + " - " + Math.round(n.highPrice * ie.rate).format()), n.lowPromo > 0 && n.highPromo > 0 && (i = Math.round(n.lowPromo * ie.rate).format() + " - " + Math.round(n.highPromo * ie.rate).format()));
+            console.log(i);
+            $("li#nini_price").find('b')[0].textContent = i;
+        }
+
+        if (oe === "taobao") {
+            var e = "", t = "", n = k(), i = "";
+            i = Math.round(n.orgPrice * ie.rate).format(), ((n.orgPrice > 0 && n.proPrice > 0 && n.orgPrice > n.proPrice) || ((0 == n.orgPrice || isNaN(n.orgPrice)) && n.proPrice > 0)) ? i = Math.round(n.proPrice * ie.rate).format() : (n.lowPrice > 0 && n.highPrice > 0 && (i = Math.round(n.lowPrice * ie.rate).format() + " - " + Math.round(n.highPrice * ie.rate).format()), n.lowPromo > 0 && n.highPromo > 0 && (i = Math.round(n.lowPromo * ie.rate).format() + " - " + Math.round(n.highPromo * ie.rate).format()));
+            console.log(i);
+            $("li#nini_price").find('b')[0].textContent = i;
         }
     }
 
@@ -699,9 +709,16 @@ const niniex = (e, t, n) => {
                 i = (Math.round(n * ie.rate)).format();
             }
         } else {
-            // console.log("cuongnh131", i, n);
-            t = $("#J_EmStock, #J_SpanStock").text(), t.length > 0 && (t = H(t), t = parseInt(t)), "number" == typeof t && (e += "tmall" == oe ? '<dl><dd style="width:100%"><span class="text-danger">Shop hiện còn <b>' + t + "</b> sản phẩm</span></dd></dl>" : '<dl><dd style="width:100%"><span class="text-danger">Shop giới hạn mua tối đa <b class="tbe-color-price">' + t + "</b> sản phẩm</span></dd></dl>"), i = Math.round(n.orgPrice * ie.rate).format(), ((n.orgPrice > 0 && n.proPrice > 0 && n.orgPrice > n.proPrice) || ((0 == n.orgPrice || isNaN(n.orgPrice)) && n.proPrice > 0)) ? i = Math.round(n.proPrice * ie.rate).format() : (n.lowPrice > 0 && n.highPrice > 0 && (i = Math.round(n.lowPrice * ie.rate).format() + " - " + Math.round(n.highPrice * ie.rate).format()), n.lowPromo > 0 && n.highPromo > 0 && (i = Math.round(n.lowPromo * ie.rate).format() + " - " + Math.round(n.highPromo * ie.rate).format()));
-            // console.log("1cuongnh11", i);
+            t = $("#J_EmStock, #J_SpanStock").text();
+
+            if (t.length > 0) {
+                t = H(t);
+                t = parseInt(t);
+            }
+
+            if ("number" == typeof t) {
+                (e += "tmall" == oe ? '' : '<dl><dd style="width:100%"><span class="text-danger">Shop giới hạn mua tối đa <b class="tbe-color-price">' + t + "</b> sản phẩm</span></dd></dl>"), i = Math.round(n.orgPrice * ie.rate).format(), ((n.orgPrice > 0 && n.proPrice > 0 && n.orgPrice > n.proPrice) || ((0 == n.orgPrice || isNaN(n.orgPrice)) && n.proPrice > 0)) ? i = Math.round(n.proPrice * ie.rate).format() : (n.lowPrice > 0 && n.highPrice > 0 && (i = Math.round(n.lowPrice * ie.rate).format() + " - " + Math.round(n.highPrice * ie.rate).format()), n.lowPromo > 0 && n.highPromo > 0 && (i = Math.round(n.lowPromo * ie.rate).format() + " - " + Math.round(n.highPromo * ie.rate).format()));
+            }
         }
 
         e.length > 0 && (e = '<div class="bg-info">' + e + "</div>");
@@ -710,7 +727,7 @@ const niniex = (e, t, n) => {
             '<div id="tbe-info-shop">',
             '<h5>NGUONHANG.NET</h5>',
             '<img style="width:70px;" src="' + chrome.runtime.getURL("images/144x144.png") + '" alt="' + te + '" />',
-            "<ul>", '<li>Giá bán: <b class="tbe-color-price">' + i + "</b> đ</li>",
+            "<ul>", '<li id="nini_price">Giá bán: <b class="tbe-color-price">' + i + "</b> đ</li>",
             '<li>Tỷ giá: <span class="tbe-rate tbe-color-price">' + ie.rate.format() + "</span> đ/tệ</li>",
             "</ul>",
             e,
