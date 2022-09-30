@@ -430,6 +430,7 @@ a.disabled {
 }
 
 #tbe-select-info {
+    clear: both;
     padding: 5px;
 }
 
