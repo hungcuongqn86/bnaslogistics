@@ -21,6 +21,14 @@ class  Shop extends BaseEntity
         'created_at',
         'updated_at'
     ];
+    protected $appends = ['rate'];
+
+    public function getRateAttribute()
+    {
+        $setting = new Setting();
+        $rowRate = $setting->where('key', '=', 'rate')->first();
+        return (int)$rowRate->value;
+    }
 
     public function Carts()
     {
