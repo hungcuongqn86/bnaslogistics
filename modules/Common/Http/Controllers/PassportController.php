@@ -133,17 +133,28 @@ class PassportController extends CommonController
             'name' => 'required',
             'phone_number' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'password' => [
+                'required',
+                'string',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ],
             'c_password' => 'required|same:password',
         ];
         $arrMessages = [
             'name.required' => 'Chưa nhập tên!',
             'phone_number.required' => 'Chưa nhập số điện thoại!',
-            'phone_number.unique' => 'Số điện thoại đã được đăng ký!',
+            'phone_number.unique' => 'Số điện thoại này đã được đăng ký, hãy nhập một số điện thoại khác!',
             'email.required' => 'Chưa nhập email!',
             'email.email' => 'Email không đúng!',
             'email.unique' => 'Email đã được sử dụng!',
             'password.required' => 'Chưa nhập mật khẩu!',
+            'password.string' => 'Mật khẩu phải là chuỗi ký tự!',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
+            'password.regex' => 'Mật khẩu phải có chứa 1 ký tự chữ in thường, 1 ký tự chữ in hoa, 1 ký tự số, 1 ký tự đặc biệt!',
             'c_password.required' => 'Chưa nhập mật khẩu xác nhận!',
             'c_password.same' => 'Mật khẩu xác nhận không chính xác!',
         ];
