@@ -2,12 +2,13 @@
 
 namespace Modules\Common\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\Notifications\ResetPasswordRequest;
-use App\Notifications\PasswordResetSuccess;
-use App\User;
 use App\Models\PasswordReset;
+use App\Notifications\PasswordResetSuccess;
+use App\Notifications\ResetPasswordRequest;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ResetPasswordController extends CommonController
 {
@@ -44,12 +45,22 @@ class ResetPasswordController extends CommonController
 
     public function create(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-        ]);
+        $arrRules = [
+            'email' => 'required|string|email'
+        ];
+        $arrMessages = [
+            'email.required' => 'Chưa nhập email!',
+            'email.email' => 'Email không đúng!'
+        ];
+
+        $validator = Validator::make($request->all(), $arrRules, $arrMessages);
+        if ($validator->fails()) {
+            return $this->sendError('Error', $validator->errors()->all());
+        }
+
         $user = User::where('email', $request->email)->first();
         if (!$user)
-            return $this->sendError('Error.', 'We can not find a user with that e-mail address.');
+            return $this->sendError('Error.', ['Không tìm thấy tài khoản đăng ký với Email này!']);
 
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
@@ -98,20 +109,44 @@ class ResetPasswordController extends CommonController
      */
     public function reset(Request $request)
     {
-        $request->validate([
+        $arrRules = [
             'email' => 'required|string|email',
-            'password' => 'required|string|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ],
             'token' => 'required|string'
-        ]);
+        ];
+        $arrMessages = [
+            'email.required' => 'Chưa nhập email!',
+            'email.email' => 'Email không đúng!',
+            'password.required' => 'Chưa nhập mật khẩu mới!',
+            'password.string' => 'Mật khẩu phải là chuỗi ký tự!',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
+            'password.regex' => 'Mật khẩu phải có chứa 1 ký tự chữ in thường, 1 ký tự chữ in hoa, 1 ký tự số, 1 ký tự đặc biệt!',
+            'password.confirmed' => 'Xác nhận mật khẩu không đúng!'
+        ];
+
+        $validator = Validator::make($request->all(), $arrRules, $arrMessages);
+        if ($validator->fails()) {
+            return $this->sendError('Error', $validator->errors()->all());
+        }
+
         $passwordReset = PasswordReset::where([
             ['token', $request->token],
             ['email', $request->email]
         ])->first();
         if (!$passwordReset)
-            return $this->sendError('Error.', 'This password reset token is invalid.');
+            return $this->sendError('Error.', ['Cập nhật mật khẩu không thành công, Phiên làm việc không đúng!.']);
         $user = User::where('email', $passwordReset->email)->first();
         if (!$user)
-            return $this->sendError('Error.', 'We can not find a user with that e-mail address.');
+            return $this->sendError('Error.', ['Không tìm thấy tài khoản đăng ký với Email này!']);
         $user->password = bcrypt($request->password);
         $user->save();
         $passwordReset->delete();
