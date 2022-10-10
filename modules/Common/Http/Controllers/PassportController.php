@@ -131,7 +131,7 @@ class PassportController extends CommonController
     {
         $arrRules = [
             'name' => 'required',
-            'phone_number' => 'required',
+            'phone_number' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required',
             'c_password' => 'required|same:password',
@@ -139,6 +139,7 @@ class PassportController extends CommonController
         $arrMessages = [
             'name.required' => 'Chưa nhập tên!',
             'phone_number.required' => 'Chưa nhập số điện thoại!',
+            'phone_number.unique' => 'Số điện thoại đã được đăng ký!',
             'email.required' => 'Chưa nhập email!',
             'email.email' => 'Email không đúng!',
             'email.unique' => 'Email đã được sử dụng!',
