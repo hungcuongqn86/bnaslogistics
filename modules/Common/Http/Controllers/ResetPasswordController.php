@@ -62,6 +62,10 @@ class ResetPasswordController extends CommonController
         if (!$user)
             return $this->sendError('Error.', ['Không tìm thấy tài khoản đăng ký với Email này!']);
 
+        if ($user->active != 1){
+            return $this->sendError('Error.', ['Tài khoản của bạn chưa kích hoạt, vui lòng check email hoặc liên hệ hotline để kích hoạt tài khoản!']);
+        }
+
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
             [
