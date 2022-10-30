@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -183,6 +184,49 @@ class UserController extends CommonController
             $userInput['activation_token'] = "";
             $update = CommonServiceFactory::mUserService()->update($userInput);
             return $this->sendResponse($update, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function passwordReset(Request $request, $id)
+    {
+        try {
+            if (!Auth::user()->hasRole('administrator')) {
+                return $this->sendError('Error', ['Bạn không có quyền thực hiện chức năng này!']);
+            }
+
+            $arrRules = [
+                'password' => [
+                    'required',
+                    'string',
+                    'confirmed',
+                    'min:6',             // must be at least 10 characters in length
+                    'regex:/[a-z]/',      // must contain at least one lowercase letter
+                    'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                    'regex:/[0-9]/',      // must contain at least one digit
+                    'regex:/[@$!%*#?&]/', // must contain a special character
+                ]
+            ];
+            $arrMessages = [
+                'password.required' => 'Chưa nhập mật khẩu mới!',
+                'password.string' => 'Mật khẩu phải là chuỗi ký tự!',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
+                'password.regex' => 'Mật khẩu phải có chứa 1 ký tự chữ in thường, 1 ký tự chữ in hoa, 1 ký tự số, 1 ký tự đặc biệt!',
+                'password.confirmed' => 'Xác nhận mật khẩu không đúng!'
+            ];
+
+            $validator = Validator::make($request->all(), $arrRules, $arrMessages);
+            if ($validator->fails()) {
+                return $this->sendError('Error', $validator->errors()->all());
+            }
+
+            $user = User::where('id', $id)->first();
+            if (!$user)
+                return $this->sendError('Error.', ['Không tìm thấy tài khoản!']);
+            $user->password = bcrypt($request->password);
+            $user->save();
+            return $this->sendResponse($user, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }

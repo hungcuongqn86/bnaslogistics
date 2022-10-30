@@ -11,6 +11,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::post('/create', 'UserController@create');
                 Route::post('/update', 'UserController@update');
                 Route::post('/active/{id}', 'UserController@active');
+                Route::post('/passwordreset/{id}', 'UserController@passwordReset');
                 Route::delete('/delete', 'UserController@delete');
             });
             Route::group(['prefix' => 'role'], function () {
