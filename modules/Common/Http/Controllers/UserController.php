@@ -2,11 +2,10 @@
 
 namespace Modules\Common\Http\Controllers;
 
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
-use Modules\Common\Services\CommonServiceFactory;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Modules\Common\Services\CommonServiceFactory;
 
 class UserController extends CommonController
 {
@@ -163,6 +162,26 @@ class UserController extends CommonController
                     }
                 }
             }
+            return $this->sendResponse($update, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function active(Request $request, $id)
+    {
+        try {
+            if (!Auth::user()->hasRole('administrator')) {
+                return $this->sendError('Error', ['Bạn không có quyền thực hiện chức năng này!']);
+            }
+            $userData = CommonServiceFactory::mUserService()->findById($id);
+            if (empty($userData)) {
+                return $this->sendError('Error', ['Không tồn tại user trong hệ thống!']);
+            }
+            $userInput['id'] = $id;
+            $userInput['active'] = true;
+            $userInput['activation_token'] = "";
+            $update = CommonServiceFactory::mUserService()->update($userInput);
             return $this->sendResponse($update, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
