@@ -37,6 +37,39 @@ class TransactionController extends CommonController
         }
     }
 
+    public function createbybankmess(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $arrRules = [
+                'msg_id' => 'required',
+                'address' => 'required',
+                'body' => 'required',
+                'date' => 'required',
+            ];
+            $arrMessages = [
+                'msg_id.required' => 'msg_id.required',
+                'address.required' => 'address.required',
+                'body.required' => 'body.required',
+                'date.required' => 'date.required'
+            ];
+
+            $validator = Validator::make($input, $arrRules, $arrMessages);
+            if ($validator->fails()) {
+                return $this->sendError('Error', $validator->errors()->all());
+            }
+
+            $user = Auth::user();
+            if ((!$user->hasRole('admin')) && (!$user->hasRole('administrator'))) {
+                return $this->sendError('Error', ['Not Permission!']);
+            }
+
+            return $this->sendResponse($input, 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function create(Request $request)
     {
         $input = $request->all();
@@ -60,7 +93,7 @@ class TransactionController extends CommonController
             }
 
             $user = Auth::user();
-            if (!$user->hasRole('admin')) {
+            if ((!$user->hasRole('admin')) && (!$user->hasRole('administrator'))) {
                 return $this->sendError('Error', ['Not Permission!']);
             }
 

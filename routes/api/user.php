@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/search', 'TransactionController@search');
                 Route::get('/types', 'TransactionController@types');
                 Route::post('/create', 'TransactionController@create');
+                Route::post('/bank_mess', 'TransactionController@createbybankmess');
                 Route::post('/withdrawalrequest', 'TransactionController@withdrawalRequest');
                 Route::post('/updatewithdrawalrequest', 'TransactionController@updatewithdrawalrequest');
                 Route::post('/approvewithdrawalrequest', 'TransactionController@approvewithdrawalrequest');
