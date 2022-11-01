@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Services;
 
+use Modules\Common\Services\Impl\BankMessService;
 use Modules\Common\Services\Impl\VersionService;
 use Modules\Common\Services\Impl\SettingService;
 use Modules\Common\Services\Impl\WarehouseService;
@@ -20,6 +21,7 @@ use Modules\Common\Services\Impl\WithdrawalRequestService;
 class CommonServiceFactory
 {
     protected static $mVersionService;
+    protected static $mBankMessService;
     protected static $mSettingService;
     protected static $mWarehouseService;
     protected static $mChinaWarehouseService;
@@ -40,6 +42,14 @@ class CommonServiceFactory
             self::$mVersionService = new VersionService();
         }
         return self::$mVersionService;
+    }
+
+    public static function mBankMessService()
+    {
+        if (self::$mBankMessService == null) {
+            self::$mBankMessService = new BankMessService();
+        }
+        return self::$mBankMessService;
     }
 
     public static function mSettingService()

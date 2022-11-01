@@ -2,39 +2,21 @@
 
 namespace Modules\Common\Entities;
 
+use App\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class BankAccount extends BaseEntity
+class BankMess extends BaseEntity
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
-    protected $table = 'bank_account';
+    protected $table = 'bank_mess';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'name',
-        'account_number',
-        'status',
-        'is_deleted',
-        'created_at',
-        'updated_at'
+        'msg_id',
+        'address',
+        'body',
+        'date'
     ];
-
-    protected $appends = ['bank_debt'];
-
-    public function getBankDebtAttribute()
-    {
-        $query = $this->Transaction()->where('is_deleted', '=', 0);
-        $res = $query->orderBy('id', 'desc')->first();
-        if (!empty($res)) {
-            return $res->bank_debt;
-        } else {
-            return 0;
-        }
-    }
-
-    public function Transaction()
-    {
-        return $this->hasMany(Transaction::class, 'bank_account', 'id');
-    }
 }

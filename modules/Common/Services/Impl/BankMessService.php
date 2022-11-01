@@ -2,20 +2,20 @@
 
 namespace Modules\Common\Services\Impl;
 
-use Modules\Common\Entities\Version;
-use Modules\Common\Services\Intf\IVersionService;
+use Modules\Common\Entities\BankMess;
+use Modules\Common\Services\Intf\IBankMessService;
 use Illuminate\Support\Facades\DB;
 
-class VersionService extends CommonService implements IVersionService
+class BankMessService extends CommonService implements IBankMessService
 {
     protected function getDefaultModel()
     {
-        return Version::getTableName();
+        return BankMess::getTableName();
     }
 
     protected function getDefaultClass()
     {
-        return Version::class;
+        return BankMess::class;
     }
 
     /**
@@ -25,7 +25,7 @@ class VersionService extends CommonService implements IVersionService
     public function search($filter)
     {
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
-        $query = Version::where('is_deleted', '=', 0);
+        $query = BankMess::where('is_deleted', '=', 0);
 
         $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'created_at';
         $sdir = isset($filter['sdir']) ? $filter['sdir'] : 'desc';
@@ -38,21 +38,15 @@ class VersionService extends CommonService implements IVersionService
         return $rResult;
     }
 
-    public function check($app = 'vs', $partner = '0')
-    {
-        $rResult = Version::where('is_deleted', '=', 0)->where('partner', '=', $partner)->where('app_code', '=', $app)->orderBy('created_at', 'desc')->first(array('version_code', 'link_apk'));
-        return $rResult;
-    }
-
     public function findById($id)
     {
-        $rResult = Version::where('id', '=', $id)->first();
+        $rResult = BankMess::where('id', '=', $id)->first();
         return array('sim' => $rResult);
     }
 
     public function create($arrInput)
     {
-        $version = new Version($arrInput);
+        $version = new BankMess($arrInput);
         DB::beginTransaction();
         try {
             $version->save();
@@ -72,7 +66,7 @@ class VersionService extends CommonService implements IVersionService
         $id = $arrInput['id'];
         DB::beginTransaction();
         try {
-            $version = Version::find($id);
+            $version = BankMess::find($id);
             $version->update($arrInput);
             DB::commit();
             return $version;

@@ -2,7 +2,7 @@
 
 namespace Modules\Common\Services\Intf;
 
-interface IVersionService
+interface IBankMessService
 {
     public function search($filter);
 }
