@@ -2,11 +2,12 @@
 
 namespace Modules\Common\Entities;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class BankAccount extends BaseEntity
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $table = 'bank_account';
     protected $primaryKey = 'id';
@@ -14,8 +15,11 @@ class BankAccount extends BaseEntity
     protected $fillable = [
         'name',
         'account_number',
+        'account_name',
+        'bin',
+        'sender',
+        'is_sms',
         'status',
-        'is_deleted',
         'created_at',
         'updated_at'
     ];
