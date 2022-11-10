@@ -19,6 +19,7 @@ class BankAccount extends BaseEntity
         'bin',
         'sender',
         'is_sms',
+        'sms_temp',
         'status',
         'created_at',
         'updated_at'
