@@ -24,9 +24,7 @@ class BankAccountService extends CommonService implements IBankAccountService
      */
     public function search($filter)
     {
-        $query = BankAccount::where('is_deleted', '=', 0);
-        $rResult = $query->get(['id', 'name'])->toArray();
-        return $rResult;
+        return BankAccount::get()->toArray();
     }
 
     public function findById($id)
