@@ -336,7 +336,7 @@ class PassportController extends CommonController
                 $children[] = $newchildren;
 
                 $newchildren = new \stdClass();
-                $newchildren->name = 'Tài khoản';
+                $newchildren->name = 'Tài khoản NH';
                 $newchildren->url = '/mcustumer/internal';
                 $children[] = $newchildren;
 

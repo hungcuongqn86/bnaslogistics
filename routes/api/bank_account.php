@@ -5,6 +5,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => 'bankaccount', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
             Route::get('/search', 'BankAccountController@search');
             Route::get('/detail/{id}', 'BankAccountController@detail');
+            Route::post('/update/{id}', 'BankAccountController@update');
         });
     });
 });

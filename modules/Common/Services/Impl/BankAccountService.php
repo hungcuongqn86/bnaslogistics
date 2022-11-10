@@ -36,4 +36,22 @@ class BankAccountService extends CommonService implements IBankAccountService
             return null;
         }
     }
+
+    public function update($arrInput)
+    {
+        $id = $arrInput['id'];
+        DB::beginTransaction();
+        try {
+            $owner = BankAccount::find($id);
+            $owner->update($arrInput);
+            DB::commit();
+            return $owner;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }
