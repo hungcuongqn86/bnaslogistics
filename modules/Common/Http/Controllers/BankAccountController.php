@@ -19,9 +19,7 @@ class BankAccountController extends CommonController
         $input = $request->all();
         try {
             $user = Auth::user();
-            if (!empty($user['partner_id']) && $user['partner_id'] > 0) {
-                $input['partner_id'] = $user['partner_id'];
-            }
+            $input['type'] = $user['type'];
             return $this->sendResponse(CommonServiceFactory::mBankAccountService()->search($input), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

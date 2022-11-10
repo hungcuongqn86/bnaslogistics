@@ -24,6 +24,15 @@ class BankAccountService extends CommonService implements IBankAccountService
      */
     public function search($filter)
     {
+        $type = isset($filter['type']) ? $filter['type'] : 1;
+        if ($type == 1) {
+            return BankAccount::get([
+                'name',
+                'account_number',
+                'account_name',
+                'bin'
+            ])->toArray();
+        }
         return BankAccount::get()->toArray();
     }
 
