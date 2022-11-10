@@ -30,5 +30,9 @@ Route::group(['middleware' => 'auth:api'], function () {
                 Route::get('/withdrawalrequestcount', 'TransactionController@withdrawalrequestcount');
             });
         });
+
+        Route::group(['prefix' => 'banksms', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/getall', 'TransactionController@bankMessGetAll');
+        });
     });
 });

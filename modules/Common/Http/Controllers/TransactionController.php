@@ -37,6 +37,20 @@ class TransactionController extends CommonController
         }
     }
 
+    public function bankMessGetAll(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $user = Auth::user();
+            if ((!$user->hasRole('admin')) && (!$user->hasRole('administrator'))) {
+                return $this->sendError('Error', ['Not Permission!']);
+            }
+            return $this->sendResponse(CommonServiceFactory::mBankMessService()->search($input), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function createbybankmess(Request $request)
     {
         $input = $request->all();

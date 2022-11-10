@@ -25,8 +25,14 @@ class BankMessService extends CommonService implements IBankMessService
     public function search($filter)
     {
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
-        $query = BankMess::where('is_deleted', '=', 0);
-
+        $query = BankMess::where('id', '>', 0);
+        $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
+        if (!empty($sKeySearch)) {
+            $query->where(function ($q) use ($sKeySearch) {
+                $q->where('address', 'LIKE', '%' . $sKeySearch . '%');
+                $q->orWhere('body', 'LIKE', '%' . $sKeySearch . '%');
+            });
+        }
         $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'created_at';
         $sdir = isset($filter['sdir']) ? $filter['sdir'] : 'desc';
 
