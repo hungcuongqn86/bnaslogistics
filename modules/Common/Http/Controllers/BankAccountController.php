@@ -71,6 +71,16 @@ class BankAccountController extends CommonController
         }
     }
 
+    private function generateRandomString($length = 6) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     public function recharge(Request $request)
     {
         $input = $request->all();
@@ -109,7 +119,7 @@ class BankAccountController extends CommonController
             $accountName = $input['vqrSelBank']['account']['account_name'];
             $acqId = $input['vqrSelBank']['bin'];
             $amount = $input['n_value'];
-            $addInfo = "Ung Ho Quy Vac Xin";
+            $addInfo = self::generateRandomString(6);
 
             $postVar = "accountNo=";
             $postVar .= $accountNo;
