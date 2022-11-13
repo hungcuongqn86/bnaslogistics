@@ -159,7 +159,7 @@ class BankAccountController extends CommonController
                 'code' => $addInfo,
                 'value' => $amount,
                 'vqr_bank_code' => $input['vqrSelBank']['code'],
-                'vqr_bank_name' => $input['vqrSelBank']['shortName'],
+                'vqr_bank_name' => $input['vqrSelBank']['name'],
                 'vqr_bank_bin' => $acqId,
                 'vqr_bank_qr_code' => $data['data']['qrCode'],
                 'account_name' => $accountName,
