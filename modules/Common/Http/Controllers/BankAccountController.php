@@ -105,10 +105,10 @@ class BankAccountController extends CommonController
 
             // Post
             $url = "https://api.vietqr.io/v2/generate";
-            $accountNo = "113366668888";
-            $accountName = "QUY VAC XIN PHONG CHONG COVID";
-            $acqId = "970415";
-            $amount = "79000";
+            $accountNo = $input['vqrSelBank']['account']['account_number'];
+            $accountName = $input['vqrSelBank']['account']['account_name'];
+            $acqId = $input['vqrSelBank']['bin'];
+            $amount = $input['n_value'];
             $addInfo = "Ung Ho Quy Vac Xin";
 
             $postVar = "accountNo=";
@@ -135,13 +135,28 @@ class BankAccountController extends CommonController
             ));
             $data = curl_exec($curl);
             curl_close($curl);
-            if (!empty($data)) {
-                $data = json_decode($data, true);
+            if (empty($data)) {
+                return $this->sendError('Error', ['Không tạo được QR Code!']);
             }
+            $data = json_decode($data, true);
+            if (empty($data['data'])) {
+                return $this->sendError('Error', ['Không tạo được QR Code!']);
+            }
+            $user = Auth::user();
 
-            // Luu thong tin
-
-            return $this->sendResponse($data, 'Successfully.');
+            $traReq = [
+                'user_id' => $user['id'],
+                'code' => $addInfo,
+                'value' => $amount,
+                'vqr_bank_code' => $input['vqrSelBank']['code'],
+                'vqr_bank_name' => $input['vqrSelBank']['shortName'],
+                'vqr_bank_bin' => $acqId,
+                'vqr_bank_qr_code' => $data['data']['qrCode'],
+                'vqr_bank_qr_data_url' => $data['data']['qrDataURL'],
+                'account_name' => $accountName,
+                'account_number' => $accountNo
+            ];
+            return $this->sendResponse(CommonServiceFactory::mBankAccountService()->transaction_requests_create($traReq), 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
