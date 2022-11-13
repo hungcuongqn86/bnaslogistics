@@ -3,6 +3,7 @@
 namespace Modules\Common\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\Common\Services\CommonServiceFactory;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +55,7 @@ class TransactionController extends CommonController
     public function createbybankmess(Request $request)
     {
         $input = $request->all();
+        DB::beginTransaction();
         try {
             $arrRules = [
                 'msg_id' => 'required',
@@ -70,22 +72,57 @@ class TransactionController extends CommonController
 
             $validator = Validator::make($input, $arrRules, $arrMessages);
             if ($validator->fails()) {
+                DB::rollBack();
                 return $this->sendError('Error', $validator->errors()->all());
             }
 
             $user = Auth::user();
             if ((!$user->hasRole('admin')) && (!$user->hasRole('administrator'))) {
+                DB::rollBack();
                 return $this->sendError('Error', ['Not Permission!']);
             }
 
             $create = CommonServiceFactory::mBankMessService()->create($input);
             if (!empty($create)) {
                 // Lay transaction_requests address
+                $body = $create->body;
+                $transaction_req = CommonServiceFactory::mBankAccountService()->transactionRequestsAvailable($create->address, $body);
+                if (!empty($transaction_req) && !empty($transaction_req['sms_temp'])) {
+                    $temp = $transaction_req['sms_temp'];
+                    preg_match_all($temp, $body, $matches);
+                    if (sizeof($matches) == 2) {
+                        if (sizeof($matches[1]) == 1) {
+                            $val = $matches[1][0];
+                            $val = str_replace(',', '', $val);
+                            $val = str_replace('.', '', $val);
+                            if ($val == $transaction_req['value']) {
+                                $trInput['type'] = 1;
+                                $trInput['code'] = 'sms'.$create->id.'req'.$transaction_req['id'];
+                                $trInput['content'] = 'sms'.$create->id.'req'.$transaction_req['id'];
+                                $trInput['value'] = $val;
 
-                //
+                                $trInput['created_by'] = $user['id'];
+
+                                $trInput['user_id'] = $transaction_req['user_id'];
+                                $duNo = CommonServiceFactory::mTransactionService()->debt($transaction_req['user_id']);
+                                $duNo = $duNo + ($val*1);
+                                $trInput['debt'] = $duNo;
+
+                                $trInput['bank_account'] = $transaction_req['bank_account'];
+                                $duNoBank = CommonServiceFactory::mTransactionService()->bankdebt($transaction_req['bank_account']);
+                                $duNoBank = $duNoBank + ($val*1);
+                                $trInput['bank_debt'] = $duNoBank;
+
+                                $create = CommonServiceFactory::mTransactionService()->create($trInput);
+                            }
+                        }
+                    }
+                }
             }
+            DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }

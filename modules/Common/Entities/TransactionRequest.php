@@ -20,6 +20,7 @@ class TransactionRequest extends BaseEntity
         'vqr_bank_name',
         'vqr_bank_bin',
         'vqr_bank_qr_code',
+        'bank_account',
         'account_name',
         'account_number',
         'account_number',

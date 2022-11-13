@@ -2,6 +2,7 @@
 
 namespace Modules\Common\Services\Impl;
 
+use Carbon\Carbon;
 use Modules\Common\Entities\TransactionRequest;
 use Modules\Common\Entities\BankAccount;
 use Modules\Common\Services\Intf\IBankAccountService;
@@ -43,6 +44,21 @@ class BankAccountService extends CommonService implements IBankAccountService
         $rResult = BankAccount::where('id', '=', $id)->first();
         if (!empty($rResult)) {
             return array('bank_account' => $rResult->toArray());
+        } else {
+            return null;
+        }
+    }
+
+    public function transactionRequestsAvailable($sender, $body)
+    {
+        $date = Carbon::now()->subDays(3);
+        $arrBody = explode(' ', $body);
+        $rResult = TransactionRequest::where('sender', '=', $sender)
+            ->whereDate('created_at', '>=', $date->toDateString())
+            ->wherein('code', $arrBody)
+            ->first();
+        if (!empty($rResult)) {
+            return $rResult->toArray();
         } else {
             return null;
         }
