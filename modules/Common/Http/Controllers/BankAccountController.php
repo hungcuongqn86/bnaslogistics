@@ -93,14 +93,55 @@ class BankAccountController extends CommonController
                 return $this->sendError('Error', ['Không có tài khoản ngân hàng!']);
             }
 
-            return $this->sendResponse($input, 'Successfully.');
-
-            $bankAccount = CommonServiceFactory::mBankAccountService()->findById($id);
+            $bankAccountId = $input['vqrSelBank']['account']['id'];
+            $bankAccount = CommonServiceFactory::mBankAccountService()->findById($bankAccountId);
             if(empty($bankAccount)){
                 return $this->sendError('Error', ['Bank Account Không tồn tại!']);
             }
 
-            return $this->sendResponse(CommonServiceFactory::mBankAccountService()->update($input), 'Successfully.');
+            // Tao vietqr
+            $vqr_client_id = "de3be5b0-f790-4e86-96d6-8ba753b8a831";
+            $vqr_api_key = "b67705a2-8713-4ad6-9bc0-10d5363c0fcf";
+
+            // Post
+            $url = "https://api.vietqr.io/v2/generate";
+            $accountNo = "113366668888";
+            $accountName = "QUY VAC XIN PHONG CHONG COVID";
+            $acqId = "970415";
+            $amount = "79000";
+            $addInfo = "Ung Ho Quy Vac Xin";
+
+            $postVar = "accountNo=";
+            $postVar .= $accountNo;
+            $postVar .= "&accountName=";
+            $postVar .= $accountName;
+            $postVar .= "&acqId=";
+            $postVar .= $acqId;
+            $postVar .= "&amount=";
+            $postVar .= $amount;
+            $postVar .= "&addInfo=";
+            $postVar .= $addInfo;
+            $postVar .= "&format=text";
+            $postVar .= "&template=compact";
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $postVar);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'x-client-id: ' . $vqr_client_id,
+                'x-api-key: ' . $vqr_api_key
+            ));
+            $data = curl_exec($curl);
+            curl_close($curl);
+            if (!empty($data)) {
+                $data = json_decode($data, true);
+            }
+
+            // Luu thong tin
+
+            return $this->sendResponse($data, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
