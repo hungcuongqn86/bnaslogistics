@@ -162,11 +162,16 @@ class BankAccountController extends CommonController
                 'vqr_bank_name' => $input['vqrSelBank']['shortName'],
                 'vqr_bank_bin' => $acqId,
                 'vqr_bank_qr_code' => $data['data']['qrCode'],
-                'vqr_bank_qr_data_url' => $data['data']['qrDataURL'],
                 'account_name' => $accountName,
                 'account_number' => $accountNo
             ];
-            return $this->sendResponse(CommonServiceFactory::mBankAccountService()->transaction_requests_create($traReq), 'Successfully.');
+
+            $create = CommonServiceFactory::mBankAccountService()->transaction_requests_create($traReq);
+            if(empty($create)){
+                return $this->sendError('Error', ['Không lưu được QR Code!']);
+            }
+            $create['vqr_bank_qr_data_url'] = $data['data']['qrDataURL'];
+            return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }
