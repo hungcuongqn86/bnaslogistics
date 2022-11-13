@@ -70,4 +70,39 @@ class BankAccountController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
+
+    public function recharge(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $arrRules = [
+                'n_value' => 'required',
+                'vqrSelBank' => 'required'
+            ];
+            $arrMessages = [
+                'n_value.required' => 'Phải nhập số tiền cần nạp!',
+                'vqrSelBank.required' => 'Phải chọn ngân hàng nạp!'
+            ];
+
+            $validator = Validator::make($input, $arrRules, $arrMessages);
+            if ($validator->fails()) {
+                return $this->sendError('Error', $validator->errors()->all());
+            }
+
+            if(empty($input['vqrSelBank']['account'])){
+                return $this->sendError('Error', ['Không có tài khoản ngân hàng!']);
+            }
+
+            return $this->sendResponse($input, 'Successfully.');
+
+            $bankAccount = CommonServiceFactory::mBankAccountService()->findById($id);
+            if(empty($bankAccount)){
+                return $this->sendError('Error', ['Bank Account Không tồn tại!']);
+            }
+
+            return $this->sendResponse(CommonServiceFactory::mBankAccountService()->update($input), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 }
