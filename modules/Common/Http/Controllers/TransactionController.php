@@ -79,7 +79,12 @@ class TransactionController extends CommonController
             }
 
             $create = CommonServiceFactory::mBankMessService()->create($input);
-            return $this->sendResponse($input, 'Successfully.');
+            if (!empty($create)) {
+                // Lay transaction_requests address
+
+                //
+            }
+            return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
         }

@@ -22,6 +22,9 @@ class TransactionRequest extends BaseEntity
         'vqr_bank_qr_code',
         'account_name',
         'account_number',
+        'account_number',
+        'sender',
+        'sms_temp',
         'created_at',
         'updated_at'
     ];
