@@ -27,6 +27,7 @@ class BankAccountService extends CommonService implements IBankAccountService
         $type = isset($filter['type']) ? $filter['type'] : 1;
         if ($type == 1) {
             return BankAccount::get([
+                'id',
                 'name',
                 'account_number',
                 'account_name',
