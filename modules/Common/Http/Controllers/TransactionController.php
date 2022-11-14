@@ -4,6 +4,7 @@ namespace Modules\Common\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\Common\Entities\TransactionRequest;
 use Modules\Common\Services\CommonServiceFactory;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -87,9 +88,12 @@ class TransactionController extends CommonController
                 // Lay transaction_requests address
                 $body = $create->body;
                 $transaction_req = CommonServiceFactory::mBankAccountService()->transactionRequestsAvailable($create->address, $body);
+                // return $this->sendResponse($transaction_req, 'Successfully.');
                 if (!empty($transaction_req) && !empty($transaction_req['sms_temp'])) {
                     $temp = $transaction_req['sms_temp'];
+                    // $temp ="/TK220xxxx45674 \+(.*?)VND/";
                     preg_match_all($temp, $body, $matches);
+                    // return $this->sendResponse($matches, 'Successfully.');
                     if (sizeof($matches) == 2) {
                         if (sizeof($matches[1]) == 1) {
                             $val = $matches[1][0];
@@ -114,6 +118,8 @@ class TransactionController extends CommonController
                                 $trInput['bank_debt'] = $duNoBank;
 
                                 $create = CommonServiceFactory::mTransactionService()->create($trInput);
+                                // Delete transaction_req
+                                TransactionRequest::where('id', '=', $transaction_req['id'])->delete();
                             }
                         }
                     }
