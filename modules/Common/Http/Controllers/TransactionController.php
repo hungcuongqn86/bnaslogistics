@@ -101,20 +101,20 @@ class TransactionController extends CommonController
                             $val = str_replace('.', '', $val);
                             if ($val == $transaction_req['value']) {
                                 $trInput['type'] = 1;
-                                $trInput['code'] = 'sms'.$create->id.'req'.$transaction_req['id'];
-                                $trInput['content'] = 'sms'.$create->id.'req'.$transaction_req['id'];
+                                $trInput['code'] = 'sms' . $create->id . 'req' . $transaction_req['id'];
+                                $trInput['content'] = 'sms' . $create->id . 'req' . $transaction_req['id'];
                                 $trInput['value'] = $val;
 
                                 $trInput['created_by'] = $user['id'];
 
                                 $trInput['user_id'] = $transaction_req['user_id'];
                                 $duNo = CommonServiceFactory::mTransactionService()->debt($transaction_req['user_id']);
-                                $duNo = $duNo + ($val*1);
+                                $duNo = $duNo + ($val * 1);
                                 $trInput['debt'] = $duNo;
 
                                 $trInput['bank_account'] = $transaction_req['bank_account'];
                                 $duNoBank = CommonServiceFactory::mTransactionService()->bankdebt($transaction_req['bank_account']);
-                                $duNoBank = $duNoBank + ($val*1);
+                                $duNoBank = $duNoBank + ($val * 1);
                                 $trInput['bank_debt'] = $duNoBank;
 
                                 $create = CommonServiceFactory::mTransactionService()->create($trInput);
@@ -136,6 +136,7 @@ class TransactionController extends CommonController
     public function create(Request $request)
     {
         $input = $request->all();
+        DB::beginTransaction();
         try {
             $arrRules = [
                 'type' => 'required',
@@ -152,11 +153,13 @@ class TransactionController extends CommonController
 
             $validator = Validator::make($input, $arrRules, $arrMessages);
             if ($validator->fails()) {
+                DB::rollBack();
                 return $this->sendError('Error', $validator->errors()->all());
             }
 
             $user = Auth::user();
             if ((!$user->hasRole('admin')) && (!$user->hasRole('administrator'))) {
+                DB::rollBack();
                 return $this->sendError('Error', ['Not Permission!']);
             }
 
@@ -179,8 +182,13 @@ class TransactionController extends CommonController
             $input['debt'] = $duNo;
             $input['bank_debt'] = $duNoBank;
             $create = CommonServiceFactory::mTransactionService()->create($input);
+            if (!empty($create)) {
+                TransactionRequest::where('user_id', '=', $input['user_id'])->delete();
+            }
+            DB::commit();
             return $this->sendResponse($create, 'Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->sendError('Error', $e->getMessage());
         }
     }
