@@ -73,7 +73,7 @@ class HistoryController extends CommonController
 
         $userId = $order['user_id'];
         if ($user['type'] == 1) {
-            if($user['id'] != $userId){
+            if ($user['id'] != $userId) {
                 return $this->sendError('Error', ['Không có quyền truy cập!'], 403);
             }
         }
@@ -86,7 +86,11 @@ class HistoryController extends CommonController
                 // Update order status
                 $orderInput = array();
                 $orderInput['id'] = $order['id'];
-
+                if ($input['type'] == 12) {
+                    if ($order['status'] == 1) {
+                        $orderInput['status'] = 2;
+                    }
+                }
                 if ($input['type'] == 4) {
                     $orderInput['status'] = 4;
                 }
