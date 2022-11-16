@@ -379,7 +379,7 @@ class OrderController extends CommonController
                 'deposit' => $deposit,
                 'phi_dat_hang_cs' => $phi_dat_hang_cs,
                 'phi_kiem_dem_cs' => $phi_kiem_dem_cs,
-                'status' => 2,
+                'status' => 1,
             );
 
             if (isset($user['hander'])) {
