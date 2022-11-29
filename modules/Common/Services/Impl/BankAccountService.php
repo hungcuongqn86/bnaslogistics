@@ -31,6 +31,7 @@ class BankAccountService extends CommonService implements IBankAccountService
             return BankAccount::get([
                 'id',
                 'name',
+                'is_sms',
                 'account_number',
                 'account_name',
                 'bin'
