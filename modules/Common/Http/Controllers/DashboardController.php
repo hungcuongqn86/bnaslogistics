@@ -60,7 +60,7 @@ class DashboardController extends CommonController
             if (!$user->hasRole('admin')) {
                 $userId = $user['id'];
                 $query->whereHas('User', function ($q) use ($userId) {
-                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                    $q->where('hander', '=', $userId);
                 });
             }
 
@@ -134,7 +134,7 @@ class DashboardController extends CommonController
         $date = Carbon::now()->subDays($dn - 1);
 
         try {
-            $query = User::whereDate('created_at', '>=', $date->toDateString())->where('type', '=', 1)->where('active', '=', 1)->where('is_deleted', '=', 0);
+            $query = User::whereDate('created_at', '>=', $date->toDateString())->where('type', '=', 1)->where('active', '=', 1);
             $user = Auth::user();
             if (!$user->hasRole('admin')) {
                 $userId = $user['id'];
@@ -163,7 +163,7 @@ class DashboardController extends CommonController
             if (!$user->hasRole('admin')) {
                 $userId = $user['id'];
                 $query->whereHas('User', function ($q) use ($userId) {
-                    $q->where('hander', '=', $userId)->where('is_deleted', '=', 0);
+                    $q->where('hander', '=', $userId);
                 });
             }
 

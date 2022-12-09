@@ -96,7 +96,7 @@ class PackageService extends CommonService implements IPackageService
                 $query->whereNull('bill_id');
                 $query->orderBy('id');
             }));
-        }))->where('is_deleted', '=', 0);
+        }));
 
         $sOrderCode = isset($filter['code']) ? $filter['code'] : '';
         $sPackageCode = isset($filter['package_code']) ? $filter['package_code'] : '';
