@@ -72,7 +72,7 @@ class UserController extends CommonController
         try {
             $arrRules = [
                 'name' => 'required',
-                'email' => 'required|email|unique:users',
+                'email' => 'required|email|unique:users,email,NULL,id,deleted_at,NULL',
                 'password' => 'required',
                 'c_password' => 'required|same:password',
                 'phone_number' => 'required'
@@ -232,32 +232,16 @@ class UserController extends CommonController
         }
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request, $id)
     {
-        $input = $request->all();
-        $owners = CommonServiceFactory::mUserService()->findByIds($input);
-        $deleteData = array();
-        $errData = array();
-        foreach ($input as $id) {
-            $check = false;
-            foreach ($owners as $owner) {
-                if ($id == $owner['id']) {
-                    $check = true;
-                    $owner['is_deleted'] = 1;
-                    $deleteData[] = $owner;
-                }
-            }
-            if (!$check) {
-                $errData[] = 'User Id ' . $id . ' NotExist';
-            }
-        }
-
-        if (!empty($errData)) {
+        $user = CommonServiceFactory::mUserService()->findById($id);
+        if (empty($user)) {
+            $errData[] = 'User Id ' . $id . ' NotExist';
             return $this->sendError('Error', $errData);
         }
 
         try {
-            CommonServiceFactory::mUserService()->delete($input);
+            CommonServiceFactory::mUserService()->delete($id);
             return $this->sendResponse(true, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());

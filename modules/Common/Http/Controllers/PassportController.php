@@ -131,8 +131,8 @@ class PassportController extends CommonController
     {
         $arrRules = [
             'name' => 'required',
-            'phone_number' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
+            'phone_number' => 'required|unique:users,phone_number,NULL,id,deleted_at,NULL',
+            'email' => 'required|email|unique:users,email,NULL,id,deleted_at,NULL',
             'password' => [
                 'required',
                 'string',

@@ -22,7 +22,7 @@ class UserService extends CommonService implements IUserService
 
     public function usersGetAll($filter)
     {
-        $query = User::with(['roles'])->where('is_deleted', '=', 0);
+        $query = User::with(['roles']);
         if (isset($filter['type'])) {
             $query->where('type', '=', $filter['type']);
         }
@@ -34,7 +34,7 @@ class UserService extends CommonService implements IUserService
     {
         $query = User::whereHas('roles', function ($q) {
             $q->whereIn('name', ['admin', 'employees']);
-        })->where('is_deleted', '=', 0);
+        });
         $rResult = $query->get(['id', 'name']);
         if (!empty($rResult)) {
             return $rResult->toArray();
@@ -49,7 +49,7 @@ class UserService extends CommonService implements IUserService
      */
     public function search($filter)
     {
-        $query = User::with(['Partner', 'roles'])->where('is_deleted', '=', 0)->where('type', '=', 0);
+        $query = User::with(['Partner', 'roles'])->where('type', '=', 0);
 
         $iPartner = isset($filter['partner_id']) ? $filter['partner_id'] : 0;
         if ($iPartner > 0) {
@@ -58,9 +58,11 @@ class UserService extends CommonService implements IUserService
 
         $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
         if (!empty($sKeySearch)) {
-            $query->Where('name', 'like', '%' . $sKeySearch . '%');
-            $query->orWhere('phone_number', 'like', '%' . $sKeySearch . '%');
-            $query->orWhere('email', 'like', '%' . $sKeySearch . '%');
+            $query->Where(function ($q) use ($sKeySearch) {
+                $q->Where('name', 'like', '%' . $sKeySearch . '%');
+                $q->orWhere('phone_number', 'like', '%' . $sKeySearch . '%');
+                $q->orWhere('email', 'like', '%' . $sKeySearch . '%');
+            });
         }
         $query->orderBy('id', 'desc');
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
@@ -74,7 +76,7 @@ class UserService extends CommonService implements IUserService
      */
     public function custumer($filter)
     {
-        $query = User::with(['Handle'])->where('is_deleted', '=', 0)->where('type', '=', 1);
+        $query = User::with(['Handle'])->where('type', '=', 1);
 
         $iPartner = isset($filter['partner_id']) ? $filter['partner_id'] : 0;
         if ($iPartner > 0) {
@@ -149,11 +151,11 @@ class UserService extends CommonService implements IUserService
         }
     }
 
-    public function delete($ids)
+    public function delete($id)
     {
         DB::beginTransaction();
         try {
-            User::wherein('id', $ids)->update(['is_deleted' => 1]);
+            User::find($id)->delete();
             DB::commit();
             return true;
         } catch (QueryException $e) {

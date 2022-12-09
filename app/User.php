@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +13,7 @@ use Modules\Common\Entities\Order;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasRoles, Notifiable;
+    use HasApiTokens, HasRoles, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +23,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password', 'partner_id', 'phone_number', 'type', 'cost_percent', 'deposit', 'code',
         'rate', 'weight_price', 'active', 'activation_token', 'bank_number', 'bank_name', 'bank_username', 'bank_branch', 'address',
-        'hander', 'total_transaction', 'vip', 'is_deleted'
+        'hander', 'total_transaction', 'vip'
     ];
 
     /**
