@@ -568,6 +568,15 @@ class OrderController extends CommonController
                 case 'phi_kiem_dem_cs':
                     $colName = 'Phí kiểm đếm';
                     break;
+                case 'can_nang_dk':
+                    $colName = 'Cân nặng dự kiến';
+                    break;
+                case 'kich_thuoc_dk':
+                    $colName = 'Kích thước dự kiến';
+                    break;
+                case 'cal_option':
+                    $colName = 'Cách tính chi phí dự kiến';
+                    break;
             }
 
             if ($order[$dirty] == $value) {
