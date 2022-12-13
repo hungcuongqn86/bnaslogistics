@@ -290,6 +290,15 @@ class OrderController extends CommonController
                     $gia_can = 0;
                     $tiencan_tt = 0;
                     $chietkhau_vc = 0;
+
+                    $dg_1_price = 0;
+                    $dg_2_price = 0;
+                    $tien_dong_go = 0;
+
+                    $chong_soc_1_price = 0;
+                    $chong_soc_2_price = 0;
+                    $tien_chong_soc = 0;
+
                     if (isset($order['cal_option'])) {
                         $cal_option = $order['cal_option'];
                         $ck_vc = $order['ck_vc'];
@@ -314,6 +323,46 @@ class OrderController extends CommonController
                             $chietkhau_vc = round($tiencan * $ck_vc / 100, 2);
                             $tiencan_tt = $tiencan - $chietkhau_vc;
                         }
+
+                        if (($order['dong_go'] == 1) && isset($order['can_nang_dk'])) {
+                            $kg_val = $order['can_nang_dk'];
+                            $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
+                            $dg_1_price = (int)$setting['setting']['value'];
+
+                            $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
+                            $dg_2_price = (int)$setting['setting']['value'];
+                            $kg1 = 0;
+                            $kg2 = 0;
+                            if ($kg_val >= 1) {
+                                $kg1 = 1;
+                                $kg2 = $kg_val - 1;
+                            } else {
+                                $kg1 = $kg_val;
+                                $kg2 = 0;
+                            }
+
+                            $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
+                        }
+
+                        if (($order['bao_hiem'] == 1) && isset($order['can_nang_dk'])) {
+                            $kg_val = $order['can_nang_dk'];
+                            $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
+                            $chong_soc_1_price = (int)$setting['setting']['value'];
+
+                            $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
+                            $chong_soc_2_price = (int)$setting['setting']['value'];
+                            $kg1 = 0;
+                            $kg2 = 0;
+                            if ($kg_val >= 1) {
+                                $kg1 = 1;
+                                $kg2 = $kg_val - 1;
+                            } else {
+                                $kg1 = $kg_val;
+                                $kg2 = 0;
+                            }
+
+                            $tien_chong_soc = (($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price)) * $order['ti_gia'];
+                        }
                     }
 
                     $order['count_product'] = $count_product;
@@ -329,6 +378,14 @@ class OrderController extends CommonController
                     $order['gia_can_dk'] = $gia_can;
                     $order['ck_vc_dk'] = $chietkhau_vc;
                     $order['tien_can_dk'] = $tiencan_tt;
+
+                    $order['dg_1_price'] = $dg_1_price;
+                    $order['dg_2_price'] = $dg_2_price;
+                    $order['tien_dong_go_dk'] = $tien_dong_go;
+
+                    $order['chong_soc_1_price'] = $chong_soc_1_price;
+                    $order['chong_soc_2_price'] = $chong_soc_2_price;
+                    $order['tien_chong_soc_dk'] = $tien_chong_soc;
 
                     $order['ti_gia'] = $rate;
                     OrderServiceFactory::mOrderService()->update($order);
