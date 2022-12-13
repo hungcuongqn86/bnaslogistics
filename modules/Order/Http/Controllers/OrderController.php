@@ -286,6 +286,36 @@ class OrderController extends CommonController
                         $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
                     }
 
+                    // Phi du kien
+                    $gia_can = 0;
+                    $tiencan_tt = 0;
+                    $chietkhau_vc = 0;
+                    if (isset($order['cal_option'])) {
+                        $cal_option = $order['cal_option'];
+                        $ck_vc = $order['ck_vc'];
+                        $cn_value = 0;
+                        if(($cal_option == 1) && isset($order['can_nang_dk'])){
+                            $cn_value = $order['can_nang_dk'];
+                        }
+                        if(($cal_option == 2) && isset($order['kich_thuoc_dk'])){
+                            $cn_value = $order['kich_thuoc_dk'];
+                        }
+
+                        if($cn_value > 0){
+                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType($cal_option);
+                            foreach ($transportFees as $feeItem) {
+                                if ($feeItem->min_r <= $cn_value) {
+                                    $gia_can = $feeItem->val;
+                                    break;
+                                }
+                            }
+
+                            $tiencan = $gia_can * $cn_value;
+                            $chietkhau_vc = round($tiencan * $ck_vc / 100, 2);
+                            $tiencan_tt = $tiencan - $chietkhau_vc;
+                        }
+                    }
+
                     $order['count_product'] = $count_product;
                     $order['tra_shop'] = $tra_shop;
                     $order['tien_hang'] = $tien_hang;
@@ -295,6 +325,11 @@ class OrderController extends CommonController
                     $order['phi_dat_hang_tt'] = $phi_dat_hang_tt;
                     $order['phi_kiem_dem_cs'] = $phi_kiem_dem_cs;
                     $order['phi_kiem_dem_tt'] = $phi_kiem_dem_tt;
+
+                    $order['gia_can_dk'] = $gia_can;
+                    $order['ck_vc_dk'] = $chietkhau_vc;
+                    $order['tien_can_dk'] = $tiencan_tt;
+
                     $order['ti_gia'] = $rate;
                     OrderServiceFactory::mOrderService()->update($order);
                 }
