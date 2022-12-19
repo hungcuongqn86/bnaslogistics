@@ -46,6 +46,8 @@ class Package extends BaseEntity
         'ck_vc_tt',
         'tien_can_tt',
         'phi_van_phat_sinh',
+        'dg_cal_option',
+        'dg_first_unit',
         'dg_1_price',
         'dg_2_price',
         'tien_dong_go',
