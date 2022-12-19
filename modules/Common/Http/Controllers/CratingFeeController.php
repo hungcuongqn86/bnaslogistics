@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Modules\Common\Services\CommonServiceFactory;
 
-class InspectionFeeController extends CommonController
+class CratingFeeController extends CommonController
 {
     public function index(Request $request)
     {
@@ -17,7 +17,7 @@ class InspectionFeeController extends CommonController
     {
         $input = $request->all();
         try {
-            return $this->sendResponse(CommonServiceFactory::mInspectionFeeService()->search($input), 'Successfully.');
+            return $this->sendResponse(CommonServiceFactory::mCratingFeeService()->search($input), 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
         } catch (\Exception $e) {
@@ -28,7 +28,7 @@ class InspectionFeeController extends CommonController
     public function detail($id)
     {
         try {
-            return $this->sendResponse(CommonServiceFactory::mInspectionFeeService()->findById($id), 'Successfully.');
+            return $this->sendResponse(CommonServiceFactory::mCratingFeeService()->findById($id), 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
         } catch (\Exception $e) {
@@ -56,7 +56,7 @@ class InspectionFeeController extends CommonController
                 return $this->sendError('Error', $validator->errors()->all());
             }
 
-            $create = CommonServiceFactory::mInspectionFeeService()->create($input);
+            $create = CommonServiceFactory::mCratingFeeService()->create($input);
             return $this->sendResponse($create, 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
@@ -85,12 +85,12 @@ class InspectionFeeController extends CommonController
                 return $this->sendError('Error', $validator->errors()->all());
             }
 
-            $inspectionFee = CommonServiceFactory::mInspectionFeeService()->findById($id);
+            $inspectionFee = CommonServiceFactory::mCratingFeeService()->findById($id);
             if (empty($inspectionFee)) {
                 return $this->sendError('Error', ['Không tồn tại dịch vụ!']);
             }
 
-            $update = CommonServiceFactory::mInspectionFeeService()->update($input);
+            $update = CommonServiceFactory::mCratingFeeService()->update($input);
             return $this->sendResponse($update, 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
@@ -102,11 +102,11 @@ class InspectionFeeController extends CommonController
     public function delete($id)
     {
         try {
-            $serviceFee = CommonServiceFactory::mInspectionFeeService()->findById($id);
+            $serviceFee = CommonServiceFactory::mCratingFeeService()->findById($id);
             if (empty($serviceFee)) {
                 return $this->sendError('Error', ['Không tồn tại dịch vụ!']);
             }
-            return $this->sendResponse(CommonServiceFactory::mInspectionFeeService()->delete($id), 'Successfully.');
+            return $this->sendResponse(CommonServiceFactory::mCratingFeeService()->delete($id), 'Successfully.');
         } catch (\PDOException $e) {
             return $this->sendError('PDOError', $e->getMessage());
         } catch (\Exception $e) {

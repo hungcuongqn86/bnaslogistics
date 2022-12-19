@@ -5,11 +5,11 @@ namespace Modules\Common\Entities;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InspectionFee extends BaseEntity
+class CratingFee extends BaseEntity
 {
     use Notifiable, SoftDeletes;
 
-    protected $table = 'inspection_fees';
+    protected $table = 'crating_fees';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [

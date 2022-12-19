@@ -2,20 +2,20 @@
 
 namespace Modules\Common\Services\Impl;
 
-use Modules\Common\Entities\InspectionFee;
-use Modules\Common\Services\Intf\IInspectionFeeService;
+use Modules\Common\Entities\CratingFee;
+use Modules\Common\Services\Intf\ICratingFeeService;
 use Illuminate\Support\Facades\DB;
 
-class InspectionFeeService extends CommonService implements IInspectionFeeService
+class CratingFeeService extends CommonService implements ICratingFeeService
 {
     protected function getDefaultModel()
     {
-        return InspectionFee::getTableName();
+        return CratingFee::getTableName();
     }
 
     protected function getDefaultClass()
     {
-        return InspectionFee::class;
+        return CratingFee::class;
     }
 
     /**
@@ -25,7 +25,7 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
     public function search($filter)
     {
         $limit = isset($filter['limit']) ? $filter['limit'] : config('const.LIMIT_PER_PAGE');
-        $query = InspectionFee::where('id', '>', 0);
+        $query = CratingFee::where('id', '>', 0);
 
         $sorder_type = isset($filter['order_type']) ? $filter['order_type'] : 'min_count';
         $sdir = isset($filter['sdir']) ? $filter['sdir'] : 'asc';
@@ -40,18 +40,18 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
 
     public function getAll()
     {
-        return InspectionFee::where('id', '>', 0)->orderBy('min_count', 'DESC')->get();
+        return CratingFee::where('id', '>', 0)->orderBy('min_count', 'DESC')->get();
     }
 
     public function findById($id)
     {
-        $rResult = InspectionFee::where('id', '=', $id)->first();
+        $rResult = CratingFee::where('id', '=', $id)->first();
         return $rResult;
     }
 
     public function create($arrInput)
     {
-        $owner = new InspectionFee($arrInput);
+        $owner = new CratingFee($arrInput);
         DB::beginTransaction();
         try {
             $owner->save();
@@ -71,7 +71,7 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
         $id = $arrInput['id'];
         DB::beginTransaction();
         try {
-            $version = InspectionFee::find($id);
+            $version = CratingFee::find($id);
             $version->update($arrInput);
             DB::commit();
             return $version;
@@ -88,7 +88,7 @@ class InspectionFeeService extends CommonService implements IInspectionFeeServic
     {
         DB::beginTransaction();
         try {
-            InspectionFee::where('id', '=', $id)->delete();
+            CratingFee::where('id', '=', $id)->delete();
             DB::commit();
             return true;
         } catch (QueryException $e) {

@@ -2,7 +2,7 @@
 
 namespace Modules\Common\Services\Intf;
 
-interface IInspectionFeeService
+interface ICratingFeeService
 {
     public function search($filter);
 }

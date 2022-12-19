@@ -33,6 +33,14 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::post('/delete/{id}', 'InspectionFeeController@delete');
         });
 
+        Route::group(['prefix' => 'crating_fees', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
+            Route::get('/search', 'CratingFeeController@search');
+            Route::get('/detail/{id}', 'CratingFeeController@detail');
+            Route::post('/create', 'CratingFeeController@create');
+            Route::post('/update/{id}', 'CratingFeeController@update');
+            Route::post('/delete/{id}', 'CratingFeeController@delete');
+        });
+
         Route::group(['prefix' => 'warehouses', 'namespace' => 'Modules\Common\Http\Controllers'], function () {
             Route::get('/search', 'WarehouseController@search');
             Route::get('/detail/{id}', 'WarehouseController@detail');

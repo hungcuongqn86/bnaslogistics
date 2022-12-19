@@ -3,6 +3,7 @@
 namespace Modules\Common\Services;
 
 use Modules\Common\Services\Impl\BankMessService;
+use Modules\Common\Services\Impl\CratingFeeService;
 use Modules\Common\Services\Impl\VersionService;
 use Modules\Common\Services\Impl\SettingService;
 use Modules\Common\Services\Impl\WarehouseService;
@@ -29,6 +30,7 @@ class CommonServiceFactory
     protected static $mServiceFeeService;
     protected static $mTransportFeeService;
     protected static $mInspectionFeeService;
+    protected static $mCratingFeeService;
     protected static $mMediaService;
     protected static $mUserService;
     protected static $mBankAccountService;
@@ -106,6 +108,14 @@ class CommonServiceFactory
             self::$mInspectionFeeService = new InspectionFeeService();
         }
         return self::$mInspectionFeeService;
+    }
+
+    public static function mCratingFeeService()
+    {
+        if (self::$mCratingFeeService == null) {
+            self::$mCratingFeeService = new CratingFeeService();
+        }
+        return self::$mCratingFeeService;
     }
 
     public static function mUserService()
