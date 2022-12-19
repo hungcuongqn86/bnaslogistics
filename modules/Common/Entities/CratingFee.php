@@ -17,6 +17,8 @@ class CratingFee extends BaseEntity
         'note',
         'min_count',
         'max_count',
+        'first_count',
+        'first_val',
         'val',
         'created_at',
         'updated_at'
