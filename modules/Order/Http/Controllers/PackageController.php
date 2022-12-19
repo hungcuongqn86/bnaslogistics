@@ -404,7 +404,7 @@ class PackageController extends CommonController
                             $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(2);
                             $gia_can = 0;
                             foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $size) {
+                                if ($feeItem->min_r < $size) {
                                     $gia_can = $feeItem->val;
                                     break;
                                 }
@@ -475,7 +475,7 @@ class PackageController extends CommonController
                                 $first_count = 1;
                                 foreach ($cratingFees as $feeItem) {
                                     $min_count = floatval($feeItem->min_count);
-                                    if ($min_count <= $size) {
+                                    if ($min_count < $size) {
                                         $dg_1_price = (int)$feeItem->first_val;
                                         $dg_2_price = (int)$feeItem->val;
                                         $first_count = floatval($feeItem->first_count);
