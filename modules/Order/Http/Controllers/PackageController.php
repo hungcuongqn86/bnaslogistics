@@ -321,37 +321,32 @@ class PackageController extends CommonController
                     if ($order['dong_go'] == 1) {
                         if ($package['dg_cal_option'] == 1) {
                             if ($value > 0) {
+                                $cratingFees = CommonServiceFactory::mCratingFeeService()->getAll();
 
-
-
-                                
-
-
-
-
-
-
-
-                                if ($value < 0.5) {
-                                    $value = 0.5;
+                                $dg_1_price = 0;
+                                $dg_2_price = 0;
+                                $first_count = 1;
+                                foreach ($cratingFees as $feeItem) {
+                                    $min_count = floatval($feeItem->min_count);
+                                    if ($min_count <= $value) {
+                                        $dg_1_price = (int)$feeItem->first_val;
+                                        $dg_2_price = (int)$feeItem->val;
+                                        $first_count = floatval($feeItem->first_count);
+                                        break;
+                                    }
                                 }
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                                $dg_1_price = (int)$setting['setting']['value'];
 
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                                $dg_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($value >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $value - 1;
+                                $kt1 = 0;
+                                $kt2 = 0;
+                                if ($first_count == 0) {
+                                    $kt1 = 0;
+                                    $kt2 = $value;
                                 } else {
-                                    $kg1 = $value;
-                                    $kg2 = 0;
+                                    $kt1 = 1;
+                                    $kt2 = ceil(($value - $first_count)/$first_count);
                                 }
-
-                                $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
-                                $package['dg_first_unit'] = 0;
+                                $tien_dong_go = ($kt1 * $dg_1_price) + ($kt2 * $dg_2_price);
+                                $package['dg_first_unit'] = $first_count;
                                 $package['dg_1_price'] = $dg_1_price;
                                 $package['dg_2_price'] = $dg_2_price;
                                 $package['tien_dong_go'] = $tien_dong_go;
@@ -364,338 +359,8 @@ class PackageController extends CommonController
                         }
                     }
                     break;
-                case 'c_d':
-                    $colName = 'Chiều dài';
-                    $c_d = floatval($value);
-                    $c_r = 0;
-                    if (isset($package['c_r']) && $package['c_r'] > 0) {
-                        $c_r = $package['c_r'];
-                    }
-                    $c_c = 0;
-                    if (isset($package['c_c']) && $package['c_c'] > 0) {
-                        $c_r = $package['c_c'];
-                    }
-
-                    $setting = CommonServiceFactory::mSettingService()->findByKey('quy_doi_var');
-                    $quy_doi_var = (int)$setting['setting']['value'];
-                    $weight_qd = ($c_d * $c_r * $c_c) / $quy_doi_var;
-
-                    if ($package['cal_option'] == 2) {
-                        if ($weight_qd > 0) {
-                            if ($weight_qd < 0.5) {
-                                $weight_qd = 0.5;
-                            }
-
-                            // Lay vip
-                            $ck_vc = $order['ck_vc'];
-                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
-                            $gia_can = 0;
-                            foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $weight_qd) {
-                                    $gia_can = $feeItem->val;
-                                    break;
-                                }
-                            }
-
-                            $tiencan = $gia_can * $weight_qd;
-                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
-                            $tiencan_tt = $tiencan - $chietkhau;
-
-                            if ($package['status'] < 4) {
-                                $package['status'] = 4;
-                            }
-                            $package['weight_qd'] = $weight_qd;
-                            $package['gia_can'] = $gia_can;
-                            $package['tien_can'] = $tiencan;
-                            $package['ck_vc_tt'] = $chietkhau;
-                            $package['tien_can_tt'] = $tiencan_tt;
-
-                            // dong go, chong soc
-                            if ($order['dong_go'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                                $dg_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                                $dg_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
-                                $package['dg_1_price'] = $dg_1_price;
-                                $package['dg_2_price'] = $dg_2_price;
-                                $package['tien_dong_go'] = $tien_dong_go;
-                            }
-
-                            if ($order['bao_hiem'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                                $chong_soc_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                                $chong_soc_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_chong_soc = ($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price);
-                                $package['chong_soc_1_price'] = $chong_soc_1_price;
-                                $package['chong_soc_2_price'] = $chong_soc_2_price;
-                                $package['tien_chong_soc'] = $tien_chong_soc;
-                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
-                            }
-                        } else {
-                            $package['weight_qd'] = 0;
-                            $package['gia_can'] = 0;
-                            $package['tien_can'] = 0;
-                            $package['ck_vc_tt'] = 0;
-                            $package['tien_can_tt'] = 0;
-
-                            // dong go, chong soc
-                            $package['dg_1_price'] = 0;
-                            $package['dg_2_price'] = 0;
-                            $package['tien_dong_go'] = 0;
-
-                            $package['chong_soc_1_price'] = 0;
-                            $package['chong_soc_2_price'] = 0;
-                            $package['tien_chong_soc'] = 0;
-                            $package['tien_chong_soc_tt'] = 0;
-                        }
-                    }
-                    break;
-                case 'c_r':
-                    $colName = 'Chiều rộng';
-                    $c_r = floatval($value);
-                    $c_d = 0;
-                    if (isset($package['c_d']) && $package['c_d'] > 0) {
-                        $c_d = $package['c_d'];
-                    }
-                    $c_c = 0;
-                    if (isset($package['c_c']) && $package['c_c'] > 0) {
-                        $c_r = $package['c_c'];
-                    }
-
-                    $setting = CommonServiceFactory::mSettingService()->findByKey('quy_doi_var');
-                    $quy_doi_var = (int)$setting['setting']['value'];
-                    $weight_qd = ($c_d * $c_r * $c_c) / $quy_doi_var;
-
-                    if ($package['cal_option'] == 2) {
-                        if ($weight_qd > 0) {
-                            if ($weight_qd < 0.5) {
-                                $weight_qd = 0.5;
-                            }
-
-                            // Lay vip
-                            $ck_vc = $order['ck_vc'];
-                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
-                            $gia_can = 0;
-                            foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $weight_qd) {
-                                    $gia_can = $feeItem->val;
-                                    break;
-                                }
-                            }
-
-                            $tiencan = $gia_can * $weight_qd;
-                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
-                            $tiencan_tt = $tiencan - $chietkhau;
-
-                            if ($package['status'] < 4) {
-                                $package['status'] = 4;
-                            }
-                            $package['weight_qd'] = $weight_qd;
-                            $package['gia_can'] = $gia_can;
-                            $package['tien_can'] = $tiencan;
-                            $package['ck_vc_tt'] = $chietkhau;
-                            $package['tien_can_tt'] = $tiencan_tt;
-
-                            // dong go, chong soc
-                            if ($order['dong_go'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                                $dg_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                                $dg_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
-                                $package['dg_1_price'] = $dg_1_price;
-                                $package['dg_2_price'] = $dg_2_price;
-                                $package['tien_dong_go'] = $tien_dong_go;
-                            }
-
-                            if ($order['bao_hiem'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                                $chong_soc_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                                $chong_soc_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_chong_soc = ($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price);
-                                $package['chong_soc_1_price'] = $chong_soc_1_price;
-                                $package['chong_soc_2_price'] = $chong_soc_2_price;
-                                $package['tien_chong_soc'] = $tien_chong_soc;
-                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
-                            }
-                        } else {
-                            $package['weight_qd'] = 0;
-                            $package['gia_can'] = 0;
-                            $package['tien_can'] = 0;
-                            $package['ck_vc_tt'] = 0;
-                            $package['tien_can_tt'] = 0;
-
-                            // dong go, chong soc
-                            $package['dg_1_price'] = 0;
-                            $package['dg_2_price'] = 0;
-                            $package['tien_dong_go'] = 0;
-
-                            $package['chong_soc_1_price'] = 0;
-                            $package['chong_soc_2_price'] = 0;
-                            $package['tien_chong_soc'] = 0;
-                            $package['tien_chong_soc_tt'] = 0;
-                        }
-                    }
-                    break;
-                case 'c_c':
-                    $colName = 'Chiều cao';
-                    $c_c = floatval($value);
-                    $c_d = 0;
-                    if (isset($package['c_d']) && $package['c_d'] > 0) {
-                        $c_d = $package['c_d'];
-                    }
-                    $c_r = 0;
-                    if (isset($package['c_r']) && $package['c_r'] > 0) {
-                        $c_r = $package['c_r'];
-                    }
-
-                    $setting = CommonServiceFactory::mSettingService()->findByKey('quy_doi_var');
-                    $quy_doi_var = (int)$setting['setting']['value'];
-                    $weight_qd = ($c_d * $c_r * $c_c) / $quy_doi_var;
-
-                    if ($package['cal_option'] == 2) {
-                        if ($weight_qd > 0) {
-                            if ($weight_qd < 0.5) {
-                                $weight_qd = 0.5;
-                            }
-
-                            // Lay vip
-                            $ck_vc = $order['ck_vc'];
-                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
-                            $gia_can = 0;
-                            foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $weight_qd) {
-                                    $gia_can = $feeItem->val;
-                                    break;
-                                }
-                            }
-
-                            $tiencan = $gia_can * $weight_qd;
-                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
-                            $tiencan_tt = $tiencan - $chietkhau;
-
-                            if ($package['status'] < 4) {
-                                $package['status'] = 4;
-                            }
-                            $package['weight_qd'] = $weight_qd;
-                            $package['gia_can'] = $gia_can;
-                            $package['tien_can'] = $tiencan;
-                            $package['ck_vc_tt'] = $chietkhau;
-                            $package['tien_can_tt'] = $tiencan_tt;
-
-                            // dong go, chong soc
-                            if ($order['dong_go'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                                $dg_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                                $dg_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
-                                $package['dg_1_price'] = $dg_1_price;
-                                $package['dg_2_price'] = $dg_2_price;
-                                $package['tien_dong_go'] = $tien_dong_go;
-                            }
-
-                            if ($order['bao_hiem'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                                $chong_soc_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                                $chong_soc_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_chong_soc = ($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price);
-                                $package['chong_soc_1_price'] = $chong_soc_1_price;
-                                $package['chong_soc_2_price'] = $chong_soc_2_price;
-                                $package['tien_chong_soc'] = $tien_chong_soc;
-                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
-                            }
-                        } else {
-                            $package['weight_qd'] = 0;
-                            $package['gia_can'] = 0;
-                            $package['tien_can'] = 0;
-                            $package['ck_vc_tt'] = 0;
-                            $package['tien_can_tt'] = 0;
-
-                            // dong go, chong soc
-                            $package['dg_1_price'] = 0;
-                            $package['dg_2_price'] = 0;
-                            $package['tien_dong_go'] = 0;
-
-                            $package['chong_soc_1_price'] = 0;
-                            $package['chong_soc_2_price'] = 0;
-                            $package['tien_chong_soc'] = 0;
-                            $package['tien_chong_soc_tt'] = 0;
-                        }
-                    }
-                    break;
                 case 'cal_option':
-                    $colName = 'Áp giá theo';
+                    $colName = 'Áp giá VC theo';
                     if ($value == 0) {
                         $weight = $package['weight'];
                         if ($weight > 0) {
@@ -725,80 +390,13 @@ class PackageController extends CommonController
                             $package['tien_can'] = $tiencan;
                             $package['ck_vc_tt'] = $chietkhau;
                             $package['tien_can_tt'] = $tiencan_tt;
-
-                            // dong go, chong soc
-                            if ($order['dong_go'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                                $dg_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                                $dg_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight - 1;
-                                } else {
-                                    $kg1 = $weight;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
-                                $package['dg_1_price'] = $dg_1_price;
-                                $package['dg_2_price'] = $dg_2_price;
-                                $package['tien_dong_go'] = $tien_dong_go;
-                            }
-
-                            if ($order['bao_hiem'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                                $chong_soc_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                                $chong_soc_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight - 1;
-                                } else {
-                                    $kg1 = $weight;
-                                    $kg2 = 0;
-                                }
-
-                                $tien_chong_soc = ($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price);
-                                $package['chong_soc_1_price'] = $chong_soc_1_price;
-                                $package['chong_soc_2_price'] = $chong_soc_2_price;
-                                $package['tien_chong_soc'] = $tien_chong_soc;
-                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
-                            }
-
                         } else {
                             $package['gia_can'] = 0;
                             $package['tien_can'] = 0;
                             $package['ck_vc_tt'] = 0;
                             $package['tien_can_tt'] = 0;
-
-                            // dong go, chong soc
-                            $package['dg_1_price'] = 0;
-                            $package['dg_2_price'] = 0;
-                            $package['tien_dong_go'] = 0;
-
-                            $package['chong_soc_1_price'] = 0;
-                            $package['chong_soc_2_price'] = 0;
-                            $package['tien_chong_soc'] = 0;
-                            $package['tien_chong_soc_tt'] = 0;
                         }
                     } elseif ($value == 1) {
-                        // dong go, chong soc
-                        $package['dg_1_price'] = 0;
-                        $package['dg_2_price'] = 0;
-                        $package['tien_dong_go'] = 0;
-
-                        $package['chong_soc_1_price'] = 0;
-                        $package['chong_soc_2_price'] = 0;
-                        $package['tien_chong_soc'] = 0;
-                        $package['tien_chong_soc_tt'] = 0;
-
                         $size = $package['size'];
                         if ($size > 0) {
                             // Lay vip
@@ -829,56 +427,18 @@ class PackageController extends CommonController
                             $package['ck_vc_tt'] = 0;
                             $package['tien_can_tt'] = 0;
                         }
-                    } else {
-                        $c_d = 0;
-                        if (isset($package['c_d']) && $package['c_d'] > 0) {
-                            $c_d = $package['c_d'];
-                        }
-
-                        $c_r = 0;
-                        if (isset($package['c_r']) && $package['c_r'] > 0) {
-                            $c_r = $package['c_r'];
-                        }
-
-                        $c_c = 0;
-                        if (isset($package['c_c']) && $package['c_c'] > 0) {
-                            $c_r = $package['c_c'];
-                        }
-
-                        $setting = CommonServiceFactory::mSettingService()->findByKey('quy_doi_var');
-                        $quy_doi_var = (int)$setting['setting']['value'];
-                        $weight_qd = ($c_d * $c_r * $c_c) / $quy_doi_var;
-                        if ($weight_qd > 0) {
-                            if ($weight_qd < 0.5) {
-                                $weight_qd = 0.5;
-                            }
-
-                            // Lay vip
-                            $ck_vc = $order['ck_vc'];
-                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType(1);
-                            $gia_can = 0;
-                            foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $weight_qd) {
-                                    $gia_can = $feeItem->val;
-                                    break;
+                    }
+                    break;
+                case 'dg_cal_option':
+                    $colName = 'Áp giá ĐG theo';
+                    if ($order['dong_go'] == 1) {
+                        if ($value == 0) {
+                            $weight = $package['weight'];
+                            if ($weight > 0) {
+                                if ($weight < 0.5) {
+                                    $weight = 0.5;
                                 }
-                            }
 
-                            $tiencan = $gia_can * $weight_qd;
-                            $chietkhau = round($tiencan * $ck_vc / 100, 2);
-                            $tiencan_tt = $tiencan - $chietkhau;
-
-                            if ($package['status'] < 4) {
-                                $package['status'] = 4;
-                            }
-                            $package['weight_qd'] = $weight_qd;
-                            $package['gia_can'] = $gia_can;
-                            $package['tien_can'] = $tiencan;
-                            $package['ck_vc_tt'] = $chietkhau;
-                            $package['tien_can_tt'] = $tiencan_tt;
-
-                            // dong go, chong soc
-                            if ($order['dong_go'] == 1) {
                                 $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
                                 $dg_1_price = (int)$setting['setting']['value'];
 
@@ -886,59 +446,63 @@ class PackageController extends CommonController
                                 $dg_2_price = (int)$setting['setting']['value'];
                                 $kg1 = 0;
                                 $kg2 = 0;
-                                if ($weight_qd >= 1) {
+                                if ($weight >= 1) {
                                     $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
+                                    $kg2 = $weight - 1;
                                 } else {
-                                    $kg1 = $weight_qd;
+                                    $kg1 = $weight;
                                     $kg2 = 0;
                                 }
 
                                 $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
+                                $package['dg_first_unit'] = 0;
                                 $package['dg_1_price'] = $dg_1_price;
                                 $package['dg_2_price'] = $dg_2_price;
                                 $package['tien_dong_go'] = $tien_dong_go;
+                            } else {
+                                $package['dg_first_unit'] = 0;
+                                $package['dg_1_price'] = 0;
+                                $package['dg_2_price'] = 0;
+                                $package['tien_dong_go'] = 0;
                             }
+                        } elseif ($value == 1) {
+                            $size = $package['size'];
+                            if ($size > 0) {
+                                $cratingFees = CommonServiceFactory::mCratingFeeService()->getAll();
 
-                            if ($order['bao_hiem'] == 1) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                                $chong_soc_1_price = (int)$setting['setting']['value'];
-
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                                $chong_soc_2_price = (int)$setting['setting']['value'];
-                                $kg1 = 0;
-                                $kg2 = 0;
-                                if ($weight_qd >= 1) {
-                                    $kg1 = 1;
-                                    $kg2 = $weight_qd - 1;
-                                } else {
-                                    $kg1 = $weight_qd;
-                                    $kg2 = 0;
+                                $dg_1_price = 0;
+                                $dg_2_price = 0;
+                                $first_count = 1;
+                                foreach ($cratingFees as $feeItem) {
+                                    $min_count = floatval($feeItem->min_count);
+                                    if ($min_count <= $size) {
+                                        $dg_1_price = (int)$feeItem->first_val;
+                                        $dg_2_price = (int)$feeItem->val;
+                                        $first_count = floatval($feeItem->first_count);
+                                        break;
+                                    }
                                 }
 
-                                $tien_chong_soc = ($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price);
-                                $package['chong_soc_1_price'] = $chong_soc_1_price;
-                                $package['chong_soc_2_price'] = $chong_soc_2_price;
-                                $package['tien_chong_soc'] = $tien_chong_soc;
-                                $package['tien_chong_soc_tt'] = $tien_chong_soc * $order['ti_gia'];
+                                $kt1 = 0;
+                                $kt2 = 0;
+                                if ($first_count == 0) {
+                                    $kt1 = 0;
+                                    $kt2 = $size;
+                                } else {
+                                    $kt1 = 1;
+                                    $kt2 = ceil(($size - $first_count)/$first_count);
+                                }
+                                $tien_dong_go = ($kt1 * $dg_1_price) + ($kt2 * $dg_2_price);
+                                $package['dg_first_unit'] = $first_count;
+                                $package['dg_1_price'] = $dg_1_price;
+                                $package['dg_2_price'] = $dg_2_price;
+                                $package['tien_dong_go'] = $tien_dong_go;
+                            } else {
+                                $package['dg_first_unit'] = 0;
+                                $package['dg_1_price'] = 0;
+                                $package['dg_2_price'] = 0;
+                                $package['tien_dong_go'] = 0;
                             }
-                        } else {
-                            $package['weight_qd'] = 0;
-
-                            $package['gia_can'] = 0;
-                            $package['tien_can'] = 0;
-                            $package['ck_vc_tt'] = 0;
-                            $package['tien_can_tt'] = 0;
-
-                            // dong go, chong soc
-                            $package['dg_1_price'] = 0;
-                            $package['dg_2_price'] = 0;
-                            $package['tien_dong_go'] = 0;
-
-                            $package['chong_soc_1_price'] = 0;
-                            $package['chong_soc_2_price'] = 0;
-                            $package['tien_chong_soc'] = 0;
-                            $package['tien_chong_soc_tt'] = 0;
                         }
                     }
                     break;
