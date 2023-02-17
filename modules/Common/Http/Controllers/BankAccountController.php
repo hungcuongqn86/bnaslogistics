@@ -119,7 +119,9 @@ class BankAccountController extends CommonController
             $accountName = $input['vqrSelBank']['account']['account_name'];
             $acqId = $input['vqrSelBank']['bin'];
             $amount = $input['n_value'];
-            $addInfo = self::generateRandomString(6);
+
+            $user = Auth::user();
+            $addInfo = $user['code']. "-" .self::generateRandomString(6);
 
             $postVar = "accountNo=";
             $postVar .= $accountNo;
@@ -152,7 +154,6 @@ class BankAccountController extends CommonController
             if (empty($data['data'])) {
                 return $this->sendError('Error', ['Không tạo được QR Code!']);
             }
-            $user = Auth::user();
 
             $traReq = [
                 'user_id' => $user['id'],
