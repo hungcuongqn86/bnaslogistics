@@ -72,7 +72,7 @@ class BankAccountController extends CommonController
     }
 
     private function generateRandomString($length = 6) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
@@ -121,7 +121,7 @@ class BankAccountController extends CommonController
             $amount = $input['n_value'];
 
             $user = Auth::user();
-            $addInfo = $user['code']. "-" .self::generateRandomString(6);
+            $addInfo = $user['code'].self::generateRandomString(6);
 
             $postVar = "accountNo=";
             $postVar .= $accountNo;
