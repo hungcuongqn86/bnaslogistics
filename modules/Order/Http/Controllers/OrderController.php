@@ -561,7 +561,7 @@ class OrderController extends CommonController
         $value = $input['value'];
 
         if (($order['status'] > 3) && ($dirty != "nv_note")) {
-            return $this->sendError('Error', ['Đơn đã mua, không thể thay đổi!']);
+            return $this->sendError('Error', ['Đơn đã mua hoặc hủy, không thể thay đổi!']);
         }
 
         if ($orderItem[$dirty] == $value) {
@@ -623,7 +623,7 @@ class OrderController extends CommonController
         }
 
         if ($order['status'] > 4) {
-            return $this->sendError('Error', ['Đơn đã mua, không thể thay đổi!']);
+            return $this->sendError('Error', ['Đơn đã mua hoặc hủy, không thể thay đổi!']);
         }
 
         DB::beginTransaction();
@@ -979,7 +979,7 @@ class OrderController extends CommonController
         }
 
         if ($order['status'] > 4) {
-            return $this->sendError('Error', ['Đơn đã mua, không thể xóa!']);
+            return $this->sendError('Error', ['Đơn đã mua hoặc hủy, không thể xóa!']);
         }
 
         DB::beginTransaction();
