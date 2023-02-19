@@ -301,6 +301,22 @@ class OrderService extends CommonService implements IOrderService
         }
     }
 
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            Order::where('id', '=', $id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     // Order Item
     public function itemCreate($arrInput)
     {

@@ -963,4 +963,33 @@ class OrderController extends CommonController
             return $this->sendError('Error', $e->getMessage());
         }
     }
+
+    public function delete(Request $request, $id)
+    {
+        $input = $request->all();
+        $user = $request->user();
+
+        $order = OrderServiceFactory::mOrderService()->findById($id);
+        if (empty($order)) {
+            return $this->sendError('Error', ['Đơn không tồn tại!']);
+        }
+
+        if ($order['user_id'] != $user['id']) {
+            return $this->sendError('Error', ['Không có quyền thực hiện với đơn này!']);
+        }
+
+        if ($order['status'] > 4) {
+            return $this->sendError('Error', ['Đơn đã mua, không thể xóa!']);
+        }
+
+        DB::beginTransaction();
+        try {
+            OrderServiceFactory::mOrderService()->delete($id);
+            DB::commit();
+            return $this->sendResponse([1], 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
 }

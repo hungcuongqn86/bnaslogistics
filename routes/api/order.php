@@ -15,6 +15,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::post('/reorder/{id}', 'OrderController@reorder');
             Route::post('/phancong', 'OrderController@phancong');
             Route::post('/datcoc', 'OrderController@datcoc');
+            Route::post('/delete/{id}', 'OrderController@delete');
             Route::get('/detail/{id}', 'OrderController@detail');
             Route::group(['prefix' => 'order_item'], function () {
                 Route::post('/update/{id}', 'OrderController@itemUpdate');
