@@ -320,7 +320,7 @@ class TransactionController extends CommonController
         $input = $request->all();
         try {
             $user = Auth::user();
-            if (!$user->hasRole('admin')) {
+            if (!($user->hasRole('admin') || $user->hasRole('administrator'))) {
                 return $this->sendError('Error', ['Not Permission!']);
             }
 
