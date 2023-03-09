@@ -85,10 +85,15 @@ class CartController extends CommonController
                     if ($phi_kiem_dem_cs != 0) {
                         $phi_kiem_dem_tt = $count_product * $phi_kiem_dem_cs;
                     }
+					
+					$vip = "0";
+					if (isset($vip['id']) && (!empty($vip['id']))) {
+						$vip = $vip['id'];
+					}
 
                     $cart['count_product'] = $count_product;
                     $cart['tien_hang'] = $tien_hang;
-                    $cart['vip_id'] = $vip['id'];
+                    $cart['vip_id'] = $vip;
                     $cart['ck_dv'] = $ck_dv;
                     $cart['ck_dv_tt'] = $ck_dv_tt;
                     $cart['phi_dat_hang_cs'] = $phi_dat_hang_cs;
