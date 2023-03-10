@@ -38,8 +38,8 @@ class CartController extends CommonController
                     // Lay vip
                     $ck_dv = 0;
                     $vip = CommonServiceFactory::mVipService()->findById($cart['user']['vip']);
-                    if (!empty($vip)) {
-                        $ck_dv = $vip['ck_dv'];
+                    if (!empty($vip) && !empty($vip['ck_dv'])) {
+						$ck_dv = $vip['ck_dv'];
                     }
 
                     // Lay bang gia dv
@@ -52,9 +52,9 @@ class CartController extends CommonController
                     $count_product = 0;
                     foreach ($cartItems as $cartItem) {
                         $price = self::convertPrice($cartItem['price']);
-                        $amount = $cartItem['amount'];
+                        $amount = (int)$cartItem['amount'];
                         $tien_hang = $tien_hang + round($price * $rate * $amount, 0);
-                        $count_product = $count_product + $cartItem['amount'];
+                        $count_product = $count_product + (int)$cartItem['amount'];
                     }
 
                     // Tinh phi dich vu
