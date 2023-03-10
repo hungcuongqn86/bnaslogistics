@@ -128,14 +128,18 @@ const niniex = (e, t, n) => {
         return "undefined" != typeof t && (e = $(t).attr("href")), e = c(e)
     }
 
-    function w() {
-        var e = "", t = $(".shopLink");
-        if ($(t).text() == '') {
-            t = $("a.slogo-shopname");
+    function getShopName() {
+        var e = "";
+        var t = $(".shopLink, a.slogo-shopname, div.hd-shop-name > a");
+
+        if ("undefined" != typeof t && (e = $(t).text()), !e.length) {
+            t = $('div[class*="ShopHeader--title"]');
         }
-        if ($(t).text() == '') {
-            t = $("div.hd-shop-name > a");
+
+        if ("undefined" != typeof t && (e = $(t).text()), !e.length) {
+            t = $('h4[class*="ShopFloat--title"]');
         }
+
         if ("undefined" != typeof t && (e = $(t).text()), !e.length) {
             var n = JSON.parse(u("tmp_g_config"));
             "object" == typeof n && null !== n && "undefined" != typeof n.sellerNickName && (e = decodeURIComponent(n.sellerNickName))
@@ -352,10 +356,21 @@ const niniex = (e, t, n) => {
     }
 
     function T() {
-        var e, t = $(W[oe].crawle.originPrice), n = $(W[oe].crawle.promoPrice), i = t.text(), o = n.text(), r = 0,
-            s = 0, a = 0, l = 0;
+        var t = $(W[oe].crawle.originPrice), n = $(W[oe].crawle.promoPrice);
+
+        if (t.length == 0) {
+            t = $('span[class*="Price--priceText"]');
+            if (t.length > 0) {
+                t = $(t[0]);
+            }
+        }
+
+        if (n.length == 0) {
+            n = $('span[class*="Price--extraPriceText"]');
+        }
+
+        var e, i = t.text(), o = n.text(), r = 0, s = 0, a = 0, l = 0;
         if (!o) {
-            console.log("cuongnh111");
             o = "0";
         }
         return i.indexOf("-") > -1 ? (e = i.split("-"), r = parseFloat(e[0]), s = parseFloat(e[1]), i = 0) : i = parseFloat(i), o.indexOf("-") > -1 ? (e = o.split("-"), a = parseFloat(e[0]), l = parseFloat(e[1]), o = 0) : o = parseFloat(o), {
@@ -406,13 +421,11 @@ const niniex = (e, t, n) => {
         if (("undefined" == typeof t) || t == 0) {
             t = 0;
             $('.next-input-group-auto-width>input').each(function () {
-                console.log("cuongnh: " + $(this).val());
                 if ($(this).val() != "") {
                     t = t + parseInt($(this).val());
                 }
             });
         }
-        console.log("cuongnh: " + t);
 
         var i = "";
         if (i = $(".unit-detail-freight-cost").attr("data-unit-config"), "undefined" != typeof i && (i = JSON.parse(i)), "object" == typeof i && (n = parseInt(i.beginAmount)), t < n) return g("Thông báo", "Shop yêu cầu mua tối thiểu " + n + " sản phẩm.", "warning"), m(), !1;
@@ -433,7 +446,7 @@ const niniex = (e, t, n) => {
 
     function S() {
         var e = "", t = "", n = "";
-        "taobao" === oe ? (n = $("#J_ThumbView, #J_ImgBooth").attr("alt"), "undefined" == typeof n && (n = $("#J_Title .tb-main-title").data("title")), e = y(), t = _()) : "tmall" === oe && (n = $("#J_ThumbView, #J_ImgBooth").attr("alt"), e = w(), t = E());
+        "taobao" === oe ? (n = $("#J_ThumbView, #J_ImgBooth").attr("alt"), "undefined" == typeof n && (n = $("#J_Title .tb-main-title").data("title")), e = y(), t = _()) : "tmall" === oe && (n = $("#J_ThumbView, #J_ImgBooth").attr("alt"), e = getShopName(), t = E());
         var i = $(W[oe].crawle.image).attr("src"), o = $(W[oe].crawle.size).next().find(".tb-selected").data("pv"),
             r = $(W[oe].crawle.color).next().find(".tb-selected").data("pv"),
             s = $(W[oe].crawle.more_pro1).next().find(".tb-selected").data("pv"),
@@ -447,8 +460,6 @@ const niniex = (e, t, n) => {
         f && !isNaN(f) && (m = f);
         var g = "";
         "taobao" == oe ? g = v(o, r) : "tmall" == oe && (g = l("skuId"));
-
-        console.log("cuongnh12121: " + t);
 
         var b = {
             rate: ie.rate,
@@ -561,7 +572,7 @@ const niniex = (e, t, n) => {
             }
             var n = tk.tbex_thqc_token[0];
             var e = "", t = "";
-            "1688" === oe && (e = x(), t = C()), "taobao" === oe && (e = y(), t = _()), "tmall" === oe && (e = w(), t = E()), $.ajax({
+            "1688" === oe && (e = x(), t = C()), "taobao" === oe && (e = y(), t = _()), "tmall" === oe && (e = getShopName(), t = E()), $.ajax({
                 method: "POST",
                 url: ie.apiShopUrl,
                 dataType: 'json',
@@ -678,7 +689,10 @@ const niniex = (e, t, n) => {
     }
 
     function showInfo() {
-        if (j()) return !1;
+        if (j()) {
+            return !1;
+        }
+
         var e = "", t = "", n = k(), i = "";
         if ("1688" == oe) {
             if ($(".mod-detail-purchasing").length) {
@@ -696,9 +710,7 @@ const niniex = (e, t, n) => {
 
             if ("number" == typeof n) {
                 i = Math.round(n * ie.rate).format();
-                // console.log("cuongnh111", i, n);
             } else {
-                // console.log("cuongnh121", i, n);
                 if (n.length > 0) {
                     parseInt(n[0].begin) > 1 && (e += '<dl><dd style="width:100%"><span class="text-danger">Shop yêu cầu mua tối thiểu ' + n[0].begin + " sản phẩm</span></dd></dl>");
                     for (var o = 0; o <= n.length - 1; o++) e += n[o].end.length > 0 ? "<dl><dd>Mua: " + n[o].begin + " - " + n[o].end + ' sản phẩm</dd><dd>Giá: <span class="tbe-color-price">¥' + n[o].price + "</span></dd></dl>" : "<dl><dd>Mua: &gt;" + n[o].begin + ' sản phẩm</dd><dd>Giá: <span class="tbe-color-price">¥' + n[o].price + "</span></dd></dl>"
@@ -710,19 +722,21 @@ const niniex = (e, t, n) => {
             }
         } else {
             t = $("#J_EmStock, #J_SpanStock").text();
-
             if (t.length > 0) {
                 t = H(t);
                 t = parseInt(t);
+            } else {
+                t = 0;
             }
 
             if ("number" == typeof t) {
+                console.log("cuongh", n);
                 (e += "tmall" == oe ? '' : '<dl><dd style="width:100%"><span class="text-danger">Shop giới hạn mua tối đa <b class="tbe-color-price">' + t + "</b> sản phẩm</span></dd></dl>"), i = Math.round(n.orgPrice * ie.rate).format(), ((n.orgPrice > 0 && n.proPrice > 0 && n.orgPrice > n.proPrice) || ((0 == n.orgPrice || isNaN(n.orgPrice)) && n.proPrice > 0)) ? i = Math.round(n.proPrice * ie.rate).format() : (n.lowPrice > 0 && n.highPrice > 0 && (i = Math.round(n.lowPrice * ie.rate).format() + " - " + Math.round(n.highPrice * ie.rate).format()), n.lowPromo > 0 && n.highPromo > 0 && (i = Math.round(n.lowPromo * ie.rate).format() + " - " + Math.round(n.highPromo * ie.rate).format()));
             }
         }
 
         e.length > 0 && (e = '<div class="bg-info">' + e + "</div>");
-        // console.log("cuongnh1", i, n);
+
         var r = [
             '<div id="tbe-info-shop">',
             '<h5>NGUONHANG.NET</h5>',
@@ -734,8 +748,12 @@ const niniex = (e, t, n) => {
             '<div id="tbe-select-info"></div>',
             '<div class="tbe-info-warning"><p>(!!) Vui lòng chọn đầy đủ thông tin sản phẩm ở bên dưới để xem giá chuẩn.</p><p>(!!) không dùng Google Translate khi thêm sản phẩm.</p></div>',
             "</div>"].join("");
-        $("#J_Title, .tb-detail-hd, #mod-detail-price, .od-pc-offer-title-contain").append(r);
+        var titleElm = $("#J_Title, .tb-detail-hd, #mod-detail-price, .od-pc-offer-title-contain");
+        if (titleElm.length == 0) {
+            titleElm = $('div[class*="ItemHeader--root"]');
+        }
 
+        titleElm.append(r);
         $(".obj-order").hide();
         $(".order-button-wrapper").hide();
         $(".tb-action").hide();
@@ -902,44 +920,40 @@ const niniex = (e, t, n) => {
         }
     }, !1), $(document).ready(function () {
         pe.ready(function () {
-            if ("taobao" === oe) {
-                $(".sufei-dialog-kissy").remove();
-                $("#J_isku .tb-skin").on("click", "li", function (e) {
-                    e.preventDefault();
-                    $(this).siblings("li").removeClass("tb-selected");
-                    $(this).addClass("tb-selected");
-                });
-            }
+            setTimeout(function () {
+                if ("taobao" === oe) {
+                    $(".sufei-dialog-kissy").remove();
+                    $("#J_isku .tb-skin").on("click", "li", function (e) {
+                        e.preventDefault();
+                        $(this).siblings("li").removeClass("tb-selected");
+                        $(this).addClass("tb-selected");
+                    });
+                }
 
-            if (f() && !j()) {
-                d();
-                $(W[oe].translate.originPrice).text("Giá");
-                $(W[oe].translate.promoPrice).text("Giá bán");
-                $(W[oe].translate.size).text("Kích thước"), $(W[oe].translate.color).text("Màu sắc"), $(W[oe].translate.amount).text("Số lượng");
-                $(W[oe].translate.unit).text("sản phẩm");
-                if (pe.length == 0) {
-                    sleep(2000);
-                    pe = $("#J_box_buycart, #J_juValid, .tb-action, .obj-order, .order-button-children, .order-button-wrapper, .od-pc-offer-payment-contain");
-                    console.log('pe', pe);
+                if (f() && !j()) {
+                    d();
+                    $(W[oe].translate.originPrice).text("Giá");
+                    $(W[oe].translate.promoPrice).text("Giá bán");
+                    $(W[oe].translate.size).text("Kích thước"), $(W[oe].translate.color).text("Màu sắc"), $(W[oe].translate.amount).text("Số lượng");
+                    $(W[oe].translate.unit).text("sản phẩm");
+
+                    if (pe.length == 0) {
+                        pe = $("#J_box_buycart, #J_juValid, .tb-action, .obj-order, .order-button-children, .order-button-wrapper, .od-pc-offer-payment-contain");
+                    }
+
+                    if (pe.length == 0) {
+                        pe = $('div[class*="BasicContent--actions"]');
+                    }
+
+                    pe.before(ce);
+                    pe.before(he);
+                    pe.before(ue);
+                    le.render(ae.createElement(de, null), document.getElementById("pro-thqc-note"));
+                    le.render(ae.createElement(fe, { message: re }), document.getElementById("cart-thqc-warning"));
+                    le.render(ae.createElement(me, { btnname: se }), document.getElementById("cart-thqc-parent"));
+                    setShop();
                 }
-                if (pe.length == 0) {
-                    sleep(2000);
-                    pe = $("#J_box_buycart, #J_juValid, .tb-action, .obj-order, .order-button-children, .order-button-wrapper, .od-pc-offer-payment-contain");
-                    console.log('pe', pe);
-                }
-                if (pe.length == 0) {
-                    sleep(2000);
-                    pe = $("#J_box_buycart, #J_juValid, .tb-action, .obj-order, .order-button-children, .order-button-wrapper, .od-pc-offer-payment-contain");
-                    console.log('pe', pe);
-                }
-                pe.before(ce);
-                pe.before(he);
-                pe.before(ue);
-                le.render(ae.createElement(de, null), document.getElementById("pro-thqc-note"));
-                le.render(ae.createElement(fe, {message: re}), document.getElementById("cart-thqc-warning"));
-                le.render(ae.createElement(me, {btnname: se}), document.getElementById("cart-thqc-parent"));
-                setShop();
-            }
+            }, 3000);
         });
     }), Number.prototype.format = function () {
         var e = this + "", t = e.split(","), n = t[0], i = "";
