@@ -359,11 +359,20 @@ class OrderController extends CommonController
 
                         if (($order['bao_hiem'] == 1) && isset($order['can_nang_dk'])) {
                             $kg_val = $order['can_nang_dk'];
-                            $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                            $chong_soc_1_price = (int)$setting['setting']['value'];
+                            if ($order['chong_soc_1_price'] == 0) {
+                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
+                                $chong_soc_1_price = (int)$setting['setting']['value'];
+                            } else {
+                                $chong_soc_1_price = $order['chong_soc_1_price'];
+                            }
 
-                            $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                            $chong_soc_2_price = (int)$setting['setting']['value'];
+                            if ($order['chong_soc_2_price'] == 0) {
+                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
+                                $chong_soc_2_price = (int)$setting['setting']['value'];
+                            } else {
+                                $chong_soc_2_price = $order['chong_soc_2_price'];
+                            }
+
                             $kg1 = 0;
                             $kg2 = 0;
                             if ($kg_val >= 1) {
