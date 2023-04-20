@@ -303,14 +303,14 @@ class OrderController extends CommonController
                         $cal_option = $order['cal_option'];
                         $ck_vc = $order['ck_vc'];
                         $cn_value = 0;
-                        if(($cal_option == 1) && isset($order['can_nang_dk'])){
+                        if (($cal_option == 1) && isset($order['can_nang_dk'])) {
                             $cn_value = $order['can_nang_dk'];
                         }
-                        if(($cal_option == 2) && isset($order['kich_thuoc_dk'])){
+                        if (($cal_option == 2) && isset($order['kich_thuoc_dk'])) {
                             $cn_value = $order['kich_thuoc_dk'];
                         }
 
-                        if($cn_value > 0){
+                        if ($cn_value > 0) {
                             if ($order['gia_can_dk'] == 0) {
                                 $transportFees = CommonServiceFactory::mTransportFeeService()->getByType($cal_option);
                                 foreach ($transportFees as $feeItem) {
@@ -330,11 +330,20 @@ class OrderController extends CommonController
 
                         if (($order['dong_go'] == 1) && isset($order['can_nang_dk'])) {
                             $kg_val = $order['can_nang_dk'];
-                            $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                            $dg_1_price = (int)$setting['setting']['value'];
+                            if ($order['dg_1_price'] == 0) {
+                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
+                                $dg_1_price = (int)$setting['setting']['value'];
+                            } else {
+                                $dg_1_price = $order['dg_1_price'];
+                            }
 
-                            $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                            $dg_2_price = (int)$setting['setting']['value'];
+                            if ($order['dg_2_price'] == 0) {
+                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
+                                $dg_2_price = (int)$setting['setting']['value'];
+                            } else {
+                                $dg_2_price = $order['dg_2_price'];
+                            }
+
                             $kg1 = 0;
                             $kg2 = 0;
                             if ($kg_val >= 1) {
@@ -669,6 +678,12 @@ class OrderController extends CommonController
                     break;
                 case 'gia_can_dk':
                     $colName = 'Giá cân nặng dự kiến';
+                    break;
+                case 'dg_1_price':
+                    $colName = 'Giá đóng gỗ 1 dự kiến';
+                    break;
+                case 'dg_2_price':
+                    $colName = 'Giá đóng gỗ 2 dự kiến';
                     break;
                 case 'kich_thuoc_dk':
                     $colName = 'Kích thước dự kiến';
