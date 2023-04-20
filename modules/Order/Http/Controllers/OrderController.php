@@ -311,12 +311,16 @@ class OrderController extends CommonController
                         }
 
                         if($cn_value > 0){
-                            $transportFees = CommonServiceFactory::mTransportFeeService()->getByType($cal_option);
-                            foreach ($transportFees as $feeItem) {
-                                if ($feeItem->min_r <= $cn_value) {
-                                    $gia_can = $feeItem->val;
-                                    break;
+                            if ($order['gia_can_dk'] == 0) {
+                                $transportFees = CommonServiceFactory::mTransportFeeService()->getByType($cal_option);
+                                foreach ($transportFees as $feeItem) {
+                                    if ($feeItem->min_r <= $cn_value) {
+                                        $gia_can = $feeItem->val;
+                                        break;
+                                    }
                                 }
+                            } else {
+                                $gia_can = $order['gia_can_dk'];
                             }
 
                             $tiencan = $gia_can * $cn_value;
@@ -662,6 +666,9 @@ class OrderController extends CommonController
                     break;
                 case 'can_nang_dk':
                     $colName = 'Cân nặng dự kiến';
+                    break;
+                case 'gia_can_dk':
+                    $colName = 'Giá cân nặng dự kiến';
                     break;
                 case 'kich_thuoc_dk':
                     $colName = 'Kích thước dự kiến';
