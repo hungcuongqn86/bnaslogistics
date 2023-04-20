@@ -36,7 +36,7 @@ class PackageService extends CommonService implements IPackageService
         $ihander = isset($filter['hander']) ? $filter['hander'] : 0;
         $query->whereHas('Order', function ($q) use ($sOrderCode, $sKeySearch, $iuserId, $ihander) {
             if (!empty($sOrderCode)) {
-                $q->where('id', '=', $sOrderCode);
+                $q->where('code', '=', $sOrderCode);
             }
 
             if ($iuserId > 0) {
