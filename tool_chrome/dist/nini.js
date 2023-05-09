@@ -837,7 +837,7 @@ const niniex = (e, t, n) => {
                 crawle: {
                     originPrice: "#J_DetailMeta > div.tm-clear > div.tb-property > div > div.tm-fcs-panel > dl.tm-tagPrice-panel > dd > span, #J_StrPriceModBox > dd > span",
                     promoPrice: "#J_PromoPrice > dd > div > span.tm-price, #J_PromoBox > div > span",
-                    image: "#J_ThumbView, #J_ImgBooth",
+                    image: ".skuItemWrapper .current img",
                     shop_nick: ".shopLink",
                     shop_link: ".shopLink",
                     amount: "#J_Amount input, input.countValueForPC",
