@@ -17,6 +17,10 @@ class CartController extends CommonController
     {
         $user = $request->user();
         try {
+            if($user->type == 0){
+                return $this->sendError('Error', 'Bạn không có quyền thực hiện chức năng này!', 403);
+            }
+
             $shops = CartServiceFactory::mCartService()->getByUser($user->id);
             return $this->sendResponse($shops, 'Successfully.');
         } catch (\Exception $e) {
