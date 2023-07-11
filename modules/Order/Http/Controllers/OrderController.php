@@ -293,11 +293,11 @@ class OrderController extends CommonController
 
                     $dg_1_price = 0;
                     $dg_2_price = 0;
-                    $tien_dong_go = 0;
+                    $tien_dong_go = $order['tien_dong_go_dk'];
 
                     $chong_soc_1_price = 0;
                     $chong_soc_2_price = 0;
-                    $tien_chong_soc = 0;
+                    $tien_chong_soc = $order['tien_chong_soc_dk'];
 
                     if (isset($order['cal_option'])) {
                         $cal_option = $order['cal_option'];
@@ -328,62 +328,68 @@ class OrderController extends CommonController
                             $tiencan_tt = $tiencan - $chietkhau_vc;
                         }
 
-                        if (($order['dong_go'] == 1) && isset($order['can_nang_dk'])) {
-                            $kg_val = $order['can_nang_dk'];
-                            if ($order['dg_1_price'] == 0) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
-                                $dg_1_price = (int)$setting['setting']['value'];
-                            } else {
-                                $dg_1_price = $order['dg_1_price'];
-                            }
+                        if ($cal_option == 1) {
+                            if (($order['dong_go'] == 1) && isset($order['can_nang_dk'])) {
+                                $kg_val = $order['can_nang_dk'];
+                                if ($order['dg_1_price'] == 0) {
+                                    $setting = CommonServiceFactory::mSettingService()->findByKey('dg_1_price');
+                                    $dg_1_price = (int)$setting['setting']['value'];
+                                } else {
+                                    $dg_1_price = $order['dg_1_price'];
+                                }
 
-                            if ($order['dg_2_price'] == 0) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
-                                $dg_2_price = (int)$setting['setting']['value'];
-                            } else {
-                                $dg_2_price = $order['dg_2_price'];
-                            }
+                                if ($order['dg_2_price'] == 0) {
+                                    $setting = CommonServiceFactory::mSettingService()->findByKey('dg_2_price');
+                                    $dg_2_price = (int)$setting['setting']['value'];
+                                } else {
+                                    $dg_2_price = $order['dg_2_price'];
+                                }
 
-                            $kg1 = 0;
-                            $kg2 = 0;
-                            if ($kg_val >= 1) {
-                                $kg1 = 1;
-                                $kg2 = $kg_val - 1;
-                            } else {
-                                $kg1 = $kg_val;
+                                $kg1 = 0;
                                 $kg2 = 0;
+                                if ($kg_val >= 1) {
+                                    $kg1 = 1;
+                                    $kg2 = $kg_val - 1;
+                                } else {
+                                    $kg1 = $kg_val;
+                                    $kg2 = 0;
+                                }
+
+                                $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
                             }
 
-                            $tien_dong_go = ($kg1 * $dg_1_price) + ($kg2 * $dg_2_price);
+                            if (($order['bao_hiem'] == 1) && isset($order['can_nang_dk'])) {
+                                $kg_val = $order['can_nang_dk'];
+                                if ($order['chong_soc_1_price'] == 0) {
+                                    $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
+                                    $chong_soc_1_price = (int)$setting['setting']['value'];
+                                } else {
+                                    $chong_soc_1_price = $order['chong_soc_1_price'];
+                                }
+
+                                if ($order['chong_soc_2_price'] == 0) {
+                                    $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
+                                    $chong_soc_2_price = (int)$setting['setting']['value'];
+                                } else {
+                                    $chong_soc_2_price = $order['chong_soc_2_price'];
+                                }
+
+                                $kg1 = 0;
+                                $kg2 = 0;
+                                if ($kg_val >= 1) {
+                                    $kg1 = 1;
+                                    $kg2 = $kg_val - 1;
+                                } else {
+                                    $kg1 = $kg_val;
+                                    $kg2 = 0;
+                                }
+
+                                $tien_chong_soc = (($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price)) * $order['ti_gia'];
+                            }
                         }
 
-                        if (($order['bao_hiem'] == 1) && isset($order['can_nang_dk'])) {
-                            $kg_val = $order['can_nang_dk'];
-                            if ($order['chong_soc_1_price'] == 0) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_1_price');
-                                $chong_soc_1_price = (int)$setting['setting']['value'];
-                            } else {
-                                $chong_soc_1_price = $order['chong_soc_1_price'];
-                            }
+                        if ($cal_option == 2) {
 
-                            if ($order['chong_soc_2_price'] == 0) {
-                                $setting = CommonServiceFactory::mSettingService()->findByKey('chong_soc_2_price');
-                                $chong_soc_2_price = (int)$setting['setting']['value'];
-                            } else {
-                                $chong_soc_2_price = $order['chong_soc_2_price'];
-                            }
-
-                            $kg1 = 0;
-                            $kg2 = 0;
-                            if ($kg_val >= 1) {
-                                $kg1 = 1;
-                                $kg2 = $kg_val - 1;
-                            } else {
-                                $kg1 = $kg_val;
-                                $kg2 = 0;
-                            }
-
-                            $tien_chong_soc = (($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price)) * $order['ti_gia'];
                         }
                     }
 
@@ -693,6 +699,14 @@ class OrderController extends CommonController
                     break;
                 case 'dg_2_price':
                     $colName = 'Giá đóng gỗ 2 dự kiến';
+                    break;
+                case 'tien_dong_go_dk':
+                    $colName = 'Tiền đóng gỗ dự kiến';
+                    $value = (int)$value;
+                    break;
+                case 'tien_chong_soc_dk':
+                    $colName = 'Tiền chống sốc dự kiến';
+                    $value = (int)$value;
                     break;
                 case 'kich_thuoc_dk':
                     $colName = 'Kích thước dự kiến';
