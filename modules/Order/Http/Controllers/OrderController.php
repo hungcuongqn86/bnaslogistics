@@ -965,6 +965,8 @@ class OrderController extends CommonController
             $input['status'] = 3;
             $input['datcoc_content'] = $input['content'];
             $input['dat_coc'] = $datcoc;
+            unset($input['tien_hang']);
+
             $update = OrderServiceFactory::mOrderService()->update($input);
             if (!empty($update)) {
                 // History
