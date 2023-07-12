@@ -384,7 +384,7 @@ class OrderController extends CommonController
                                     $kg2 = 0;
                                 }
 
-                                $tien_chong_soc = (($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price)) * $order['ti_gia'];
+                                $tien_chong_soc = ($kg1 * $chong_soc_1_price) + ($kg2 * $chong_soc_2_price);
                             }
                         }
 
