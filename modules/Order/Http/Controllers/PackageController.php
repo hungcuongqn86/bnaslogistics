@@ -176,6 +176,14 @@ class PackageController extends CommonController
                     $colName = 'Ghi chú kho Trung';
                     $hide = 1;
                     break;
+                case 'tien_dong_go':
+                    $colName = 'Phí đóng gỗ';
+                    $value = (int)$value;
+                    break;
+                case 'tien_chong_soc':
+                    $colName = 'Phí chống sốc';
+                    $value = (int)$value;
+                    break;
                 case 'weight':
                     $colName = 'Cân nặng';
                     $value = floatval($value);
