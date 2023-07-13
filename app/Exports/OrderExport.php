@@ -63,13 +63,13 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                             'id' => $order['code'],
                             'status' => !empty($arr_status[$order['status']]) ? $arr_status[$order['status']] : $order['status'],
                             'created_at' => date('d-m-Y', strtotime($order['created_at'])),
-                            'user_name' => $order['user']['name'],
-                            'user_email' => $order['user']['email'],
-                            'user_phone_number' => $order['user']['phone_number'],
+                            'user_name' => !empty($order['user']) ? $order['user']['name'] : '',
+                            'user_email' => !empty($order['user']) ? $order['user']['email'] : '',
+                            'user_phone_number' => !empty($order['user']) ? $order['user']['phone_number'] : '',
                             'tien_hang' => (int)$order['tien_hang'],
                             'thanh_toan' => (int)$order['dat_coc'],
                             'thieu' => (int)$order['tien_hang'] - (int)$order['dat_coc'],
-                            'handle_name' => !empty($order['handle']['name']) ? $order['handle']['name'] : '',
+                            'handle_name' => !empty($order['handle']) ? $order['handle']['name'] : '',
                             'link' => $order_item['pro_link']
                         );
                     } else {
@@ -99,7 +99,7 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                     'tien_hang' => (int)$order['tien_hang'],
                     'thanh_toan' => (int)$order['dat_coc'],
                     'thieu' => (int)$order['tien_hang'] - (int)$order['dat_coc'],
-                    'handle_name' => !empty($order['handle']['name']) ? $order['handle']['name'] : '',
+                    'handle_name' => !empty($order['handle']) ? $order['handle']['name'] : '',
                     'link' => ''
                 );
             }
