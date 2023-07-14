@@ -37,8 +37,9 @@ class OrderController extends CommonController
     public function export(Request $request)
     {
         try {
+            $input = $request->all();
             $fileName = time() . '.orders.xlsx';
-            $file = Excel::store(new OrderExport, $fileName);
+            $file = Excel::store(new OrderExport($input), $fileName);
             return $this->sendResponse($fileName, 'Successfully.');
         } catch (\Exception $e) {
             return $this->sendError('Error', $e->getMessage());
