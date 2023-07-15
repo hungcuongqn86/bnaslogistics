@@ -99,6 +99,11 @@ class PackageService extends CommonService implements IPackageService
             $query->where('package_code', 'LIKE', '%' . $sKeySearch . '%');
         }
 
+        $action = isset($filter['action']) ? $filter['action'] : '';
+        if ($action == 'nhap_kho_tq') {
+            $query->whereIn('status', [1,2,3]);
+        }
+
         $query->orderBy('id', 'desc');
         return $query->get()->toArray();
     }
