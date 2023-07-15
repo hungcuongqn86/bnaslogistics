@@ -37,6 +37,25 @@ class PackageController extends CommonController
         }
     }
 
+    public function search1(Request $request)
+    {
+        $input = $request->all();
+        try {
+            $user = $request->user();
+            if ($user->type === 1) {
+                $input['user_id'] = $user->id;
+            }
+
+            if ($user->hasRole('employees')) {
+                $input['hander'] = $user->id;
+            }
+
+            return $this->sendResponse(OrderServiceFactory::mPackageService()->search1($input), 'Successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function detail($id)
     {
         try {

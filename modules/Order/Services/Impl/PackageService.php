@@ -72,6 +72,37 @@ class PackageService extends CommonService implements IPackageService
         return $rResult;
     }
 
+    public function search1($filter)
+    {
+        $sKeySearch = isset($filter['key']) ? $filter['key'] : '';
+        $query = Package::with(array('Order' => function ($query) {
+            $query->with(['User', 'OrderItems'])->orderBy('id');
+        }))->with(array('Receipt' => function ($query) {
+            $query->with(['User'])->orderBy('id');
+        }))->with(array('TqReceipt' => function ($query) {
+            $query->with(['User'])->orderBy('id');
+        }));
+
+        $iuserId = isset($filter['user_id']) ? $filter['user_id'] : 0;
+        $ihander = isset($filter['hander']) ? $filter['hander'] : 0;
+        $query->whereHas('Order', function ($q) use ( $iuserId, $ihander) {
+            if ($iuserId > 0) {
+                $q->where('user_id', '=', $iuserId);
+            }
+
+            if ($ihander > 0) {
+                $q->where('hander', '=', $ihander);
+            }
+        });
+
+        if (!empty($sKeySearch)) {
+            $query->where('package_code', 'LIKE', '%' . $sKeySearch . '%');
+        }
+
+        $query->orderBy('id', 'desc');
+        return $query->get()->toArray();
+    }
+
     public function myOrderCountByStatus($userId)
     {
         $rResult = Package::whereHas('Order', function ($q) use ($userId) {
