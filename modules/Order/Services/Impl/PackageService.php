@@ -108,7 +108,9 @@ class PackageService extends CommonService implements IPackageService
             $query->whereIn('status', [4]);
         }
 
-        
+        if ($action == 'nhap_kho_viet') {
+            $query->whereIn('status', [4,5]);
+        }
 
         $query->orderBy('id', 'desc');
         return $query->get()->toArray();
