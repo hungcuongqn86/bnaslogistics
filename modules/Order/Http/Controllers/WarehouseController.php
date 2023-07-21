@@ -495,29 +495,46 @@ class WarehouseController extends CommonController
     public function deletetqreceipt(Request $request, $id)
     {
         $input = $request->all();
-        $bill = OrderServiceFactory::mBillService()->findById($input['id']);
-        if (empty($bill)) {
-            return $this->sendError('Error', ['Không tồn tại phiếu xuất!']);
+        $user = $request->user();
+        $tqReceipt = OrderServiceFactory::mTqReceiptService()->findById($id);
+        if (empty($tqReceipt)) {
+            return $this->sendError('Error', ['Không tồn tại phiếu nhập!']);
         }
-        if ($bill['bill']['status'] == 2) {
-            return $this->sendError('Error', ['Không thể xóa phiếu xuất đã xuất kho!']);
+
+        $packages = $tqReceipt['package'];
+        foreach ($packages as $package) {
+            if ($package['status'] > 4) {
+                return $this->sendError('Error', ['Không thể xóa phiếu nhập có kiện hàng đã xuất kho!']);
+            }
         }
+
         DB::beginTransaction();
         try {
-            // Package
-            $packages = $bill['bill']['package'];
             foreach ($packages as $package) {
                 $packageInput = array(
                     'id' => $package['id'],
-                    'bill_id' => null
+                    'tq_receipt_id' => null,
+                    'status' => 3
                 );
                 OrderServiceFactory::mPackageService()->update($packageInput);
+
+                // Update order
+                $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
+                if (empty($order)) {
+                    return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+                }
+
+                // Add history
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $order['id'],
+                    'type' => 11,
+                    'content' => 'Kiện hàng ' . $package['id'] . ' hủy nhập kho Trung Quốc, xóa mã phiếu ' . $tqReceipt['code']
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
             }
-            $billInput = array(
-                'id' => $input['id'],
-                'is_deleted' => 1
-            );
-            OrderServiceFactory::mBillService()->update($billInput);
+
+            OrderServiceFactory::mTqReceiptService()->delete($id);
             DB::commit();
             return $this->sendResponse(true, 'Successfully.');
         } catch (\Exception $e) {
