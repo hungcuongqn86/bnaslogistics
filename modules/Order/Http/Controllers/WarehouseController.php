@@ -492,6 +492,57 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function deletereceipt(Request $request, $id)
+    {
+        $input = $request->all();
+        $user = $request->user();
+        $tqReceipt = OrderServiceFactory::mReceiptService()->findById($id);
+        if (empty($tqReceipt)) {
+            return $this->sendError('Error', ['Không tồn tại phiếu nhập!']);
+        }
+
+        $packages = $tqReceipt['package'];
+        foreach ($packages as $package) {
+            if ($package['status'] > 6) {
+                return $this->sendError('Error', ['Không thể xóa phiếu nhập có kiện hàng đã xuất kho!']);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($packages as $package) {
+                $packageInput = array(
+                    'id' => $package['id'],
+                    'receipt_id' => null,
+                    'status' => 5
+                );
+                OrderServiceFactory::mPackageService()->update($packageInput);
+
+                // Update order
+                $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
+                if (empty($order)) {
+                    return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+                }
+
+                // Add history
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $order['id'],
+                    'type' => 11,
+                    'content' => 'Kiện hàng ' . $package['id'] . ' hủy nhập kho Việt, xóa mã phiếu ' . $tqReceipt['code']
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
+            }
+
+            OrderServiceFactory::mReceiptService()->delete($id);
+            DB::commit();
+            return $this->sendResponse(true, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function deletetqreceipt(Request $request, $id)
     {
         $input = $request->all();

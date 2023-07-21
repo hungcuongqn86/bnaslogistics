@@ -104,4 +104,20 @@ class ReceiptService extends CommonService implements IReceiptService
             throw $e;
         }
     }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            Receipt::find($id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }
