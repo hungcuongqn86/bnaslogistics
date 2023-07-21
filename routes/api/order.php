@@ -52,6 +52,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             });
             Route::group(['prefix' => 'warehouse-tq'], function () {
                 Route::get('/receipts', 'WarehouseController@tqreceipts');
+                Route::post('/receipt/delete/{id}', 'WarehouseController@deletetqreceipt');
                 Route::post('/storebill/create', 'WarehouseController@tqstorebillCreate');
             });
             Route::group(['prefix' => 'comment'], function () {

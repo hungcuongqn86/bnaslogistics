@@ -492,6 +492,40 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function deletetqreceipt(Request $request, $id)
+    {
+        $input = $request->all();
+        $bill = OrderServiceFactory::mBillService()->findById($input['id']);
+        if (empty($bill)) {
+            return $this->sendError('Error', ['Không tồn tại phiếu xuất!']);
+        }
+        if ($bill['bill']['status'] == 2) {
+            return $this->sendError('Error', ['Không thể xóa phiếu xuất đã xuất kho!']);
+        }
+        DB::beginTransaction();
+        try {
+            // Package
+            $packages = $bill['bill']['package'];
+            foreach ($packages as $package) {
+                $packageInput = array(
+                    'id' => $package['id'],
+                    'bill_id' => null
+                );
+                OrderServiceFactory::mPackageService()->update($packageInput);
+            }
+            $billInput = array(
+                'id' => $input['id'],
+                'is_deleted' => 1
+            );
+            OrderServiceFactory::mBillService()->update($billInput);
+            DB::commit();
+            return $this->sendResponse(true, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function billDelete(Request $request)
     {
         $input = $request->all();
