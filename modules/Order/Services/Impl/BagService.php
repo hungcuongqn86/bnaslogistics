@@ -101,4 +101,20 @@ class BagService extends CommonService implements IBagService
             throw $e;
         }
     }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            Bag::find($id)->delete();
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

@@ -492,6 +492,57 @@ class WarehouseController extends CommonController
         }
     }
 
+    public function bagDelete(Request $request, $id)
+    {
+        $input = $request->all();
+        $user = $request->user();
+        $bag = OrderServiceFactory::mBagService()->findById($id);
+        if (empty($bag)) {
+            return $this->sendError('Error', ['Không tồn tại bao!']);
+        }
+
+        $packages = $bag['package'];
+        foreach ($packages as $package) {
+            if ($package['status'] > 5) {
+                return $this->sendError('Error', ['Không thể xóa phiếu nhập có kiện hàng đã xuất kho Trung!']);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($packages as $package) {
+                $packageInput = array(
+                    'id' => $package['id'],
+                    'tq_receipt_id' => null,
+                    'status' => 4
+                );
+                OrderServiceFactory::mPackageService()->update($packageInput);
+
+                // Update order
+                $order = OrderServiceFactory::mOrderService()->findById($package['order_id']);
+                if (empty($order)) {
+                    return $this->sendError('Error', ['Đơn hàng không tồn tại!']);
+                }
+
+                // Add history
+                $history = [
+                    'user_id' => $user['id'],
+                    'order_id' => $order['id'],
+                    'type' => 11,
+                    'content' => 'Kiện hàng ' . $package['id'] . ' hủy bao hàng ' . $bag['code']
+                ];
+                OrderServiceFactory::mHistoryService()->create($history);
+            }
+
+            OrderServiceFactory::mBagService()->delete($id);
+            DB::commit();
+            return $this->sendResponse(true, 'Successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     public function deletereceipt(Request $request, $id)
     {
         $input = $request->all();
