@@ -132,8 +132,9 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
             if (!empty($order['package'])) {
                 $packages = $order['package'];
                 foreach ($packages as $package) {
-
-
+                    $tien_van_chuyen = $tien_van_chuyen + (int)$package['tien_can_tt'] + (int)$package['phi_van_phat_sinh'];
+                    $tien_dong_go = $tien_dong_go + (int)$package['tien_dong_go'];
+                    $tien_chong_soc = $tien_chong_soc + (int)$package['tien_chong_soc_tt'];
                 }
             }
 
