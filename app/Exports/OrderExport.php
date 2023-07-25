@@ -198,9 +198,19 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                             'user_email' => '',
                             'user_phone_number' => '',
                             'tien_hang' => '',
-                            'thanh_toan' => '',
-                            'thieu' => '',
+                            'phi_dat_hang_tt' => '',
+                            'phi_kiem_dem_tt' => '',
+                            'tong_tien_don' => '',
+                            'tien_van_chuyen' => '',
+                            'tien_dong_go' => '',
+                            'tien_chong_soc' => '',
+                            'tien_ship_nd' => '',
+                            'tong_cong' => '',
+                            'dat_coc' => '',
                             'handle_name' => '',
+                            'size_color' => $size_color,
+                            'price' => $order_item['price'],
+                            'amount' => $order_item['amount'],
                             'link' => $order_item['pro_link']
                         );
                     }
