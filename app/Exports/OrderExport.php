@@ -153,8 +153,16 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
             if (!empty($order['order_items'])) {
                 foreach ($order['order_items'] as $key => $order_item) {
                     $size_color = "";
+                    if (!empty($order_item['name'])) {
+                        $size_color = $order_item['name'];
+                    }
+
                     if (!empty($order_item['colortxt'])) {
-                        $size_color = $order_item['colortxt'];
+                        if (!empty($size_color)) {
+                            $size_color = $size_color . " " . $order_item['colortxt'];
+                        } else {
+                            $size_color = $order_item['colortxt'];
+                        }
                     }
 
                     if (!empty($order_item['sizetxt'])) {
