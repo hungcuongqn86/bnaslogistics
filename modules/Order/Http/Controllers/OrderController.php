@@ -967,7 +967,7 @@ class OrderController extends CommonController
         try {
             // Transaction
             $datcoc = $order['tien_hang'] + $order['phi_kiem_dem_tt'] + $order['phi_dat_hang_tt'];
-            $datcoc = ceil($datcoc * $vip['deposit'] / 100);
+            $datcoc = round($datcoc * $vip['deposit'] / 100);
             if ($datcoc != $input['dc_value']) {
                 return $this->sendError('Error', ['Lỗi dữ liệu, hãy thực hiện lại!']);
             }
