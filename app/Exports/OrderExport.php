@@ -42,6 +42,7 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
             'Phí kiểm đếm',
             'Tổng tiền đơn hàng',
             'Đặt cọc',
+            'Mã vận đơn',
             'Phí vận chuyển',
             'Phí đóng gỗ',
             'Phí chống sốc',
@@ -129,12 +130,18 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
             $tien_van_chuyen = 0;
             $tien_dong_go = 0;
             $tien_chong_soc = 0;
+
+            $package_code_list = [];
+
             if (!empty($order['package'])) {
                 $packages = $order['package'];
                 foreach ($packages as $package) {
                     $tien_van_chuyen = $tien_van_chuyen + (int)$package['tien_can_tt'] + (int)$package['phi_van_phat_sinh'];
                     $tien_dong_go = $tien_dong_go + (int)$package['tien_dong_go'];
                     $tien_chong_soc = $tien_chong_soc + (int)$package['tien_chong_soc_tt'];
+                    if (!empty($package['package_code'])) {
+                        $package_code_list[] = $package['package_code'];
+                    }
                 }
             }
 
@@ -202,6 +209,7 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                             'phi_kiem_dem_tt' => $phi_kiem_dem_tt,
                             'tong_tien_don' => $tien_hang + $phi_dat_hang_tt + $phi_kiem_dem_tt,
                             'dat_coc' => (int)$order['dat_coc'],
+                            'ma_van_don' => implode(', ', $package_code_list),
                             'tien_van_chuyen' => (int)$tien_van_chuyen,
                             'tien_dong_go' => (int)$tien_dong_go,
                             'tien_chong_soc' => (int)$tien_chong_soc,
@@ -226,6 +234,7 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                             'phi_kiem_dem_tt' => '',
                             'tong_tien_don' => '',
                             'dat_coc' => '',
+                            'ma_van_don' => '',
                             'tien_van_chuyen' => '',
                             'tien_dong_go' => '',
                             'tien_chong_soc' => '',
@@ -252,6 +261,7 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                     'phi_kiem_dem_tt' => $phi_kiem_dem_tt,
                     'tong_tien_don' => $tien_hang + $phi_dat_hang_tt + $phi_kiem_dem_tt,
                     'dat_coc' => (int)$order['dat_coc'],
+                    'ma_van_don' => implode(', ', $package_code_list),
                     'tien_van_chuyen' => (int)$tien_van_chuyen,
                     'tien_dong_go' => (int)$tien_dong_go,
                     'tien_chong_soc' => (int)$tien_chong_soc,
