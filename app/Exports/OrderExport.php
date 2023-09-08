@@ -41,12 +41,12 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
             'Phí dịch vụ mua hàng',
             'Phí kiểm đếm',
             'Tổng tiền đơn hàng',
+            'Đặt cọc',
             'Phí vận chuyển',
             'Phí đóng gỗ',
             'Phí chống sốc',
             'Phí ship nội địa',
             'Tổng cộng',
-            'Đặt cọc',
             'Phụ trách',
             'Thông số SP',
             'Đơn giá',
@@ -150,6 +150,12 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                 $tien_chong_soc = (int)$order['tien_chong_soc_dk'];
             }
 
+            $status = $order['status'];
+            $tien_hang = (int)$order['tien_hang'];
+            $phi_dat_hang_tt = (int)$order['phi_dat_hang_tt'];
+            $phi_kiem_dem_tt = (int)$order['phi_kiem_dem_tt'];
+            $ship_khach_tt = (int)$order['ship_khach_tt'];
+
             if (!empty($order['order_items'])) {
                 foreach ($order['order_items'] as $key => $order_item) {
                     $size_color = "";
@@ -174,23 +180,33 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                     }
 
                     if (!$key) {
+                        if ($status == 6) {
+                            $tien_hang = 0;
+                            $phi_dat_hang_tt = 0;
+                            $phi_kiem_dem_tt = 0;
+                            $ship_khach_tt = 0;
+                            $tien_van_chuyen = 0;
+                            $tien_dong_go = 0;
+                            $tien_chong_soc = 0;
+                        }
+
                         $data[] = array(
                             'code' => $order['code'],
-                            'status' => !empty($arr_status[$order['status']]) ? $arr_status[$order['status']] : $order['status'],
+                            'status' => !empty($arr_status[$status]) ? $arr_status[$status] : $order['status'],
                             'created_at' => date('d-m-Y', strtotime($order['created_at'])),
                             'user_name' => !empty($order['user']) ? $order['user']['name'] : '',
                             'user_email' => !empty($order['user']) ? $order['user']['email'] : '',
                             'user_phone_number' => !empty($order['user']) ? $order['user']['phone_number'] : '',
-                            'tien_hang' => (int)$order['tien_hang'],
-                            'phi_dat_hang_tt' => (int)$order['phi_dat_hang_tt'],
-                            'phi_kiem_dem_tt' => (int)$order['phi_kiem_dem_tt'],
-                            'tong_tien_don' => (int)$order['tien_hang'] + (int)$order['phi_dat_hang_tt'] + (int)$order['phi_kiem_dem_tt'],
+                            'tien_hang' => $tien_hang,
+                            'phi_dat_hang_tt' => $phi_dat_hang_tt,
+                            'phi_kiem_dem_tt' => $phi_kiem_dem_tt,
+                            'tong_tien_don' => $tien_hang + $phi_dat_hang_tt + $phi_kiem_dem_tt,
+                            'dat_coc' => (int)$order['dat_coc'],
                             'tien_van_chuyen' => (int)$tien_van_chuyen,
                             'tien_dong_go' => (int)$tien_dong_go,
                             'tien_chong_soc' => (int)$tien_chong_soc,
-                            'tien_ship_nd' => (int)$order['ship_khach_tt'],
-                            'tong_cong' => (int)$order['tien_hang'] + (int)$order['phi_dat_hang_tt'] + (int)$order['phi_kiem_dem_tt'] + (int)$order['ship_khach_tt'] + (int)$tien_van_chuyen + (int)$tien_dong_go + (int)$tien_chong_soc,
-                            'dat_coc' => (int)$order['dat_coc'],
+                            'tien_ship_nd' => $ship_khach_tt,
+                            'tong_cong' => $tien_hang + $phi_dat_hang_tt + $phi_kiem_dem_tt + $ship_khach_tt + (int)$tien_van_chuyen + (int)$tien_dong_go + (int)$tien_chong_soc,
                             'handle_name' => !empty($order['handle']) ? $order['handle']['name'] : '',
                             'size_color' => $size_color,
                             'price' => $order_item['price'],
@@ -209,12 +225,12 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
                             'phi_dat_hang_tt' => '',
                             'phi_kiem_dem_tt' => '',
                             'tong_tien_don' => '',
+                            'dat_coc' => '',
                             'tien_van_chuyen' => '',
                             'tien_dong_go' => '',
                             'tien_chong_soc' => '',
                             'tien_ship_nd' => '',
                             'tong_cong' => '',
-                            'dat_coc' => '',
                             'handle_name' => '',
                             'size_color' => $size_color,
                             'price' => $order_item['price'],
@@ -226,21 +242,21 @@ class OrderExport implements FromCollection, WithHeadings, ShouldAutoSize, WithE
             } else {
                 $data[] = array(
                     'code' => $order['code'],
-                    'status' => !empty($arr_status[$order['status']]) ? $arr_status[$order['status']] : $order['status'],
+                    'status' => !empty($arr_status[$status]) ? $arr_status[$status] : $order['status'],
                     'created_at' => date('d-m-Y', strtotime($order['created_at'])),
                     'user_name' => $order['user']['name'],
                     'user_email' => $order['user']['email'],
                     'user_phone_number' => $order['user']['phone_number'],
-                    'tien_hang' => (int)$order['tien_hang'],
-                    'phi_dat_hang_tt' => (int)$order['phi_dat_hang_tt'],
-                    'phi_kiem_dem_tt' => (int)$order['phi_kiem_dem_tt'],
-                    'tong_tien_don' => (int)$order['tien_hang'] + (int)$order['phi_dat_hang_tt'] + (int)$order['phi_kiem_dem_tt'],
+                    'tien_hang' => $tien_hang,
+                    'phi_dat_hang_tt' => $phi_dat_hang_tt,
+                    'phi_kiem_dem_tt' => $phi_kiem_dem_tt,
+                    'tong_tien_don' => $tien_hang + $phi_dat_hang_tt + $phi_kiem_dem_tt,
+                    'dat_coc' => (int)$order['dat_coc'],
                     'tien_van_chuyen' => (int)$tien_van_chuyen,
                     'tien_dong_go' => (int)$tien_dong_go,
                     'tien_chong_soc' => (int)$tien_chong_soc,
-                    'tien_ship_nd' => (int)$order['ship_khach_tt'],
-                    'tong_cong' => (int)$order['tien_hang'] + (int)$order['phi_dat_hang_tt'] + (int)$order['phi_kiem_dem_tt'] + (int)$order['ship_khach_tt'] + (int)$tien_van_chuyen + (int)$tien_dong_go + (int)$tien_chong_soc,
-                    'dat_coc' => (int)$order['dat_coc'],
+                    'tien_ship_nd' => $ship_khach_tt,
+                    'tong_cong' => $tien_hang + $phi_dat_hang_tt + $phi_kiem_dem_tt + $ship_khach_tt + (int)$tien_van_chuyen + (int)$tien_dong_go + (int)$tien_chong_soc,
                     'handle_name' => !empty($order['handle']) ? $order['handle']['name'] : '',
                     'size_color' => "",
                     'price' => "",
